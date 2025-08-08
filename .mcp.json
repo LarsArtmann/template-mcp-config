@@ -17,12 +17,16 @@
       "args": [
         "-y",
         "@modelcontextprotocol/server-filesystem",
-        "${HOME}/IdeaProjects/",
-        "${HOME}/GolandProjects/",
-        "${HOME}/WebStormProjects/",
         "${HOME}/projects/",
+        "${HOME}/work/",
+        "${HOME}/code/",
         "/tmp"
       ],
+      "env": {}
+    },
+    "playwright": {
+      "command": "bunx",
+      "args": ["-y", "@playwright/mcp"],
       "env": {}
     },
     "puppeteer": {
@@ -51,11 +55,6 @@
       "env": {
         "KUBECONFIG": "${KUBECONFIG:-${HOME}/.kube/config}"
       }
-    },
-    "docker": {
-      "command": "bunx",
-      "args": ["-y", "@modelcontextprotocol/server-docker"],
-      "env": {}
     },
     "ssh": {
       "command": "bunx",

@@ -9,7 +9,8 @@
       "Bash(readme-generator)",
       "Bash(./mcp-validate --help)",
       "Bash(./mcp-validate help)",
-      "Bash(./mcp-validate schema list)"
+      "Bash(./mcp-validate schema list)",
+      "Bash(./validation/mcp-validate:*)"
     ],
     "deny": []
   }

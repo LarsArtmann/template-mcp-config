@@ -47,4 +47,5 @@ temp/
 
 # readme-generator config (if you customize it)
 # Uncomment if you want to ignore local readme config changes
-# .readme/
+# .readme/.DS_Store
+/.claude

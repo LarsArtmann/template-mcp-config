@@ -5,14 +5,22 @@
 [![License: EUPL v1.2](https://img.shields.io/badge/License-EUPLv1.2-blue.svg)](https://joinup.ec.europa.eu/software/page/eupl)
 [![GitHub stars](https://img.shields.io/github/stars/LarsArtmann/template-mcp-config.svg?style=social&label=Star)](https://github.com/LarsArtmann/template-mcp-config)
 
+## 🚀 One-Line Quick Start
+
+```bash
+git subtree add --prefix=.mcp-config https://github.com/LarsArtmann/template-mcp-config.git main --squash && ln -s .mcp-config/.mcp.json .mcp.json && cp .mcp-config/.env.example .env
+```
+
 A curated Model Context Protocol (MCP) configuration template that provides essential MCP servers for development teams. Features **Context7** for real-time documentation, plus carefully selected servers for filesystem access, GitHub integration, browser automation, and DevOps tools—all without requiring external API keys (except GitHub and optional Turso).
 
 ## 🌟 Key Features
 
-### ✨ **Context7 Integration**
-- **Real-time documentation**: Access up-to-date library docs and code examples
-- **Zero configuration**: Works immediately with `use context7` in prompts
+### ✨ **Context7 & DeepWiki Integration**
+- **Real-time documentation**: Access up-to-date library docs and code examples via Context7
+- **Repository documentation**: Search public repository documentation via DeepWiki
+- **Zero configuration**: Works immediately with `use context7` or `use deepwiki` in prompts
 - **Version-specific**: Always gets the latest official documentation
+- **AI-powered search**: Get context-grounded responses from repository docs
 
 ### 🎯 **Curated Server Selection**
 - **Minimal API dependencies**: Most servers work without external API keys
@@ -31,6 +39,7 @@ A curated Model Context Protocol (MCP) configuration template that provides esse
 | Category | Server | Purpose | API Key Required |
 |----------|--------|---------|------------------|
 | **📚 Documentation** | Context7 | Real-time library documentation | ❌ |
+| **📚 Documentation** | DeepWiki | Public repository documentation & AI search | ❌ |
 | **🔧 Version Control** | GitHub | Repository operations & issue management | ✅ |
 | **📁 File System** | Filesystem | Multi-directory file access | ❌ |
 | **🧠 AI Enhancement** | Memory | Persistent conversation context | ❌ |
@@ -49,7 +58,7 @@ A curated Model Context Protocol (MCP) configuration template that provides esse
 | **📊 Monitoring** | Prometheus | Metrics collection & analysis | ❌ |
 | **📦 Kubernetes Packages** | Helm | Kubernetes application management | ❌ |
 
-**Total: 17 MCP servers** - Only **1 required API key** (GitHub), **1 optional** (Turso)
+**Total: 18 MCP servers** - Only **1 required API key** (GitHub), **1 optional** (Turso)
 
 ## 🚀 Quick Start
 
@@ -94,13 +103,19 @@ git submodule update --remote
 
 ## 💡 Usage Examples
 
-### Context7 in Action
+### Context7 & DeepWiki in Action
 ```
 User: "Create a FastAPI application with JWT authentication. use context7"
 AI: [Fetches latest FastAPI docs and provides current best practices]
 
 User: "Write a Next.js 14 component with server actions. use context7"  
 AI: [Gets up-to-date Next.js 14 documentation and examples]
+
+User: "How does Kubernetes handle pod scheduling? use deepwiki"
+AI: [Searches public Kubernetes documentation for detailed scheduling information]
+
+User: "Explain React hooks implementation details. use deepwiki"
+AI: [Retrieves React repository documentation with AI-powered explanations]
 ```
 
 ### Browser Automation
@@ -167,8 +182,11 @@ Update the `filesystem` server paths for your environment:
       "args": [
         "-y",
         "@modelcontextprotocol/server-filesystem",
-        "/your/projects/directory",
-        "/another/work/directory",
+        "${HOME}/projects",
+        "${HOME}/GolandProjects",
+        "${HOME}/IdeaProjects", 
+        "${HOME}/WebStormProjects",
+        "${HOME}/Desktop",
         "/tmp"
       ]
     }

@@ -300,7 +300,7 @@ async function runValidationTests() {
   console.log('\n🔍 Test 8: TypeSpec schema validation');
   try {
     // Check if generated schemas exist
-    const schemaDir = path.join(__dirname, 'schemas', 'generated', 'json-schema');
+    const schemaDir = path.join(__dirname, '..', 'schemas', 'generated', 'json-schema');
     const mainSchemaPath = path.join(schemaDir, 'MCPConfiguration.yaml');
     
     if (fs.existsSync(mainSchemaPath)) {

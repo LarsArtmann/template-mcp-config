@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:docs.devin.ai)",
+      "WebFetch(domain:joinup.ec.europa.eu)",
+      "WebFetch(domain:interoperable-europe.ec.europa.eu)",
+      "WebFetch(domain:spdx.org)",
+      "WebFetch(domain:eupl.eu)",
+      "Bash(readme-generator)"
+    ],
+    "deny": []
+  }
+}

@@ -1,0 +1,44 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: EnvironmentVariable.yaml
+type: object
+properties:
+  name:
+    type: string
+    pattern: ^[A-Z][A-Z0-9_]*$
+    description: Environment variable name
+  description:
+    type: string
+    minLength: 10
+    description: Description of the environment variable's purpose
+  example:
+    type: string
+    description: Example value (use placeholders for sensitive data)
+  defaultValue:
+    type: string
+    description: Default value if not provided
+  sensitive:
+    type: boolean
+    default: false
+    description: Indicates if variable contains sensitive information
+  pattern:
+    type: string
+    description: Regular expression pattern for value validation
+  type:
+    anyOf:
+      - type: string
+        const: api_key
+      - type: string
+        const: url
+      - type: string
+        const: path
+      - type: string
+        const: boolean
+      - type: string
+        const: number
+      - type: string
+        const: string
+    description: Variable type or category
+required:
+  - name
+  - description
+description: Individual environment variable definition

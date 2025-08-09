@@ -1,0 +1,33 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: ValidationResult.yaml
+type: object
+properties:
+  valid:
+    type: boolean
+    description: Whether validation passed successfully
+  errors:
+    type: array
+    items:
+      $ref: ValidationError.yaml
+    description: Critical errors that prevent server operation
+  warnings:
+    type: array
+    items:
+      $ref: ValidationWarning.yaml
+    description: Non-critical warnings about configuration
+  details:
+    $ref: ValidationDetails.yaml
+    description: Detailed results broken down by validation category
+  timestamp:
+    type: string
+    format: date-time
+    description: When the validation was performed
+required:
+  - valid
+  - errors
+  - warnings
+  - details
+  - timestamp
+description: |-
+  Validation Result
+  Structure returned by validation operations

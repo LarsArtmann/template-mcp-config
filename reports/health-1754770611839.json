@@ -1,0 +1,227 @@
+{
+  "timestamp": "2025-08-09T20:16:51.838Z",
+  "system": {
+    "timestamp": "2025-08-09T20:16:49.104Z",
+    "platform": "darwin",
+    "arch": "arm64",
+    "nodeVersion": "v22.17.0",
+    "memory": {
+      "total": 24,
+      "free": 0.5,
+      "used": 23.5
+    },
+    "uptime": 4552,
+    "loadAverage": [
+      60.8505859375,
+      87.935546875,
+      67.04296875
+    ],
+    "disk": "Filesystem      Size    Used   Avail Capacity iused ifree %iused  Mounted on\n/dev/disk3s5   228Gi   144Gi   5.0Gi    97%    3.6M   52M    6%   /System/Volumes/Data\n"
+  },
+  "servers": {
+    "context7": {
+      "status": "unhealthy",
+      "responseTime": 11,
+      "exitCode": 1,
+      "message": "Exit code 1",
+      "type": "local",
+      "capabilities": {},
+      "timestamp": "2025-08-09T20:16:49.129Z"
+    },
+    "deepwiki": {
+      "status": "healthy",
+      "responseTime": 1051,
+      "httpStatus": 200,
+      "message": "Server responding",
+      "type": "remote",
+      "capabilities": {},
+      "timestamp": "2025-08-09T20:16:50.181Z"
+    },
+    "github": {
+      "status": "unhealthy",
+      "responseTime": 10,
+      "exitCode": 1,
+      "message": "Exit code 1",
+      "type": "local",
+      "capabilities": {
+        "auth": {
+          "status": "needs_config"
+        }
+      },
+      "timestamp": "2025-08-09T20:16:50.191Z"
+    },
+    "filesystem": {
+      "status": "unhealthy",
+      "responseTime": 11,
+      "exitCode": 1,
+      "message": "Exit code 1",
+      "type": "local",
+      "capabilities": {
+        "paths": {
+          "totalPaths": 6,
+          "accessiblePaths": 6,
+          "totalItems": 277,
+          "status": "healthy"
+        }
+      },
+      "timestamp": "2025-08-09T20:16:50.204Z"
+    },
+    "playwright": {
+      "status": "unhealthy",
+      "responseTime": 11,
+      "exitCode": 1,
+      "message": "Exit code 1",
+      "type": "local",
+      "capabilities": {},
+      "timestamp": "2025-08-09T20:16:50.215Z"
+    },
+    "puppeteer": {
+      "status": "unhealthy",
+      "responseTime": 11,
+      "exitCode": 1,
+      "message": "Exit code 1",
+      "type": "local",
+      "capabilities": {},
+      "timestamp": "2025-08-09T20:16:50.226Z"
+    },
+    "memory": {
+      "status": "unhealthy",
+      "responseTime": 9,
+      "exitCode": 1,
+      "message": "Exit code 1",
+      "type": "local",
+      "capabilities": {},
+      "timestamp": "2025-08-09T20:16:50.235Z"
+    },
+    "sequential-thinking": {
+      "status": "unhealthy",
+      "responseTime": 13,
+      "exitCode": 1,
+      "message": "Exit code 1",
+      "type": "local",
+      "capabilities": {},
+      "timestamp": "2025-08-09T20:16:50.248Z"
+    },
+    "everything": {
+      "status": "unhealthy",
+      "responseTime": 9,
+      "exitCode": 1,
+      "message": "Exit code 1",
+      "type": "local",
+      "capabilities": {},
+      "timestamp": "2025-08-09T20:16:50.258Z"
+    },
+    "kubernetes": {
+      "status": "unhealthy",
+      "responseTime": 10,
+      "exitCode": 1,
+      "message": "Exit code 1",
+      "type": "local",
+      "capabilities": {
+        "cluster": {
+          "accessible": true,
+          "status": "healthy",
+          "message": "Cluster accessible"
+        }
+      },
+      "timestamp": "2025-08-09T20:16:51.764Z"
+    },
+    "ssh": {
+      "status": "unhealthy",
+      "responseTime": 9,
+      "exitCode": 1,
+      "message": "Exit code 1",
+      "type": "local",
+      "capabilities": {},
+      "timestamp": "2025-08-09T20:16:51.773Z"
+    },
+    "sqlite": {
+      "status": "unhealthy",
+      "responseTime": 7,
+      "exitCode": 1,
+      "message": "Exit code 1",
+      "type": "local",
+      "capabilities": {},
+      "timestamp": "2025-08-09T20:16:51.780Z"
+    },
+    "turso": {
+      "status": "unhealthy",
+      "responseTime": 9,
+      "exitCode": 1,
+      "message": "Exit code 1",
+      "type": "local",
+      "capabilities": {
+        "database": {
+          "status": "optional"
+        }
+      },
+      "timestamp": "2025-08-09T20:16:51.789Z"
+    },
+    "terraform": {
+      "status": "unhealthy",
+      "responseTime": 9,
+      "exitCode": 1,
+      "message": "Exit code 1",
+      "type": "local",
+      "capabilities": {},
+      "timestamp": "2025-08-09T20:16:51.798Z"
+    },
+    "nixos": {
+      "status": "unhealthy",
+      "responseTime": 7,
+      "exitCode": 1,
+      "message": "Exit code 1",
+      "type": "local",
+      "capabilities": {},
+      "timestamp": "2025-08-09T20:16:51.805Z"
+    },
+    "prometheus": {
+      "status": "unhealthy",
+      "responseTime": 6,
+      "exitCode": 1,
+      "message": "Exit code 1",
+      "type": "local",
+      "capabilities": {
+        "metrics": {
+          "accessible": false,
+          "status": "unavailable",
+          "url": "http://localhost:9090"
+        }
+      },
+      "timestamp": "2025-08-09T20:16:51.814Z"
+    },
+    "helm": {
+      "status": "unhealthy",
+      "responseTime": 6,
+      "exitCode": 1,
+      "message": "Exit code 1",
+      "type": "local",
+      "capabilities": {},
+      "timestamp": "2025-08-09T20:16:51.820Z"
+    },
+    "fetch": {
+      "status": "unhealthy",
+      "responseTime": 9,
+      "exitCode": 1,
+      "message": "Exit code 1",
+      "type": "local",
+      "capabilities": {},
+      "timestamp": "2025-08-09T20:16:51.830Z"
+    },
+    "youtube-transcript": {
+      "status": "unhealthy",
+      "responseTime": 7,
+      "exitCode": 1,
+      "message": "Exit code 1",
+      "type": "local",
+      "capabilities": {},
+      "timestamp": "2025-08-09T20:16:51.837Z"
+    }
+  },
+  "summary": {
+    "total": 19,
+    "healthy": 1,
+    "unhealthy": 18,
+    "avgResponseTime": 64
+  }
+}

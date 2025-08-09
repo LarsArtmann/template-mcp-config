@@ -1,0 +1,51 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: StdioMCPServer.yaml
+type: object
+properties:
+  type:
+    type: string
+    const: stdio
+    description: Server type identifier
+  command:
+    type: string
+    minLength: 1
+    description: Command to execute (e.g., 'bunx', 'node', 'python')
+  args:
+    type: array
+    items:
+      type: string
+    description: Command line arguments for the server
+  env:
+    $ref: "#/$defs/RecordString"
+    description: Environment variables for the server process
+  cwd:
+    type: string
+    description: Working directory for the server process
+  initTimeoutMs:
+    type: integer
+    minimum: 1000
+    maximum: 60000
+    default: 10000
+    description: Server initialization timeout in milliseconds
+  autoRestart:
+    type: boolean
+    default: false
+    description: Automatically restart server on failure
+  maxRestarts:
+    type: integer
+    minimum: 1
+    maximum: 10
+    default: 3
+    description: "Maximum restart attempts (requires autoRestart: true)"
+required:
+  - type
+  - command
+description: |-
+  Standard I/O MCP Server Configuration
+  These servers run as child processes communicating via stdin/stdout
+$defs:
+  RecordString:
+    type: object
+    properties: {}
+    additionalProperties:
+      type: string

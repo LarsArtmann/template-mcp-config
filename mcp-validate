@@ -1,0 +1,351 @@
+#!/usr/bin/env node
+
+/**
+ * MCP Configuration Validation CLI
+ * 
+ * Command-line interface for validating MCP configurations.
+ * Provides easy-to-use commands for validation, testing, and schema operations.
+ */
+
+const fs = require('fs');
+const path = require('path');
+const { validateMCPConfig } = require('./validate-config.js');
+const { runValidationTests } = require('./test-validation.js');
+
+const VERSION = '1.0.0';
+
+/**
+ * Display help information
+ */
+function showHelp() {
+  console.log(`
+📋 MCP Configuration Validation CLI v${VERSION}
+
+USAGE:
+  mcp-validate [command] [options]
+
+COMMANDS:
+  validate [config]      Validate MCP configuration file (default: .mcp.json)
+  test                   Run validation test suite
+  schema                 Operations with TypeSpec schemas
+  version                Show version information
+  help                   Show this help message
+
+VALIDATE OPTIONS:
+  -v, --verbose          Show detailed validation results
+  -q, --quiet           Show only errors (no warnings)
+  --json                Output results in JSON format
+  --no-connectivity     Skip server connectivity tests
+  --env-file <path>     Specify custom .env file path
+
+SCHEMA COMMANDS:
+  schema compile         Compile TypeSpec schemas to JSON Schema
+  schema validate        Validate current schemas are up to date
+  schema list            List available generated schemas
+
+EXAMPLES:
+  mcp-validate                           # Validate .mcp.json with default settings
+  mcp-validate validate config.json     # Validate specific config file
+  mcp-validate validate --verbose       # Show detailed validation results
+  mcp-validate validate --json          # Output results as JSON
+  mcp-validate test                      # Run test suite
+  mcp-validate schema compile           # Recompile TypeSpec schemas
+
+ENVIRONMENT:
+  MCP_CONFIG_PATH       Default path to MCP configuration file
+  MCP_ENV_FILE         Default path to environment file
+  MCP_VALIDATION_TIMEOUT  Timeout for connectivity tests (ms)
+
+For more information, visit:
+https://github.com/LarsArtmann/template-mcp-config
+  `.trim());
+}
+
+/**
+ * Show version information
+ */
+function showVersion() {
+  console.log(`MCP Configuration Validation CLI v${VERSION}`);
+  console.log('Built with TypeSpec and Node.js');
+  
+  try {
+    const packageJson = JSON.parse(fs.readFileSync(path.join(__dirname, 'package.json'), 'utf8'));
+    console.log(`Package version: ${packageJson.version}`);
+  } catch (error) {
+    // Ignore package.json read errors
+  }
+}
+
+/**
+ * Handle schema operations
+ */
+async function handleSchemaCommand(subcommand) {
+  switch (subcommand) {
+    case 'compile':
+      console.log('🔨 Compiling TypeSpec schemas...');
+      try {
+        const { spawn } = require('child_process');
+        const child = spawn('npx', ['tsp', 'compile', './schemas'], {
+          stdio: 'inherit',
+          cwd: __dirname
+        });
+        
+        child.on('close', (code) => {
+          if (code === 0) {
+            console.log('✅ Schemas compiled successfully');
+          } else {
+            console.error('❌ Schema compilation failed');
+            process.exit(1);
+          }
+        });
+        
+        child.on('error', (error) => {
+          console.error('❌ Failed to run TypeSpec compiler:', error.message);
+          process.exit(1);
+        });
+      } catch (error) {
+        console.error('❌ Schema compilation error:', error.message);
+        process.exit(1);
+      }
+      break;
+
+    case 'validate':
+      console.log('🔍 Validating TypeSpec schemas...');
+      const schemaDir = path.join(__dirname, 'schemas', 'generated', 'json-schema');
+      
+      if (!fs.existsSync(schemaDir)) {
+        console.error('❌ Generated schemas not found. Run: mcp-validate schema compile');
+        process.exit(1);
+      }
+      
+      const schemaFiles = fs.readdirSync(schemaDir).filter(f => f.endsWith('.yaml'));
+      console.log(`📋 Found ${schemaFiles.length} generated schema files:`);
+      
+      schemaFiles.forEach(file => {
+        try {
+          const content = fs.readFileSync(path.join(schemaDir, file), 'utf8');
+          if (content.includes('$schema') && content.includes('type:')) {
+            console.log(`  ✅ ${file} - Valid`);
+          } else {
+            console.log(`  ❌ ${file} - Invalid format`);
+          }
+        } catch (error) {
+          console.log(`  ❌ ${file} - Read error: ${error.message}`);
+        }
+      });
+      break;
+
+    case 'list':
+      console.log('📋 Generated TypeSpec Schemas:');
+      const listSchemaDir = path.join(__dirname, 'schemas', 'generated', 'json-schema');
+      
+      if (!fs.existsSync(listSchemaDir)) {
+        console.log('  (No schemas found - run: mcp-validate schema compile)');
+        return;
+      }
+      
+      const listFiles = fs.readdirSync(listSchemaDir).filter(f => f.endsWith('.yaml'));
+      listFiles.forEach(file => {
+        const filePath = path.join(listSchemaDir, file);
+        const stats = fs.statSync(filePath);
+        const size = (stats.size / 1024).toFixed(1);
+        console.log(`  📄 ${file} (${size} KB)`);
+      });
+      
+      console.log(`\nTotal: ${listFiles.length} schema files`);
+      break;
+
+    default:
+      console.error(`❌ Unknown schema command: ${subcommand}`);
+      console.log('Available schema commands: compile, validate, list');
+      process.exit(1);
+  }
+}
+
+/**
+ * Parse command line arguments
+ */
+function parseArgs(args) {
+  const options = {
+    command: 'validate',
+    configPath: '.mcp.json',
+    verbose: false,
+    quiet: false,
+    json: false,
+    noConnectivity: false,
+    envFile: '.env'
+  };
+
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
+    
+    switch (arg) {
+      case 'validate':
+      case 'test':
+      case 'schema':
+      case 'version':
+      case 'help':
+        options.command = arg;
+        if (arg === 'schema' && args[i + 1] && !args[i + 1].startsWith('-')) {
+          options.subcommand = args[++i];
+        }
+        break;
+        
+      case '-v':
+      case '--verbose':
+        options.verbose = true;
+        break;
+        
+      case '-q':
+      case '--quiet':
+        options.quiet = true;
+        break;
+        
+      case '--json':
+        options.json = true;
+        break;
+        
+      case '--no-connectivity':
+        options.noConnectivity = true;
+        break;
+        
+      case '--env-file':
+        if (args[i + 1] && !args[i + 1].startsWith('-')) {
+          options.envFile = args[++i];
+        }
+        break;
+        
+      default:
+        // Assume it's a config file path if it doesn't start with -
+        if (!arg.startsWith('-') && options.command === 'validate') {
+          options.configPath = arg;
+        }
+        break;
+    }
+  }
+
+  return options;
+}
+
+/**
+ * Format validation output based on options
+ */
+function formatOutput(result, options) {
+  if (options.json) {
+    console.log(JSON.stringify(result, null, 2));
+    return;
+  }
+
+  if (options.quiet) {
+    // Only show errors in quiet mode
+    if (result.errors.length > 0) {
+      result.errors.forEach(error => console.error(`❌ ${error}`));
+    }
+    return;
+  }
+
+  if (options.verbose) {
+    // Show detailed results
+    console.log('\n📊 Detailed Validation Results:');
+    console.log('=' .repeat(50));
+    
+    Object.entries(result.details).forEach(([category, details]) => {
+      const status = details.valid ? '✅' : '❌';
+      console.log(`\n${status} ${category.toUpperCase()}:`);
+      
+      if (details.errors && details.errors.length > 0) {
+        console.log('  Errors:');
+        details.errors.forEach(error => console.log(`    - ${error}`));
+      }
+      
+      if (details.warnings && details.warnings.length > 0) {
+        console.log('  Warnings:');
+        details.warnings.forEach(warning => console.log(`    - ${warning}`));
+      }
+    });
+  }
+
+  // Always show summary
+  console.log(`\n📋 Summary: ${result.valid ? 'VALID' : 'INVALID'}`);
+  if (result.errors.length > 0) {
+    console.log(`❌ Errors: ${result.errors.length}`);
+  }
+  if (result.warnings.length > 0) {
+    console.log(`⚠️  Warnings: ${result.warnings.length}`);
+  }
+}
+
+/**
+ * Main CLI function
+ */
+async function main() {
+  const args = process.argv.slice(2);
+  
+  // Handle no arguments - show help
+  if (args.length === 0) {
+    const options = parseArgs(['validate']);
+    
+    try {
+      const result = await validateMCPConfig(options.configPath);
+      formatOutput(result, options);
+      process.exit(result.valid ? 0 : 1);
+    } catch (error) {
+      console.error(`❌ Validation failed: ${error.message}`);
+      process.exit(1);
+    }
+    return;
+  }
+  
+  const options = parseArgs(args);
+
+  // Handle environment variables
+  if (process.env.MCP_CONFIG_PATH && options.configPath === '.mcp.json') {
+    options.configPath = process.env.MCP_CONFIG_PATH;
+  }
+  
+  if (process.env.MCP_ENV_FILE) {
+    options.envFile = process.env.MCP_ENV_FILE;
+  }
+
+  try {
+    switch (options.command) {
+      case 'help':
+        showHelp();
+        break;
+
+      case 'version':
+        showVersion();
+        break;
+
+      case 'test':
+        console.log('🧪 Running validation test suite...');
+        const testsPassed = await runValidationTests();
+        process.exit(testsPassed ? 0 : 1);
+        break;
+
+      case 'schema':
+        await handleSchemaCommand(options.subcommand || 'list');
+        break;
+
+      case 'validate':
+      default:
+        const result = await validateMCPConfig(options.configPath);
+        formatOutput(result, options);
+        process.exit(result.valid ? 0 : 1);
+        break;
+    }
+  } catch (error) {
+    console.error(`❌ Command failed: ${error.message}`);
+    process.exit(1);
+  }
+}
+
+// Run CLI if called directly
+if (require.main === module) {
+  main().catch(error => {
+    console.error(`❌ CLI error: ${error.message}`);
+    process.exit(1);
+  });
+}
+
+module.exports = { main, parseArgs, formatOutput };

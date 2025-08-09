@@ -78,7 +78,5 @@ pnpm-lock.yaml
 # Yarn Integrity file
 .yarn-integrity
 
-# readme-generator config (if you customize it)
-# Uncomment if you want to ignore local readme config changes
-# .readme/.DS_Store
-/.claude
+# MCP memory cache files
+**/*mcp-memory.json

@@ -1,61 +1,70 @@
 {
   "name": "template-mcp-config",
   "version": "1.0.0",
-  "description": "Production-ready MCP configuration template with validation and TypeSpec schemas",
-  "main": "validate-config.js",
-  "type": "commonjs",
-  "scripts": {
-    "validate": "node validate-config.js",
-    "validate:verbose": "node validate-config.js --verbose",
-    "typespec:compile": "tsp compile ./schemas",
-    "typespec:watch": "tsp compile ./schemas --watch",
-    "build": "npm run typespec:compile",
-    "test": "node test-validation.js",
-    "lint": "echo 'No linting configured yet'",
-    "format": "echo 'No formatting configured yet'"
-  },
-  "bin": {
-    "validate-mcp": "./validate-config.js"
-  },
-  "keywords": [
-    "mcp",
-    "model-context-protocol",
-    "validation",
-    "typespec",
-    "configuration",
-    "schema"
-  ],
-  "author": "Lars Artmann",
+  "description": "Production-ready MCP configuration template with Context7 integration and comprehensive tooling for modern development workflows",
   "license": "EUPL-1.2",
+  "author": "Lars Artmann",
   "repository": {
     "type": "git",
     "url": "https://github.com/LarsArtmann/template-mcp-config.git"
   },
+  "homepage": "https://github.com/LarsArtmann/template-mcp-config",
   "bugs": {
     "url": "https://github.com/LarsArtmann/template-mcp-config/issues"
   },
-  "homepage": "https://github.com/LarsArtmann/template-mcp-config#readme",
-  "devDependencies": {
-    "@typespec/compiler": "^0.60.0",
-    "@typespec/http": "^0.60.0",
-    "@typespec/json-schema": "^0.60.0",
-    "@typespec/openapi": "^0.60.0",
-    "@typespec/openapi3": "^0.60.0",
-    "@typespec/rest": "^0.60.0",
-    "@typespec/versioning": "^0.60.0",
-    "typescript": "^5.3.0"
-  },
-  "dependencies": {},
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "context7",
+    "claude",
+    "ai",
+    "development-tools",
+    "template",
+    "configuration"
+  ],
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=18.0.0",
+    "bun": ">=1.0.0"
   },
+  "packageManager": "bun@1.0.0",
+  "main": ".mcp.json",
   "files": [
-    "validate-config.js",
-    "schemas/",
-    "generated/",
     ".mcp.json",
     ".env.example",
     "README.md",
-    "USAGE.md"
+    "USAGE.md",
+    "LICENSE",
+    "scripts/"
+  ],
+  "scripts": {
+    "install-all": "bun install",
+    "test-servers": "node scripts/test-mcp-servers.js",
+    "validate": "node scripts/validate-env.js && echo 'Environment validation complete'",
+    "validate:env": "node scripts/validate-env.js",
+    "validate:json": "node -e \"JSON.parse(require('fs').readFileSync('.mcp.json', 'utf8')); console.log('✅ .mcp.json is valid JSON')\"",
+    "cache:warm": "node scripts/warm-cache.js",
+    "clean": "rm -rf node_modules bun.lockb",
+    "fresh-install": "bun run clean && bun install",
+    "setup": "cp .env.example .env && echo 'Edit .env with your configuration, then restart your MCP client'",
+    "lint": "bun run validate:json && echo 'JSON validation passed'",
+    "test": "bun run test-servers"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  },
+  "optionalDependencies": {
+    "playwright": "^1.40.0"
+  },
+  "bundleDependencies": false,
+  "os": [
+    "darwin",
+    "linux",
+    "win32"
+  ],
+  "cpu": [
+    "x64",
+    "arm64"
   ]
 }

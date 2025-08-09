@@ -1,0 +1,20 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: ValidationError.yaml
+type: object
+properties:
+  code:
+    type: string
+    description: Machine-readable error code
+  message:
+    type: string
+    description: Human-readable error description
+  path:
+    type: string
+    description: JSON path to the configuration element causing the error
+  resolution:
+    type: string
+    description: Suggested steps to resolve the error
+required:
+  - code
+  - message
+description: Validation error details

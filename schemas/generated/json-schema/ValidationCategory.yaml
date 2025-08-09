@@ -1,0 +1,30 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: ValidationCategory.yaml
+type: object
+properties:
+  valid:
+    type: boolean
+    description: Whether this category passed validation
+  errors:
+    type: array
+    items:
+      $ref: ValidationError.yaml
+    description: Errors specific to this validation category
+  warnings:
+    type: array
+    items:
+      $ref: ValidationWarning.yaml
+    description: Warnings specific to this validation category
+  metadata:
+    $ref: "#/$defs/RecordUnknown"
+    description: Additional metadata specific to this category
+required:
+  - valid
+  - errors
+  - warnings
+description: Validation results for a specific category
+$defs:
+  RecordUnknown:
+    type: object
+    properties: {}
+    additionalProperties: {}

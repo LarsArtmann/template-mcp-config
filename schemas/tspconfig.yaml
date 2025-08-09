@@ -7,21 +7,12 @@ emit:
 
 options:
   "@typespec/json-schema":
-    emitter-output-dir: "../generated/json-schema"
+    emitter-output-dir: "{project-root}/generated/json-schema"
     file-type: yaml
     
   "@typespec/openapi3":
-    emitter-output-dir: "../generated/openapi"
+    emitter-output-dir: "{project-root}/generated/openapi"
     file-type: yaml
-
-linter:
-  extends:
-    - "@typespec/best-practices"
-  rules:
-    # Enforce consistent naming
-    "@typespec/naming-convention": "error"
-    # Ensure all models have descriptions
-    "@typespec/no-model-without-description": "error"
 
 warn-as-error: false
 

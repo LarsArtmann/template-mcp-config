@@ -1,0 +1,56 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: HttpMCPServer.yaml
+type: object
+properties:
+  type:
+    type: string
+    const: http
+    description: Server type identifier
+  serverUrl:
+    type: string
+    format: uri
+    pattern: ^https?://
+    description: Server URL (must be valid HTTP/HTTPS URL)
+  headers:
+    $ref: "#/$defs/RecordString"
+    description: Authentication headers for HTTP requests
+  connectTimeoutMs:
+    type: integer
+    minimum: 1000
+    maximum: 30000
+    default: 5000
+    description: HTTP connection timeout in milliseconds
+  requestTimeoutMs:
+    type: integer
+    minimum: 1000
+    maximum: 60000
+    default: 30000
+    description: HTTP request timeout in milliseconds
+  verifySsl:
+    type: boolean
+    default: true
+    description: Verify SSL certificates for HTTPS connections
+  maxRetries:
+    type: integer
+    minimum: 0
+    maximum: 10
+    default: 3
+    description: Maximum connection retry attempts
+  retryDelayMs:
+    type: integer
+    minimum: 100
+    maximum: 10000
+    default: 1000
+    description: Delay between retry attempts in milliseconds
+required:
+  - type
+  - serverUrl
+description: |-
+  HTTP MCP Server Configuration
+  These servers communicate via HTTP with SSE for streaming
+$defs:
+  RecordString:
+    type: object
+    properties: {}
+    additionalProperties:
+      type: string

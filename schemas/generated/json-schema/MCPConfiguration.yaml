@@ -1,0 +1,23 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: MCPConfiguration.yaml
+type: object
+properties:
+  mcpServers:
+    $ref: "#/$defs/RecordMCPServer"
+    description: Collection of MCP servers with their configurations
+  global:
+    $ref: GlobalConfiguration.yaml
+    description: Global configuration settings (optional)
+  version:
+    type: string
+    default: 1.0.0
+    description: Configuration schema version
+required:
+  - mcpServers
+description: Root MCP configuration structure
+$defs:
+  RecordMCPServer:
+    type: object
+    properties: {}
+    additionalProperties:
+      $ref: MCPServer.yaml

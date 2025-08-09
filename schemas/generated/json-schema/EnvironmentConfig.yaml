@@ -1,0 +1,19 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: EnvironmentConfig.yaml
+type: object
+properties:
+  required:
+    type: array
+    items:
+      $ref: EnvironmentVariable.yaml
+    description: Required environment variables that must be set
+  optional:
+    type: array
+    items:
+      $ref: EnvironmentVariable.yaml
+    description: Optional environment variables with default values
+required:
+  - required
+description: |-
+  Environment Variable Configuration
+  Defines required and optional environment variables for MCP servers

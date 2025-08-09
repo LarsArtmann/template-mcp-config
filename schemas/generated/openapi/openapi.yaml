@@ -1,0 +1,346 @@
+openapi: 3.0.0
+info:
+  title: MCP Configuration Schema
+  description: |-
+    MCP Configuration API Service Definition
+
+    Schema definitions for Model Context Protocol (MCP) configurations.
+    This includes server configurations, environment variables, and validation rules.
+  version: 0.0.0
+tags: []
+paths: {}
+components:
+  schemas:
+    EnvironmentConfig:
+      type: object
+      required:
+        - required
+      properties:
+        required:
+          type: array
+          items:
+            $ref: '#/components/schemas/EnvironmentVariable'
+          description: Required environment variables that must be set
+        optional:
+          type: array
+          items:
+            $ref: '#/components/schemas/EnvironmentVariable'
+          description: Optional environment variables with default values
+      description: |-
+        Environment Variable Configuration
+        Defines required and optional environment variables for MCP servers
+    EnvironmentVariable:
+      type: object
+      required:
+        - name
+        - description
+      properties:
+        name:
+          type: string
+          pattern: ^[A-Z][A-Z0-9_]*$
+          description: Environment variable name
+        description:
+          type: string
+          minLength: 10
+          description: Description of the environment variable's purpose
+        example:
+          type: string
+          description: Example value (use placeholders for sensitive data)
+        defaultValue:
+          type: string
+          description: Default value if not provided
+        sensitive:
+          type: boolean
+          description: Indicates if variable contains sensitive information
+          default: false
+        pattern:
+          type: string
+          description: Regular expression pattern for value validation
+        type:
+          type: string
+          enum:
+            - api_key
+            - url
+            - path
+            - boolean
+            - number
+            - string
+          description: Variable type or category
+      description: Individual environment variable definition
+    GlobalConfiguration:
+      type: object
+      properties:
+        timeoutMs:
+          type: integer
+          format: int32
+          minimum: 1000
+          maximum: 300000
+          description: Timeout for server operations in milliseconds
+          default: 30000
+        maxConcurrentServers:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 50
+          description: Maximum concurrent server connections
+          default: 10
+        debug:
+          type: boolean
+          description: Enable debug logging for all servers
+          default: false
+      description: Global MCP configuration settings
+    HttpMCPServer:
+      type: object
+      required:
+        - type
+        - serverUrl
+      properties:
+        type:
+          type: string
+          enum:
+            - http
+          description: Server type identifier
+        serverUrl:
+          type: string
+          format: uri
+          pattern: ^https?://
+          description: Server URL (must be valid HTTP/HTTPS URL)
+        headers:
+          type: object
+          additionalProperties:
+            type: string
+          description: Authentication headers for HTTP requests
+        connectTimeoutMs:
+          type: integer
+          format: int32
+          minimum: 1000
+          maximum: 30000
+          description: HTTP connection timeout in milliseconds
+          default: 5000
+        requestTimeoutMs:
+          type: integer
+          format: int32
+          minimum: 1000
+          maximum: 60000
+          description: HTTP request timeout in milliseconds
+          default: 30000
+        verifySsl:
+          type: boolean
+          description: Verify SSL certificates for HTTPS connections
+          default: true
+        maxRetries:
+          type: integer
+          format: int32
+          minimum: 0
+          maximum: 10
+          description: Maximum connection retry attempts
+          default: 3
+        retryDelayMs:
+          type: integer
+          format: int32
+          minimum: 100
+          maximum: 10000
+          description: Delay between retry attempts in milliseconds
+          default: 1000
+      description: |-
+        HTTP MCP Server Configuration
+        These servers communicate via HTTP with SSE for streaming
+    MCPConfiguration:
+      type: object
+      required:
+        - mcpServers
+      properties:
+        mcpServers:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/MCPServer'
+          description: Collection of MCP servers with their configurations
+        global:
+          allOf:
+            - $ref: '#/components/schemas/GlobalConfiguration'
+          description: Global configuration settings (optional)
+        version:
+          type: string
+          description: Configuration schema version
+          default: 1.0.0
+      description: Root MCP configuration structure
+    MCPServer:
+      anyOf:
+        - $ref: '#/components/schemas/StdioMCPServer'
+        - $ref: '#/components/schemas/HttpMCPServer'
+      discriminator:
+        propertyName: type
+        mapping:
+          stdio: '#/components/schemas/StdioMCPServer'
+          http: '#/components/schemas/HttpMCPServer'
+      description: MCP Server configuration supporting both stdio and HTTP protocols
+    StdioMCPServer:
+      type: object
+      required:
+        - type
+        - command
+      properties:
+        type:
+          type: string
+          enum:
+            - stdio
+          description: Server type identifier
+        command:
+          type: string
+          minLength: 1
+          description: Command to execute (e.g., 'bunx', 'node', 'python')
+        args:
+          type: array
+          items:
+            type: string
+          description: Command line arguments for the server
+        env:
+          type: object
+          additionalProperties:
+            type: string
+          description: Environment variables for the server process
+        cwd:
+          type: string
+          description: Working directory for the server process
+        initTimeoutMs:
+          type: integer
+          format: int32
+          minimum: 1000
+          maximum: 60000
+          description: Server initialization timeout in milliseconds
+          default: 10000
+        autoRestart:
+          type: boolean
+          description: Automatically restart server on failure
+          default: false
+        maxRestarts:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 10
+          description: 'Maximum restart attempts (requires autoRestart: true)'
+          default: 3
+      description: |-
+        Standard I/O MCP Server Configuration
+        These servers run as child processes communicating via stdin/stdout
+    ValidationCategory:
+      type: object
+      required:
+        - valid
+        - errors
+        - warnings
+      properties:
+        valid:
+          type: boolean
+          description: Whether this category passed validation
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          description: Errors specific to this validation category
+        warnings:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationWarning'
+          description: Warnings specific to this validation category
+        metadata:
+          type: object
+          additionalProperties: {}
+          description: Additional metadata specific to this category
+      description: Validation results for a specific category
+    ValidationDetails:
+      type: object
+      required:
+        - structure
+        - servers
+        - environment
+        - connectivity
+      properties:
+        structure:
+          allOf:
+            - $ref: '#/components/schemas/ValidationCategory'
+          description: Results of configuration structure validation
+        servers:
+          allOf:
+            - $ref: '#/components/schemas/ValidationCategory'
+          description: Results of individual server validation
+        environment:
+          allOf:
+            - $ref: '#/components/schemas/ValidationCategory'
+          description: Results of environment variable validation
+        connectivity:
+          allOf:
+            - $ref: '#/components/schemas/ValidationCategory'
+          description: Results of server connectivity tests
+      description: Detailed validation results
+    ValidationError:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          description: Machine-readable error code
+        message:
+          type: string
+          description: Human-readable error description
+        path:
+          type: string
+          description: JSON path to the configuration element causing the error
+        resolution:
+          type: string
+          description: Suggested steps to resolve the error
+      description: Validation error details
+    ValidationResult:
+      type: object
+      required:
+        - valid
+        - errors
+        - warnings
+        - details
+        - timestamp
+      properties:
+        valid:
+          type: boolean
+          description: Whether validation passed successfully
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          description: Critical errors that prevent server operation
+        warnings:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationWarning'
+          description: Non-critical warnings about configuration
+        details:
+          allOf:
+            - $ref: '#/components/schemas/ValidationDetails'
+          description: Detailed results broken down by validation category
+        timestamp:
+          type: string
+          format: date-time
+          description: When the validation was performed
+      description: |-
+        Validation Result
+        Structure returned by validation operations
+    ValidationWarning:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          description: Machine-readable warning code
+        message:
+          type: string
+          description: Human-readable warning description
+        path:
+          type: string
+          description: JSON path to the configuration element
+        recommendation:
+          type: string
+          description: Recommended action to address the warning
+      description: Validation warning details

@@ -40,11 +40,9 @@
       "env": {}
     },
     "memory": {
-      "command": "bunx",
-      "args": ["-y", "@modelcontextprotocol/server-memory"],
-      "env": {
-        "MEMORY_FILE_PATH": "${HOME}/.cache/mcp-memory.json"
-      }
+      "command": "mcp-server-memory",
+      "args": [],
+      "env": {}
     },
     "sequential-thinking": {
       "command": "bunx",
@@ -63,54 +61,9 @@
         "KUBECONFIG": "${KUBECONFIG:-${HOME}/.kube/config}"
       }
     },
-    "ssh": {
-      "command": "bunx",
-      "args": ["-y", "@modelcontextprotocol/server-ssh"],
-      "env": {}
-    },
-    "sqlite": {
-      "command": "bunx",
-      "args": ["-y", "@modelcontextprotocol/server-sqlite"],
-      "env": {}
-    },
-    "turso": {
-      "command": "bunx",
-      "args": ["-y", "@modelcontextprotocol/server-turso"],
-      "env": {
-        "TURSO_DATABASE_URL": "${TURSO_DATABASE_URL:-}",
-        "TURSO_AUTH_TOKEN": "${TURSO_AUTH_TOKEN:-}"
-      }
-    },
-    "terraform": {
-      "command": "bunx",
-      "args": ["-y", "@modelcontextprotocol/server-terraform"],
-      "env": {}
-    },
-    "nixos": {
-      "command": "bunx",
-      "args": ["-y", "@modelcontextprotocol/server-nixos"],
-      "env": {}
-    },
-    "prometheus": {
-      "command": "bunx",
-      "args": ["-y", "@modelcontextprotocol/server-prometheus"],
-      "env": {
-        "PROMETHEUS_URL": "${PROMETHEUS_URL:-http://localhost:9090}"
-      }
-    },
-    "helm": {
-      "command": "bunx",
-      "args": ["-y", "@modelcontextprotocol/server-helm"],
-      "env": {}
-    },
     "fetch": {
       "command": "bunx",
-      "args": ["-y", "@modelcontextprotocol/server-fetch"],
-      "env": {}
-    },
-    "youtube-transcript": {
-      "command": "bunx",
-      "args": ["-y", "@modelcontextprotocol/server-youtube-transcript"],
+      "args": ["-y", "mcp-fetch-server"],
       "env": {}
     }
   }

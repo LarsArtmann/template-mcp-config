@@ -1,0 +1,22 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: ValidationDetails.yaml
+type: object
+properties:
+  structure:
+    $ref: ValidationCategory.yaml
+    description: Results of configuration structure validation
+  servers:
+    $ref: ValidationCategory.yaml
+    description: Results of individual server validation
+  environment:
+    $ref: ValidationCategory.yaml
+    description: Results of environment variable validation
+  connectivity:
+    $ref: ValidationCategory.yaml
+    description: Results of server connectivity tests
+required:
+  - structure
+  - servers
+  - environment
+  - connectivity
+description: Detailed validation results

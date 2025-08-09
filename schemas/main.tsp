@@ -18,24 +18,12 @@ using TypeSpec.JsonSchema;
 
 /**
  * MCP Configuration API Service Definition
+ * 
+ * Schema definitions for Model Context Protocol (MCP) configurations.
+ * This includes server configurations, environment variables, and validation rules.
  */
 @service({
   title: "MCP Configuration Schema",
-  version: "1.0.0",
-})
-@info({
-  description: """
-  Schema definitions for Model Context Protocol (MCP) configurations.
-  This includes server configurations, environment variables, and validation rules.
-  """,
-  contact: {
-    name: "Template MCP Config",
-    url: "https://github.com/LarsArtmann/template-mcp-config",
-  },
-  license: {
-    name: "EUPL-1.2",
-    url: "https://joinup.ec.europa.eu/software/page/eupl",
-  },
 })
 namespace MCPConfig;
 

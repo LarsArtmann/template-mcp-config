@@ -1,0 +1,21 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: GlobalConfiguration.yaml
+type: object
+properties:
+  timeoutMs:
+    type: integer
+    minimum: 1000
+    maximum: 300000
+    default: 30000
+    description: Timeout for server operations in milliseconds
+  maxConcurrentServers:
+    type: integer
+    minimum: 1
+    maximum: 50
+    default: 10
+    description: Maximum concurrent server connections
+  debug:
+    type: boolean
+    default: false
+    description: Enable debug logging for all servers
+description: Global MCP configuration settings

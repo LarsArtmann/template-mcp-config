@@ -72,6 +72,14 @@ cp template-mcp-config/.mcp.json your-project/.mcp.json
 cp template-mcp-config/.env.example your-project/.env
 # Edit .env with your GitHub token
 
+# Install dependencies and warm cache (optional but recommended)
+cd template-mcp-config
+bun install
+bun run cache:warm
+
+# Test the configuration
+bun run test-servers
+
 # Restart your MCP client (Claude Desktop, Cursor, etc.) and test
 ```
 
@@ -83,6 +91,12 @@ git subtree add --prefix=mcp-config https://github.com/LarsArtmann/template-mcp-
 
 # Link the configuration
 ln -s mcp-config/.mcp.json .mcp.json
+
+# Install dependencies and optimize for performance
+cd mcp-config
+bun install
+bun run cache:warm
+bun run test-servers
 
 # Update later with:
 git subtree pull --prefix=mcp-config https://github.com/LarsArtmann/template-mcp-config.git main --squash
@@ -97,9 +111,72 @@ git submodule update --init
 # Link the configuration  
 ln -s mcp-config/.mcp.json .mcp.json
 
+# Install dependencies and optimize for performance
+cd mcp-config
+bun install
+bun run cache:warm
+bun run test-servers
+
 # Update later with:
 git submodule update --remote
 ```
+
+## 📦 Package Management & Development
+
+### Installation & Setup
+```bash
+# Clone the repository
+git clone https://github.com/LarsArtmann/template-mcp-config.git
+cd template-mcp-config
+
+# Install development dependencies
+bun install
+
+# Set up environment variables
+cp .env.example .env
+# Edit .env with your API keys
+
+# Warm the bunx package cache for faster MCP server startup
+bun run cache:warm
+
+# Test all MCP servers
+bun run test-servers
+
+# Validate environment configuration
+bun run validate:env
+```
+
+### Development Scripts
+
+| Command | Description |
+|---------|-------------|
+| `bun install` | Install Node.js development dependencies |
+| `bun run test-servers` | Test all MCP server installations |
+| `bun run cache:warm` | Pre-download MCP packages for faster startup |
+| `bun run validate:env` | Check environment variable configuration |
+| `bun run validate:json` | Validate .mcp.json syntax |
+| `bun run setup` | Copy .env.example to .env for initial setup |
+| `bun run clean` | Remove node_modules and lockfiles |
+| `bun run fresh-install` | Clean install from scratch |
+
+### Node.js Version Management
+The template includes `.nvmrc` for consistent Node.js versions:
+
+```bash
+# Use the recommended Node.js version
+nvm use
+
+# Or with other version managers
+asdf install nodejs
+```
+
+### Performance Optimization
+- **Cache warming**: Reduces MCP server startup latency
+- **Dependency pre-installation**: Faster development setup
+- **Environment validation**: Prevents runtime configuration errors
+- **Server testing**: Ensures all MCP servers are accessible
+
+See [CACHING.md](./CACHING.md) for detailed caching strategies.
 
 ## 💡 Usage Examples
 
@@ -303,11 +380,18 @@ This template has been tested with:
 
 #### Server startup failures
 ```bash
-# Verify bunx can access the package
+# Test all servers systematically
+bun run test-servers
+
+# Verify specific packages can be accessed
 bunx --help @upstash/context7-mcp
 
 # Check environment variables
+bun run validate:env
 echo $GITHUB_PERSONAL_ACCESS_TOKEN
+
+# Warm the package cache if needed
+bun run cache:warm
 ```
 
 #### Playwright browser issues

@@ -34,25 +34,39 @@
     "README.md",
     "USAGE.md",
     "LICENSE",
-    "scripts/"
+    "scripts/",
+    "validation/",
+    "schemas/"
   ],
   "scripts": {
     "install-all": "bun install",
     "test-servers": "node scripts/test-mcp-servers.js",
-    "validate": "node scripts/validate-env.js && echo 'Environment validation complete'",
+    "validate": "node validation/validate-config.js",
     "validate:env": "node scripts/validate-env.js",
     "validate:json": "node -e \"JSON.parse(require('fs').readFileSync('.mcp.json', 'utf8')); console.log('✅ .mcp.json is valid JSON')\"",
+    "validate:full": "node validation/validate-config.js --verbose",
+    "validate:test": "node validation/test-validation.js",
+    "typespec:compile": "tsp compile ./schemas",
+    "typespec:watch": "tsp compile ./schemas --watch",
+    "schema:build": "bun run typespec:compile",
     "cache:warm": "node scripts/warm-cache.js",
     "clean": "rm -rf node_modules bun.lockb",
     "fresh-install": "bun run clean && bun install",
     "setup": "cp .env.example .env && echo 'Edit .env with your configuration, then restart your MCP client'",
     "lint": "bun run validate:json && echo 'JSON validation passed'",
-    "test": "bun run test-servers"
+    "test": "bun run test-servers && bun run validate:test"
   },
   "dependencies": {},
   "devDependencies": {
     "@types/node": "^20.0.0",
-    "typescript": "^5.0.0"
+    "typescript": "^5.0.0",
+    "@typespec/compiler": "^0.60.0",
+    "@typespec/http": "^0.60.0",
+    "@typespec/json-schema": "^0.60.0",
+    "@typespec/openapi": "^0.60.0",
+    "@typespec/openapi3": "^0.60.0",
+    "@typespec/rest": "^0.60.0",
+    "@typespec/versioning": "^0.60.0"
   },
   "optionalDependencies": {
     "playwright": "^1.40.0"

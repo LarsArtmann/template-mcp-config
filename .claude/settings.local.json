@@ -6,7 +6,10 @@
       "WebFetch(domain:interoperable-europe.ec.europa.eu)",
       "WebFetch(domain:spdx.org)",
       "WebFetch(domain:eupl.eu)",
-      "Bash(readme-generator)"
+      "Bash(readme-generator)",
+      "Bash(./mcp-validate --help)",
+      "Bash(./mcp-validate help)",
+      "Bash(./mcp-validate schema list)"
     ],
     "deny": []
   }

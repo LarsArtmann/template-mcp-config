@@ -1,0 +1,28 @@
+# TypeSpec Configuration for MCP Configuration Validation
+# This file configures the TypeSpec compiler and output generation
+
+emit:
+  - "@typespec/json-schema"
+  - "@typespec/openapi3"
+
+options:
+  "@typespec/json-schema":
+    emitter-output-dir: "../generated/json-schema"
+    file-type: yaml
+    
+  "@typespec/openapi3":
+    emitter-output-dir: "../generated/openapi"
+    file-type: yaml
+
+linter:
+  extends:
+    - "@typespec/best-practices"
+  rules:
+    # Enforce consistent naming
+    "@typespec/naming-convention": "error"
+    # Ensure all models have descriptions
+    "@typespec/no-model-without-description": "error"
+
+warn-as-error: false
+
+trace: ["*"]

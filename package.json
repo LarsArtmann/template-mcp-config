@@ -1,0 +1,61 @@
+{
+  "name": "template-mcp-config",
+  "version": "1.0.0",
+  "description": "Production-ready MCP configuration template with validation and TypeSpec schemas",
+  "main": "validate-config.js",
+  "type": "commonjs",
+  "scripts": {
+    "validate": "node validate-config.js",
+    "validate:verbose": "node validate-config.js --verbose",
+    "typespec:compile": "tsp compile ./schemas",
+    "typespec:watch": "tsp compile ./schemas --watch",
+    "build": "npm run typespec:compile",
+    "test": "node test-validation.js",
+    "lint": "echo 'No linting configured yet'",
+    "format": "echo 'No formatting configured yet'"
+  },
+  "bin": {
+    "validate-mcp": "./validate-config.js"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "validation",
+    "typespec",
+    "configuration",
+    "schema"
+  ],
+  "author": "Lars Artmann",
+  "license": "EUPL-1.2",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/LarsArtmann/template-mcp-config.git"
+  },
+  "bugs": {
+    "url": "https://github.com/LarsArtmann/template-mcp-config/issues"
+  },
+  "homepage": "https://github.com/LarsArtmann/template-mcp-config#readme",
+  "devDependencies": {
+    "@typespec/compiler": "^0.60.0",
+    "@typespec/http": "^0.60.0",
+    "@typespec/json-schema": "^0.60.0",
+    "@typespec/openapi": "^0.60.0",
+    "@typespec/openapi3": "^0.60.0",
+    "@typespec/rest": "^0.60.0",
+    "@typespec/versioning": "^0.60.0",
+    "typescript": "^5.3.0"
+  },
+  "dependencies": {},
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "files": [
+    "validate-config.js",
+    "schemas/",
+    "generated/",
+    ".mcp.json",
+    ".env.example",
+    "README.md",
+    "USAGE.md"
+  ]
+}

@@ -63,6 +63,16 @@ pnpm-lock.yaml
 # Optional REPL history
 .node_repl_history
 
+# Bun lockfile (regenerated from package.json)
+bun.lock
+bun.lockb
+
+# Node version file (user preference)
+.nvmrc
+
+# Health reports (generated at runtime)
+reports/health-*.json
+
 # Optional ESLint cache
 .eslintcache
 

@@ -15,6 +15,12 @@ const fs = require('fs');
 const path = require('path');
 const { spawn } = require('child_process');
 const { promisify } = require('util');
+const { 
+  createValidator, 
+  validateMCPConfiguration,
+  validateMCPServer, 
+  formatValidationErrors 
+} = require('./schema-loader');
 
 // Configuration constants
 const DEFAULT_CONFIG_PATH = '.mcp.json';
@@ -110,7 +116,7 @@ async function validateMCPConfig(configPath = DEFAULT_CONFIG_PATH) {
 }
 
 /**
- * Validate JSON structure and schema
+ * Validate JSON structure and schema using TypeSpec-generated schemas
  * @param {string} configPath 
  * @param {Object} result 
  * @returns {Promise<Object>}
@@ -135,47 +141,45 @@ async function validateStructure(configPath, result) {
       return null;
     }
 
-    // Validate required structure
-    if (!config.mcpServers) {
+    // Validate against TypeSpec schema
+    console.log('🔍 Validating configuration against TypeSpec schema...');
+    const validator = createValidator();
+    const schemaResult = validateMCPConfiguration(config, validator);
+    
+    if (!schemaResult.valid) {
       result.valid = false;
-      result.errors.push('Missing required "mcpServers" property');
+      const formattedErrors = formatValidationErrors(schemaResult.errors);
+      result.errors.push(...formattedErrors.map(error => `Schema validation: ${error}`));
+      
+      console.log(`❌ Schema validation failed with ${formattedErrors.length} errors`);
+      formattedErrors.forEach(error => console.log(`   • ${error}`));
       return null;
     }
 
-    if (typeof config.mcpServers !== 'object' || Array.isArray(config.mcpServers)) {
-      result.valid = false;
-      result.errors.push('"mcpServers" must be an object');
-      return null;
-    }
-
-    // Validate server count
+    // Basic structure checks passed by schema validation
     const serverCount = Object.keys(config.mcpServers).length;
-    if (serverCount === 0) {
-      result.valid = false;
-      result.errors.push('No MCP servers configured');
-      return null;
-    }
-
-    // Expected server names (15 servers as of current configuration)
+    
+    // Additional business logic validation
     const expectedServers = [
       'context7', 'deepwiki', 'github', 'filesystem', 'playwright', 'puppeteer',
       'memory', 'sequential-thinking', 'everything', 'kubernetes', 'ssh',
       'sqlite', 'turso', 'fetch', 'youtube-transcript'
     ];
     
-    // Check for missing or unexpected servers
+    // Check for missing or unexpected servers (warnings only)
     const configuredServers = Object.keys(config.mcpServers);
     const missingServers = expectedServers.filter(server => !configuredServers.includes(server));
     const unexpectedServers = configuredServers.filter(server => !expectedServers.includes(server));
     
     if (missingServers.length > 0) {
-      result.errors.push(`Missing expected servers: ${missingServers.join(', ')}`);
+      console.log(`⚠️ Missing expected servers: ${missingServers.join(', ')}`);
     }
     
     if (unexpectedServers.length > 0) {
       console.log(`⚠️ Unexpected servers found: ${unexpectedServers.join(', ')}`);
     }
 
+    console.log(`✅ Schema validation passed for ${serverCount} servers`);
     console.log(`📋 Found ${serverCount} configured servers (expected ${expectedServers.length})`);
     return config;
 
@@ -187,73 +191,63 @@ async function validateStructure(configPath, result) {
 }
 
 /**
- * Validate individual server configurations
+ * Validate individual server configurations using TypeSpec schemas
  * @param {Object} servers 
  * @param {Object} result 
  */
 async function validateServers(servers, result) {
+  // Create validator once and reuse it for all servers
+  const validator = createValidator();
   const validationPromises = [];
 
   for (const [serverName, serverConfig] of Object.entries(servers)) {
-    validationPromises.push(validateSingleServer(serverName, serverConfig, result));
+    validationPromises.push(validateSingleServer(serverName, serverConfig, result, validator));
   }
 
   await Promise.all(validationPromises);
+  
+  console.log(`🔍 Validated ${Object.keys(servers).length} server configurations using TypeSpec schemas`);
 }
 
 /**
- * Validate a single server configuration
+ * Validate a single server configuration using TypeSpec schema
  * @param {string} serverName 
  * @param {MCPServer} serverConfig 
  * @param {Object} result 
+ * @param {Object} validator - Pre-created validator instance
  */
-async function validateSingleServer(serverName, serverConfig, result) {
+async function validateSingleServer(serverName, serverConfig, result, validator = null) {
   try {
-    // Check for required properties based on server type
-    const isHttpServer = !!serverConfig.serverUrl;
-    const isStdioServer = !!serverConfig.command;
-
-    if (!isHttpServer && !isStdioServer) {
+    // Use TypeSpec schema validation first
+    const ajv = validator || createValidator();
+    const schemaResult = validateMCPServer(serverConfig, ajv);
+    
+    if (!schemaResult.valid) {
       result.valid = false;
-      result.errors.push(`Server "${serverName}": Missing required "command" or "serverUrl" property`);
+      const formattedErrors = formatValidationErrors(schemaResult.errors);
+      formattedErrors.forEach(error => {
+        result.errors.push(`Server "${serverName}": ${error}`);
+      });
       return;
     }
 
-    if (isHttpServer && isStdioServer) {
-      result.warnings.push(`Server "${serverName}": Has both "command" and "serverUrl", will use serverUrl`);
-    }
+    // Additional business logic validation after schema validation passes
+    const isHttpServer = !!serverConfig.serverUrl;
+    const isStdioServer = !!serverConfig.command;
 
-    // Validate HTTP server configuration
+    // Special validation for specific servers
     if (isHttpServer) {
-      try {
-        new URL(serverConfig.serverUrl);
-        
-        // Special validation for SSE servers
-        if (serverName === 'deepwiki' && !serverConfig.serverUrl.includes('sse')) {
-          result.warnings.push(`Server "${serverName}": URL should include 'sse' for Server-Sent Events`);
-        }
-      } catch {
-        result.valid = false;
-        result.errors.push(`Server "${serverName}": Invalid serverUrl format`);
+      // Special validation for SSE servers
+      if (serverName === 'deepwiki' && !serverConfig.serverUrl.includes('sse')) {
+        result.warnings.push(`Server "${serverName}": URL should include 'sse' for Server-Sent Events`);
       }
     }
 
-    // Validate stdio server configuration
     if (isStdioServer) {
-      if (typeof serverConfig.command !== 'string' || serverConfig.command.trim() === '') {
-        result.valid = false;
-        result.errors.push(`Server "${serverName}": "command" must be a non-empty string`);
-      }
-
-      if (serverConfig.args && !Array.isArray(serverConfig.args)) {
-        result.valid = false;
-        result.errors.push(`Server "${serverName}": "args" must be an array`);
-      }
-
       // Validate server-specific package names
       const expectedPackages = {
         'context7': '@upstash/context7-mcp',
-        'github': '@modelcontextprotocol/server-github',
+        'github': '@modelcontextprotocol/server-github', 
         'filesystem': '@modelcontextprotocol/server-filesystem',
         'playwright': '@playwright/mcp',
         'puppeteer': '@modelcontextprotocol/server-puppeteer',
@@ -276,21 +270,14 @@ async function validateSingleServer(serverName, serverConfig, result) {
         }
       }
 
-      // Validate command exists
+      // Validate command exists (non-blocking)
       if (serverConfig.command && !serverConfig.command.includes('/')) {
-        // Check if command is available in PATH
         try {
           await checkCommandExists(serverConfig.command);
         } catch (error) {
           result.warnings.push(`Server "${serverName}": Command "${serverConfig.command}" may not be available in PATH`);
         }
       }
-    }
-
-    // Validate environment variables
-    if (serverConfig.env && typeof serverConfig.env !== 'object') {
-      result.valid = false;
-      result.errors.push(`Server "${serverName}": "env" must be an object`);
     }
 
   } catch (error) {

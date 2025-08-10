@@ -74,7 +74,7 @@ bun install
 bun run cache:warm
 
 # Test the configuration
-bun run test-servers
+node scripts/test-all.js
 
 # Restart your MCP client (Claude Desktop, Cursor, etc.) and test
 ```
@@ -92,7 +92,7 @@ ln -s mcp-config/.mcp.json .mcp.json
 cd mcp-config
 bun install
 bun run cache:warm
-bun run test-servers
+node scripts/test-all.js
 
 # Update later with:
 git subtree pull --prefix=mcp-config https://github.com/LarsArtmann/template-mcp-config.git main --squash
@@ -111,7 +111,7 @@ ln -s mcp-config/.mcp.json .mcp.json
 cd mcp-config
 bun install
 bun run cache:warm
-bun run test-servers
+node scripts/test-all.js
 
 # Update later with:
 git submodule update --remote
@@ -136,7 +136,7 @@ cp .env.example .env
 bun run cache:warm
 
 # Test all MCP servers
-bun run test-servers
+node scripts/test-all.js
 
 # Validate environment configuration
 bun run validate:env
@@ -147,7 +147,7 @@ bun run validate:env
 | Command | Description |
 |---------|-------------|
 | `bun install` | Install Node.js development dependencies |
-| `bun run test-servers` | Test all MCP server installations |
+| `node scripts/test-all.js` | Test all MCP server installations |
 | `bun run cache:warm` | Pre-download MCP packages for faster startup |
 | `bun run validate:env` | Check environment variable configuration |
 | `bun run validate:json` | Validate .mcp.json syntax |
@@ -387,7 +387,7 @@ This template has been tested with:
 #### Server startup failures
 ```bash
 # Test all servers systematically
-bun run test-servers
+node scripts/test-all.js
 
 # Verify specific packages can be accessed
 bunx --help @upstash/context7-mcp

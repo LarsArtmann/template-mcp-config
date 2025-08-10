@@ -58,7 +58,6 @@ function loadSchema(schemaName) {
  */
 function createInlineMCPSchema() {
   return {
-    $schema: "https://json-schema.org/draft/2020-12/schema",
     type: "object",
     properties: {
       mcpServers: {

@@ -66,7 +66,7 @@ function createInlineMCPSchema() {
           ".*": {
             oneOf: [
               {
-                // Stdio Server
+                // Explicit Stdio Server (with type field)
                 type: "object",
                 properties: {
                   type: { type: "string", const: "stdio" },
@@ -91,11 +91,11 @@ function createInlineMCPSchema() {
                     default: 3 
                   }
                 },
-                required: ["command"],
+                required: ["type", "command"],
                 additionalProperties: false
               },
               {
-                // HTTP Server  
+                // Explicit HTTP Server (with type field)
                 type: "object",
                 properties: {
                   type: { type: "string", const: "http" },
@@ -134,11 +134,11 @@ function createInlineMCPSchema() {
                     default: 1000
                   }
                 },
-                required: ["serverUrl"],
+                required: ["type", "serverUrl"],
                 additionalProperties: false
               },
               {
-                // Legacy format (no explicit type)
+                // Legacy Stdio Server (no type field, has command)
                 type: "object",
                 properties: {
                   command: { type: "string", minLength: 1 },
@@ -148,6 +148,33 @@ function createInlineMCPSchema() {
                     patternProperties: { ".*": { type: "string" } }
                   },
                   cwd: { type: "string" },
+                  initTimeoutMs: { 
+                    type: "integer", 
+                    minimum: 1000, 
+                    maximum: 60000, 
+                    default: 10000 
+                  },
+                  autoRestart: { type: "boolean", default: false },
+                  maxRestarts: { 
+                    type: "integer", 
+                    minimum: 1, 
+                    maximum: 10, 
+                    default: 3 
+                  }
+                },
+                required: ["command"],
+                additionalProperties: false,
+                not: { 
+                  properties: { 
+                    serverUrl: { type: "string" } 
+                  }, 
+                  required: ["serverUrl"] 
+                }
+              },
+              {
+                // Legacy HTTP Server (no type field, has serverUrl)
+                type: "object", 
+                properties: {
                   serverUrl: { 
                     type: "string",
                     format: "uri",
@@ -156,13 +183,41 @@ function createInlineMCPSchema() {
                   headers: {
                     type: "object",
                     patternProperties: { ".*": { type: "string" } }
+                  },
+                  connectTimeoutMs: {
+                    type: "integer",
+                    minimum: 1000,
+                    maximum: 30000,
+                    default: 5000
+                  },
+                  requestTimeoutMs: {
+                    type: "integer", 
+                    minimum: 1000,
+                    maximum: 60000,
+                    default: 30000
+                  },
+                  verifySsl: { type: "boolean", default: true },
+                  maxRetries: {
+                    type: "integer",
+                    minimum: 0,
+                    maximum: 10,
+                    default: 3
+                  },
+                  retryDelayMs: {
+                    type: "integer",
+                    minimum: 100,
+                    maximum: 10000,
+                    default: 1000
                   }
                 },
-                anyOf: [
-                  { required: ["command"] },
-                  { required: ["serverUrl"] }
-                ],
-                additionalProperties: false
+                required: ["serverUrl"],
+                additionalProperties: false,
+                not: { 
+                  properties: { 
+                    command: { type: "string" } 
+                  }, 
+                  required: ["command"] 
+                }
               }
             ]
           }
@@ -213,6 +268,10 @@ function createValidator() {
   // Add the inline MCP configuration schema
   const mcpSchema = createInlineMCPSchema();
   ajv.addSchema(mcpSchema, 'MCPConfiguration');
+
+  // Add individual server schema (extract from mcpServers pattern)
+  const serverSchema = mcpSchema.properties.mcpServers.patternProperties[".*"];
+  ajv.addSchema(serverSchema, 'MCPServer');
 
   return ajv;
 }

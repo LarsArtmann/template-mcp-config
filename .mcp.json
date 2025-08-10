@@ -1,25 +1,24 @@
 {
   "mcpServers": {
     "context7": {
-      "command": "bunx",
-      "args": ["-y", "@upstash/context7-mcp@latest"],
+      "command": "node",
+      "args": ["node_modules/@upstash/context7-mcp/dist/index.js"],
       "env": {}
     },
     "deepwiki": {
       "serverUrl": "https://mcp.deepwiki.com/sse"
     },
     "github": {
-      "command": "bunx",
-      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "command": "node",
+      "args": ["node_modules/@modelcontextprotocol/server-github/dist/index.js"],
       "env": {
         "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_PERSONAL_ACCESS_TOKEN:-}"
       }
     },
     "filesystem": {
-      "command": "bunx",
+      "command": "node",
       "args": [
-        "-y",
-        "@modelcontextprotocol/server-filesystem",
+        "node_modules/@modelcontextprotocol/server-filesystem/dist/index.js",
         "${HOME}/projects",
         "${HOME}/GolandProjects",
         "${HOME}/IdeaProjects",
@@ -30,42 +29,42 @@
       "env": {}
     },
     "playwright": {
-      "command": "bunx",
-      "args": ["-y", "@playwright/mcp"],
+      "command": "node",
+      "args": ["node_modules/@playwright/mcp/index.js"],
       "env": {}
     },
     "puppeteer": {
-      "command": "bunx",
-      "args": ["-y", "@modelcontextprotocol/server-puppeteer"],
+      "command": "node",
+      "args": ["node_modules/@modelcontextprotocol/server-puppeteer/dist/index.js"],
       "env": {}
     },
     "memory": {
-      "command": "bunx",
-      "args": ["-y", "@modelcontextprotocol/server-memory"],
+      "command": "node",
+      "args": ["node_modules/@modelcontextprotocol/server-memory/dist/index.js"],
       "env": {
         "MEMORY_FILE_PATH": "${HOME}/.cache/mcp-memory.json"
       }
     },
     "sequential-thinking": {
-      "command": "bunx",
-      "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"],
+      "command": "node",
+      "args": ["node_modules/@modelcontextprotocol/server-sequential-thinking/dist/index.js"],
       "env": {}
     },
     "everything": {
-      "command": "bunx",
-      "args": ["-y", "@modelcontextprotocol/server-everything"],
+      "command": "node",
+      "args": ["node_modules/@modelcontextprotocol/server-everything/dist/index.js"],
       "env": {}
     },
     "kubernetes": {
-      "command": "bunx",
-      "args": ["-y", "mcp-server-kubernetes"],
+      "command": "node",
+      "args": ["node_modules/mcp-server-kubernetes/dist/index.js"],
       "env": {
         "KUBECONFIG": "${KUBECONFIG:-${HOME}/.kube/config}"
       }
     },
     "ssh": {
-      "command": "bunx",
-      "args": ["-y", "ssh-mcp"],
+      "command": "node",
+      "args": ["node_modules/ssh-mcp/build/index.js"],
       "env": {
         "SSH_HOST": "${SSH_HOST:-}",
         "SSH_USER": "${SSH_USER:-}",
@@ -74,31 +73,31 @@
       }
     },
     "sqlite": {
-      "command": "bunx",
-      "args": ["-y", "mcp-sqlite", "${SQLITE_DB_PATH:-./database.db}"],
+      "command": "node",
+      "args": ["node_modules/mcp-sqlite/mcp-sqlite-server.js", "${SQLITE_DB_PATH:-./database.db}"],
       "env": {}
     },
     "turso": {
-      "command": "bunx",
-      "args": ["-y", "mcp-turso-cloud"],
+      "command": "node",
+      "args": ["node_modules/mcp-turso-cloud/dist/index.js"],
       "env": {
         "TURSO_API_TOKEN": "${TURSO_API_TOKEN:-}",
         "TURSO_ORGANIZATION": "${TURSO_ORGANIZATION:-}"
       }
     },
     "terraform": {
-      "command": "bunx",
-      "args": ["-y", "terraform-mcp-server"],
+      "command": "node",
+      "args": ["node_modules/terraform-mcp-server/dist/index.js"],
       "env": {}
     },
     "fetch": {
-      "command": "bunx",
-      "args": ["-y", "fetch-mcp"],
+      "command": "node",
+      "args": ["node_modules/fetch-mcp/dist/index.js"],
       "env": {}
     },
     "youtube-transcript": {
-      "command": "bunx",
-      "args": ["-y", "@kimtaeyoon83/mcp-server-youtube-transcript"],
+      "command": "node",
+      "args": ["node_modules/@kimtaeyoon83/mcp-server-youtube-transcript/dist/index.js"],
       "env": {}
     }
   }

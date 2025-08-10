@@ -1,0 +1,177 @@
+%% Improved Events & Commands Architecture (EVENT-DRIVEN EXCELLENCE)
+%% This diagram shows how we SHOULD implement event-driven command execution
+
+graph TD
+    %% Event-Driven Architecture Core
+    subgraph EventCore["⚡ EVENT-DRIVEN CORE"]
+        
+        %% Event Bus - Central Coordination
+        subgraph EventBus["🚌 CENTRAL EVENT BUS"]
+            EventRouter["Event Router<br/>✅ Message routing<br/>✅ Topic filtering<br/>✅ Load balancing<br/>✅ Dead letter queues"]
+            EventStore["Event Store<br/>✅ Persistent events<br/>✅ Event replay<br/>✅ Audit trail<br/>✅ Time travel debugging"]
+            EventStream["Event Streams<br/>✅ Real-time updates<br/>✅ Backpressure handling<br/>✅ Flow control<br/>✅ Stream composition"]
+        end
+
+        %% Command Pattern Implementation
+        subgraph Commands["⚡ COMMAND PATTERN"]
+            CommandBus["Command Bus<br/>✅ Command routing<br/>✅ Middleware support<br/>✅ Validation<br/>✅ Authorization"]
+            CommandStore["Command Store<br/>✅ Command history<br/>✅ Undo/Redo stack<br/>✅ Transaction log<br/>✅ Recovery support"]
+            CommandExecutor["Command Executor<br/>✅ Parallel execution<br/>✅ Resource pooling<br/>✅ Timeout management<br/>✅ Circuit breaker"]
+        end
+
+        %% Process Management Excellence
+        subgraph ProcessMgmt["🎯 PROCESS MANAGEMENT"]
+            ProcessPool["Process Pool<br/>✅ Resource limits<br/>✅ Auto-scaling<br/>✅ Health monitoring<br/>✅ Graceful shutdown"]
+            TaskScheduler["Task Scheduler<br/>✅ Priority queues<br/>✅ Dependency resolution<br/>✅ Parallel/Serial execution<br/>✅ Rate limiting"]
+            ResourceMonitor["Resource Monitor<br/>✅ CPU/Memory tracking<br/>✅ Process health<br/>✅ Auto-recovery<br/>✅ Alert thresholds"]
+        end
+    end
+
+    %% Command Implementations
+    subgraph CommandImpls["🎯 CONCRETE COMMANDS"]
+        
+        ValidateCommand["ValidateCommand<br/>✅ Schema validation<br/>✅ Environment checks<br/>✅ Connectivity tests<br/>✅ Rollback capable<br/>✅ Progress events"]
+        
+        TestCommand["TestCommand<br/>✅ Parallel test execution<br/>✅ Test isolation<br/>✅ Result aggregation<br/>✅ Cancellable<br/>✅ Progress tracking"]
+        
+        HealthCommand["HealthCommand<br/>✅ Real-time monitoring<br/>✅ Alert integration<br/>✅ Historical metrics<br/>✅ Auto-recovery<br/>✅ Status events"]
+        
+        SetupCommand["SetupCommand<br/>✅ Transactional setup<br/>✅ Rollback on failure<br/>✅ Dependency resolution<br/>✅ Progress indication<br/>✅ Idempotent"]
+    end
+
+    %% Event Types & Flow
+    subgraph Events["📡 EVENT TYPES"]
+        
+        CommandEvents["Command Events<br/>✅ CommandStarted<br/>✅ CommandProgress<br/>✅ CommandCompleted<br/>✅ CommandFailed<br/>✅ CommandCancelled"]
+        
+        SystemEvents["System Events<br/>✅ ProcessStarted<br/>✅ ProcessHealthCheck<br/>✅ ResourceUsage<br/>✅ ProcessStopped<br/>✅ SystemAlert"]
+        
+        BusinessEvents["Business Events<br/>✅ ValidationCompleted<br/>✅ TestSuiteFinished<br/>✅ ServerHealthChanged<br/>✅ ConfigurationUpdated<br/>✅ ErrorOccurred"]
+        
+        UIEvents["UI Events<br/>✅ ProgressUpdate<br/>✅ StatusChanged<br/>✅ UserInteraction<br/>✅ DisplayUpdate<br/>✅ NotificationTriggered"]
+    end
+
+    %% Event Handlers & Subscribers
+    subgraph Handlers["🎧 EVENT HANDLERS"]
+        
+        ProgressHandler["Progress Handler<br/>✅ Real-time UI updates<br/>✅ Progress bars<br/>✅ Status indicators<br/>✅ ETA calculation"]
+        
+        LoggingHandler["Logging Handler<br/>✅ Structured logging<br/>✅ Event correlation<br/>✅ Performance metrics<br/>✅ Error tracking"]
+        
+        NotificationHandler["Notification Handler<br/>✅ User notifications<br/>✅ Alert management<br/>✅ Slack/Email integration<br/>✅ Alert deduplication"]
+        
+        MetricsHandler["Metrics Handler<br/>✅ Performance metrics<br/>✅ Resource usage<br/>✅ Success rates<br/>✅ Historical data"]
+    end
+
+    %% User Experience Layer
+    subgraph UXLayer["✨ EXCELLENT USER EXPERIENCE"]
+        
+        InteractiveUI["Interactive UI<br/>✅ Real-time progress<br/>✅ Cancellation support<br/>✅ Status indicators<br/>✅ Error visualization<br/>✅ Retry options"]
+        
+        CommandCLI["Command CLI<br/>✅ Rich progress bars<br/>✅ Colored output<br/>✅ Interactive prompts<br/>✅ Ctrl+C handling<br/>✅ Exit codes"]
+        
+        RealtimeDashboard["Realtime Dashboard<br/>✅ Live metrics<br/>✅ Historical charts<br/>✅ Alert status<br/>✅ System health<br/>✅ Performance trends"]
+    end
+
+    %% Event Flow Connections
+    EventRouter --> EventStore
+    EventRouter --> EventStream
+    EventStream --> Handlers
+    
+    CommandBus --> CommandExecutor
+    CommandExecutor --> ProcessPool
+    ProcessPool --> ResourceMonitor
+    
+    %% Commands emit events
+    ValidateCommand -->|"✅ emits"| CommandEvents
+    TestCommand -->|"✅ emits"| CommandEvents
+    HealthCommand -->|"✅ emits"| CommandEvents
+    SetupCommand -->|"✅ emits"| CommandEvents
+    
+    ProcessPool -->|"✅ emits"| SystemEvents
+    ResourceMonitor -->|"✅ emits"| SystemEvents
+    
+    CommandExecutor -->|"✅ emits"| BusinessEvents
+    
+    %% Event handlers consume events
+    CommandEvents --> ProgressHandler
+    SystemEvents --> MetricsHandler
+    BusinessEvents --> NotificationHandler
+    CommandEvents --> LoggingHandler
+    
+    %% UI updates from handlers
+    ProgressHandler --> InteractiveUI
+    ProgressHandler --> CommandCLI
+    MetricsHandler --> RealtimeDashboard
+    NotificationHandler --> InteractiveUI
+
+    %% Example Improved Flow
+    subgraph GoodFlow["✅ EXCELLENT EXECUTION FLOW"]
+        UserCommand["User: 'mcp test --parallel'"]
+        UserCommand --> CommandBus
+        CommandBus --> ParseCommand["Parse & Validate Command"]
+        ParseCommand --> CreateTestCommand["Create TestCommand"]
+        CreateTestCommand --> CommandExecutor
+        CommandExecutor -->|"✅ emits CommandStarted"| EventBus
+        EventBus --> ProgressHandler
+        ProgressHandler --> ShowProgress["📊 Show: 'Testing servers (0/15)'"]
+        
+        CommandExecutor --> ProcessPool
+        ProcessPool --> SpawnTests["🔄 Spawn parallel tests"]
+        SpawnTests -->|"✅ emits TestProgress"| EventBus
+        EventBus --> UpdateProgress["📊 Update: 'Testing servers (8/15)'"]
+        
+        UpdateProgress --> TestComplete["✅ All tests complete"]
+        TestComplete -->|"✅ emits CommandCompleted"| EventBus
+        EventBus --> ShowResults["📊 Show: Results summary"]
+        
+        %% User can cancel at any time
+        UserCommand -.->|"Ctrl+C"| CancelCommand["Cancel Command"]
+        CancelCommand --> GracefulShutdown["✅ Graceful shutdown"]
+    end
+
+    %% Composition & Workflows
+    subgraph Workflows["🔄 COMMAND COMPOSITION"]
+        
+        ValidateWorkflow["Validation Workflow<br/>✅ ValidateCommand<br/>✅ → TestCommand (if valid)<br/>✅ → HealthCommand (if tests pass)<br/>✅ → ReportCommand"]
+        
+        SetupWorkflow["Setup Workflow<br/>✅ SetupCommand<br/>✅ → ValidateCommand<br/>✅ → TestCommand<br/>✅ → CacheCommand<br/>✅ Rollback on any failure"]
+        
+        CIWorkflow["CI/CD Workflow<br/>✅ All commands in parallel<br/>✅ Fail-fast on critical errors<br/>✅ Collect all results<br/>✅ Generate reports"]
+    end
+
+    %% Advanced Features
+    subgraph Advanced["🚀 ADVANCED FEATURES"]
+        
+        EventReplay["Event Replay<br/>✅ Debug by replaying events<br/>✅ Test scenarios<br/>✅ Audit compliance<br/>✅ Time travel debugging"]
+        
+        CommandRetry["Command Retry<br/>✅ Exponential backoff<br/>✅ Circuit breaker pattern<br/>✅ Jitter for load balancing<br/>✅ Dead letter queues"]
+        
+        EventSourcing["Event Sourcing<br/>✅ Complete audit trail<br/>✅ State reconstruction<br/>✅ Temporal queries<br/>✅ Data recovery"]
+        
+        Observability["Observability<br/>✅ Distributed tracing<br/>✅ Metrics & logs correlation<br/>✅ Performance profiling<br/>✅ Alerting & monitoring"]
+    end
+
+    %% Key Improvements
+    subgraph Improvements["✅ ARCHITECTURAL IMPROVEMENTS"]
+        I1["✅ EVENT-DRIVEN: Loose coupling, scalable"]
+        I2["✅ COMMAND PATTERN: Undo/Redo, composition"]
+        I3["✅ REAL-TIME: Progress, cancellation, feedback"]
+        I4["✅ RESOURCE MANAGED: Pools, limits, monitoring"]
+        I5["✅ OBSERVABLE: Events, metrics, tracing"]
+        I6["✅ RESILIENT: Retries, circuit breakers, recovery"]
+        I7["✅ USER-FRIENDLY: Progress bars, colors, interaction"]
+        I8["✅ COMPOSABLE: Workflows, dependencies, parallel execution"]
+    end
+
+    %% Style the improvements
+    classDef excellentNode fill:#00b894,stroke:#00a085,stroke-width:3px,color:#fff
+    classDef greatNode fill:#6c5ce7,stroke:#5f3dc4,stroke-width:2px,color:#fff
+    classDef goodNode fill:#fd79a8,stroke:#e84393,stroke-width:2px,color:#fff
+    classDef flowNode fill:#fdcb6e,stroke:#e17055,stroke-width:2px,color:#fff
+    classDef goodEdge stroke:#00b894,stroke-width:2px
+    
+    class EventCore,EventBus,Commands excellentNode
+    class CommandImpls,Events,Handlers greatNode
+    class UXLayer,Workflows,Advanced goodNode
+    class GoodFlow,UserCommand,CommandBus,ParseCommand,CreateTestCommand flowNode

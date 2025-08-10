@@ -1,0 +1,82 @@
+%% Current MCP Configuration Architecture (PROBLEMS HIGHLIGHTED)
+%% This diagram shows why our current architecture SUCKS
+
+graph TD
+    %% Configuration Layer - MONOLITHIC MESS
+    subgraph Config["⚠️ CONFIGURATION CHAOS"]
+        MCP[".mcp.json<br/>💀 15 servers hardcoded<br/>💀 No validation rules<br/>💀 Environment variables embedded"]
+        ENV[".env<br/>💀 Mixed concerns<br/>💀 No type safety<br/>💀 Placeholder values"]
+        PKG["package.json<br/>💀 73 scripts<br/>💀 Duplicate functionality<br/>💀 No clear boundaries"]
+    end
+
+    %% Validation Hell - GOD OBJECT
+    subgraph Validation["🔥 VALIDATION HELL"]
+        ValidateJS["validate-config.js<br/>💀 609 lines GOD OBJECT<br/>💀 Does EVERYTHING<br/>💀 Structure + Env + Network + Logic<br/>💀 No separation of concerns"]
+        ValidateEnv["validate-env.js<br/>💀 Duplicate validation logic<br/>💀 Copy-paste programming"]
+        TestValidation["test-validation.js<br/>💀 More duplication<br/>💀 Inconsistent with main validator"]
+    end
+
+    %% Testing Disaster - ANOTHER MONOLITH
+    subgraph Testing["💥 TESTING DISASTER"]
+        TestServers["test-servers.js<br/>💀 462 lines MONOLITH<br/>💀 Mix of unit/integration/e2e<br/>💀 No test separation<br/>💀 Hardcoded server logic"]
+        TestMCP["test-mcp-servers.js<br/>💀 DUPLICATE test logic<br/>💀 Different implementation<br/>💀 Inconsistent results"]
+        ComprehensiveTest["comprehensive-test-servers.js<br/>💀 ANOTHER duplicate<br/>💀 Same functionality, different approach"]
+    end
+
+    %% Scripts Chaos - SPAGHETTI HELL
+    subgraph Scripts["🌀 SCRIPTS SPAGHETTI"]
+        HealthCheck["health-check.js"]
+        ParallelHealth["parallel-health-check.js<br/>💀 Duplicate health logic"]
+        Benchmark["benchmark-performance.js"]
+        PerfSummary["performance-summary.js"]
+        Setup["setup.js"]
+        WarmCache["warm-cache.js"]
+    end
+
+    %% Ghost Systems - UNUSED COMPLEXITY
+    subgraph Ghost["👻 GHOST SYSTEMS"]
+        TypeSpec["schemas/main.tsp<br/>💀 452 lines UNUSED<br/>💀 Perfect type definitions<br/>💀 Generated schemas IGNORED<br/>💀 Zero integration"]
+        Generated["schemas/generated/<br/>💀 Auto-generated schemas<br/>💀 NEVER USED<br/>💀 Wasted automation"]
+    end
+
+    %% Justfile - DUPLICATE ORCHESTRATION
+    subgraph Just["🔄 DUPLICATE ORCHESTRATION"]
+        Justfile["justfile<br/>💀 108 lines<br/>💀 Duplicates package.json scripts<br/>💀 Two ways to do everything<br/>💀 No single source of truth"]
+    end
+
+    %% Problem Connections (RED = BAD)
+    Config --> Validation
+    Config --> Testing
+    Config --> Scripts
+    
+    ValidateJS -.->|"💀 DUPLICATES"| ValidateEnv
+    ValidateJS -.->|"💀 DUPLICATES"| TestValidation
+    
+    TestServers -.->|"💀 DUPLICATES"| TestMCP
+    TestMCP -.->|"💀 DUPLICATES"| ComprehensiveTest
+    
+    HealthCheck -.->|"💀 DUPLICATES"| ParallelHealth
+    
+    TypeSpec -.->|"💀 NEVER USED"| Generated
+    Generated -.->|"💀 IGNORED BY"| ValidateJS
+    Generated -.->|"💀 IGNORED BY"| TestServers
+    
+    PKG -.->|"💀 DUPLICATES"| Justfile
+
+    %% Key Problems Legend
+    subgraph Problems["🚨 ARCHITECTURAL SINS"]
+        P1["💀 GOD OBJECTS: validate-config.js (609 lines)"]
+        P2["💀 DUPLICATION: 4+ validation scripts"]
+        P3["💀 GHOST CODE: TypeSpec schemas unused"]
+        P4["💀 NO SEPARATION: Everything mixed together"]
+        P5["💀 NO TYPES: Runtime validation only"]
+        P6["💀 SPAGHETTI: No clear data flow"]
+    end
+
+    %% Style the problems
+    classDef problemNode fill:#ff6b6b,stroke:#d63031,stroke-width:3px,color:#fff
+    classDef ghostNode fill:#6c5ce7,stroke:#5f3dc4,stroke-width:2px,color:#fff
+    classDef duplicateEdge stroke:#ff6b6b,stroke-width:3px,stroke-dasharray:10,5
+    
+    class Config,Validation,Testing,Scripts problemNode
+    class Ghost,TypeSpec,Generated ghostNode

@@ -1,0 +1,111 @@
+%% Improved MCP Configuration Architecture (CLEAN & SEPARATED)
+%% This diagram shows how the architecture SHOULD BE
+
+graph TD
+    %% Configuration Layer - CLEAN & TYPED
+    subgraph Config["✅ CLEAN CONFIGURATION"]
+        Schema["🎯 TypeSpec Schema<br/>✅ Single source of truth<br/>✅ Type-safe definitions<br/>✅ Auto-generated validation"]
+        Generated["🔄 Generated Assets<br/>✅ JSON Schema<br/>✅ TypeScript types<br/>✅ OpenAPI docs<br/>✅ Validation functions"]
+        MCPConfig[".mcp.json<br/>✅ Schema-validated<br/>✅ Type-safe<br/>✅ Auto-completion"]
+        EnvConfig[".env<br/>✅ Schema-defined<br/>✅ Type-validated<br/>✅ Required vs optional"]
+    end
+
+    %% Validation Layer - MODULAR & FOCUSED
+    subgraph Validation["🔍 MODULAR VALIDATION"]
+        ConfigValidator["config-validator.ts<br/>✅ Single responsibility<br/>✅ Uses generated schema<br/>✅ Pure functions"]
+        EnvValidator["env-validator.ts<br/>✅ Environment-specific<br/>✅ Type-safe<br/>✅ Clear error messages"]
+        ConnectivityValidator["connectivity-validator.ts<br/>✅ Network testing only<br/>✅ Async/parallel<br/>✅ Timeout handling"]
+        ValidationOrchestrator["validation-orchestrator.ts<br/>✅ Coordinates validators<br/>✅ Aggregates results<br/>✅ Structured reporting"]
+    end
+
+    %% Testing Layer - CLEAN SEPARATION
+    subgraph Testing["🧪 CLEAN TESTING"]
+        UnitTests["unit-tests/<br/>✅ Pure function testing<br/>✅ Mock dependencies<br/>✅ Fast execution"]
+        IntegrationTests["integration-tests/<br/>✅ Server connectivity<br/>✅ Real dependencies<br/>✅ Isolated tests"]
+        E2ETests["e2e-tests/<br/>✅ Full workflow testing<br/>✅ Real environment<br/>✅ User scenarios"]
+        TestOrchestrator["test-orchestrator.ts<br/>✅ Single test runner<br/>✅ Parallel execution<br/>✅ Unified reporting"]
+    end
+
+    %% Reporting Layer - STRUCTURED OUTPUT
+    subgraph Reporting["📊 STRUCTURED REPORTING"]
+        ReportGenerator["report-generator.ts<br/>✅ Multiple formats<br/>✅ JSON/HTML/Console<br/>✅ Template-based"]
+        HealthDashboard["health-dashboard/<br/>✅ Real-time status<br/>✅ Historical data<br/>✅ Performance metrics"]
+        AlertManager["alert-manager.ts<br/>✅ Failure notifications<br/>✅ Threshold monitoring<br/>✅ Recovery tracking"]
+    end
+
+    %% CI/CD Pipeline - AUTOMATED QUALITY
+    subgraph Pipeline["🚀 CI/CD PIPELINE"]
+        PreCommit["pre-commit hooks<br/>✅ Schema validation<br/>✅ Type checking<br/>✅ Linting"]
+        CI["GitHub Actions<br/>✅ Full test suite<br/>✅ Performance benchmarks<br/>✅ Security scanning"]
+        CD["Automated deployment<br/>✅ Schema migration<br/>✅ Rollback capability<br/>✅ Health monitoring"]
+    end
+
+    %% Data Flow (GREEN = GOOD)
+    Schema -->|"✅ generates"| Generated
+    Generated -->|"✅ validates"| MCPConfig
+    Generated -->|"✅ validates"| EnvConfig
+    
+    MCPConfig --> ConfigValidator
+    EnvConfig --> EnvValidator
+    ConfigValidator --> ValidationOrchestrator
+    EnvValidator --> ValidationOrchestrator
+    ConnectivityValidator --> ValidationOrchestrator
+    
+    ValidationOrchestrator -->|"✅ triggers"| TestOrchestrator
+    UnitTests --> TestOrchestrator
+    IntegrationTests --> TestOrchestrator
+    E2ETests --> TestOrchestrator
+    
+    TestOrchestrator --> ReportGenerator
+    ValidationOrchestrator --> ReportGenerator
+    ReportGenerator --> HealthDashboard
+    ReportGenerator --> AlertManager
+    
+    PreCommit -->|"✅ validates"| Schema
+    CI -->|"✅ runs"| TestOrchestrator
+    CD -->|"✅ monitors"| HealthDashboard
+
+    %% Single Orchestrator - THE SOLUTION
+    subgraph Orchestrator["🎯 SINGLE ORCHESTRATOR"]
+        MainOrchestrator["main-orchestrator.ts<br/>✅ Single entry point<br/>✅ Coordinates all layers<br/>✅ Command pattern<br/>✅ Event-driven<br/>✅ Plugin architecture"]
+    end
+    
+    MainOrchestrator -->|"✅ coordinates"| ValidationOrchestrator
+    MainOrchestrator -->|"✅ coordinates"| TestOrchestrator
+    MainOrchestrator -->|"✅ coordinates"| ReportGenerator
+    MainOrchestrator -->|"✅ coordinates"| AlertManager
+
+    %% Key Improvements Legend
+    subgraph Improvements["✅ ARCHITECTURAL WINS"]
+        I1["✅ SINGLE SOURCE OF TRUTH: TypeSpec schema drives everything"]
+        I2["✅ TYPE SAFETY: Generated types, no runtime surprises"]
+        I3["✅ SEPARATION OF CONCERNS: Each module has one job"]
+        I4["✅ ZERO DUPLICATION: Shared generated code"]
+        I5["✅ TESTABLE: Pure functions, dependency injection"]
+        I6["✅ MAINTAINABLE: Clear boundaries, plugin architecture"]
+        I7["✅ OBSERVABLE: Structured reporting and monitoring"]
+        I8["✅ AUTOMATED: CI/CD pipeline with quality gates"]
+    end
+
+    %% Command Pattern Implementation
+    subgraph Commands["⚡ COMMAND PATTERN"]
+        ValidateCommand["ValidateCommand<br/>✅ Pure command<br/>✅ Undo/Redo capable<br/>✅ Loggable"]
+        TestCommand["TestCommand<br/>✅ Parallel execution<br/>✅ Progress tracking<br/>✅ Cancellable"]
+        ReportCommand["ReportCommand<br/>✅ Multiple formats<br/>✅ Template system<br/>✅ Cacheable"]
+        HealthCommand["HealthCommand<br/>✅ Real-time monitoring<br/>✅ Alert integration<br/>✅ Historical data"]
+    end
+    
+    MainOrchestrator -->|"✅ executes"| ValidateCommand
+    MainOrchestrator -->|"✅ executes"| TestCommand
+    MainOrchestrator -->|"✅ executes"| ReportCommand
+    MainOrchestrator -->|"✅ executes"| HealthCommand
+
+    %% Style the improvements
+    classDef goodNode fill:#00b894,stroke:#00a085,stroke-width:2px,color:#fff
+    classDef greatNode fill:#6c5ce7,stroke:#5f3dc4,stroke-width:3px,color:#fff
+    classDef excellentNode fill:#fd79a8,stroke:#e84393,stroke-width:3px,color:#fff
+    classDef goodEdge stroke:#00b894,stroke-width:2px
+    
+    class Config,Validation,Testing,Reporting goodNode
+    class Pipeline,Orchestrator greatNode
+    class Commands,MainOrchestrator excellentNode

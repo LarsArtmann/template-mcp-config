@@ -17,12 +17,22 @@ validate:
 # 🧪 Test all MCP servers - verify each server can start and respond
 test:
     @echo "🧪 Testing all MCP servers..."
-    node scripts/test-servers.js
+    node scripts/test-all.js
 
 # 💚 Check server health - monitor running MCP servers (parallel)
 health:
     @echo "💚 Checking MCP server health..."
-    bun run health:check
+    node scripts/test-all.js --fast
+
+# 📊 Detailed test with full report generation
+test-detailed:
+    @echo "📊 Running detailed MCP server tests..."
+    node scripts/test-all.js --output detailed
+
+# ⚡ Fast test mode - skip capability tests
+test-fast:
+    @echo "⚡ Running fast MCP server tests..."
+    node scripts/test-all.js --fast
 
 # 🧹 Clean up - remove temporary files and caches
 clean:

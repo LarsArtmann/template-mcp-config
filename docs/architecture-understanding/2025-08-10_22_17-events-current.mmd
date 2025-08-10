@@ -1,0 +1,107 @@
+%% Current Events & Commands Architecture (PROCEDURAL MESS)
+%% This diagram shows the current TERRIBLE event handling and command execution
+
+graph TD
+    %% Current Procedural Hell
+    subgraph Current["🔥 CURRENT PROCEDURAL HELL"]
+        
+        %% Script Execution - NO COORDINATION
+        subgraph Scripts["💥 SCRIPT CHAOS"]
+            ValidateScript["validate-config.js<br/>💀 Direct execution<br/>💀 No event system<br/>💀 Blocking operations<br/>💀 No progress tracking"]
+            TestScript["test-servers.js<br/>💀 Hardcoded workflow<br/>💀 No cancellation<br/>💀 Mixed concerns<br/>💀 Poor error handling"]
+            HealthScript["health-check.js<br/>💀 Polling nightmare<br/>💀 No event streams<br/>💀 Resource leaks<br/>💀 No coordination"]
+            SetupScript["setup.js<br/>💀 Sequential execution<br/>💀 No rollback<br/>💀 No progress indication<br/>💀 Failure cascade"]
+        end
+
+        %% No Event System
+        subgraph NoEvents["👻 NO EVENT SYSTEM"]
+            NoEventBus["❌ No Event Bus<br/>💀 Scripts can't communicate<br/>💀 No coordination<br/>💀 No progress sharing"]
+            NoEventLog["❌ No Event Logging<br/>💀 No audit trail<br/>💀 No debugging info<br/>💀 No monitoring"]
+            NoPubSub["❌ No Pub/Sub<br/>💀 Tight coupling<br/>💀 No loose coupling<br/>💀 Monolithic execution"]
+        end
+
+        %% Command Pattern Missing
+        subgraph NoCommands["🚫 NO COMMAND PATTERN"]
+            NoUndo["❌ No Undo/Redo<br/>💀 Can't rollback operations<br/>💀 No transaction safety<br/>💀 Manual recovery only"]
+            NoQueue["❌ No Command Queue<br/>💀 No batch operations<br/>💀 No prioritization<br/>💀 No throttling"]
+            NoComposition["❌ No Command Composition<br/>💀 Can't chain operations<br/>💀 No conditional execution<br/>💀 No parallel workflows"]
+        end
+
+        %% Process Management Hell
+        subgraph ProcessHell["⚡ PROCESS MANAGEMENT HELL"]
+            BlockingCalls["🚫 Blocking Calls<br/>💀 spawn() with no async control<br/>💀 No timeout management<br/>💀 Process zombie risk<br/>💀 Resource exhaustion"]
+            NoProcessPool["❌ No Process Pool<br/>💀 Unlimited process spawning<br/>💀 No resource limits<br/>💀 System overload risk"]
+            PoorErrorHandling["💥 Poor Error Handling<br/>💀 Process crashes unhandled<br/>💀 No graceful degradation<br/>💀 Error cascade failures"]
+        end
+
+        %% User Experience Disaster
+        subgraph UXDisaster["😤 USER EXPERIENCE DISASTER"]
+            NoProgress["❌ No Progress Feedback<br/>💀 Silent execution<br/>💀 Users don't know what's happening<br/>💀 Appears frozen"]
+            NoInterruption["❌ No Interruption<br/>💀 Can't cancel operations<br/>💀 Ctrl+C kills everything<br/>💀 No graceful shutdown"]
+            InconsistentOutput["🌀 Inconsistent Output<br/>💀 Different scripts different formats<br/>💀 No unified reporting<br/>💀 Poor debugging"]
+        end
+
+        %% Data Flow Nightmare
+        ValidateScript -.->|"💀 NO COORDINATION"| TestScript
+        TestScript -.->|"💀 NO COMMUNICATION"| HealthScript
+        HealthScript -.->|"💀 NO FEEDBACK"| SetupScript
+        
+        BlockingCalls -.->|"💀 BLOCKS"| ValidateScript
+        BlockingCalls -.->|"💀 BLOCKS"| TestScript
+        BlockingCalls -.->|"💀 BLOCKS"| HealthScript
+        
+        NoEvents -.->|"💀 NO COORDINATION"| Scripts
+        NoCommands -.->|"💀 NO STRUCTURE"| ProcessHell
+        ProcessHell -.->|"💀 POOR UX"| UXDisaster
+    end
+
+    %% Current Justfile/Package.json Mess
+    subgraph TaskRunners["🔄 TASK RUNNER DUPLICATION"]
+        PackageScripts["package.json scripts<br/>💀 73 scripts<br/>💀 No event coordination<br/>💀 Direct node calls<br/>💀 No composition"]
+        JustCommands["justfile commands<br/>💀 108 lines<br/>💀 Duplicates package.json<br/>💀 Shell script hell<br/>💀 No error propagation"]
+        
+        PackageScripts -.->|"💀 DUPLICATES"| JustCommands
+        JustCommands -.->|"💀 NO COORDINATION"| Scripts
+    end
+
+    %% Problems with Current Approach
+    subgraph Problems["🚨 CURRENT PROBLEMS"]
+        P1["💀 NO COORDINATION: Scripts run in isolation"]
+        P2["💀 NO COMMUNICATION: Can't share progress/state"]  
+        P3["💀 NO COMPOSITION: Can't build complex workflows"]
+        P4["💀 NO ROLLBACK: Operations can't be undone"]
+        P5["💀 NO MONITORING: No visibility into execution"]
+        P6["💀 NO CANCELLATION: Operations can't be stopped"]
+        P7["💀 RESOURCE LEAKS: Processes not managed properly"]
+        P8["💀 POOR UX: No feedback, inconsistent output"]
+    end
+
+    %% Example of Current Terrible Flow
+    subgraph BadFlow["💥 TYPICAL TERRIBLE EXECUTION FLOW"]
+        Start["User runs 'just test'"]
+        Start --> Shell["Shell executes justfile"]
+        Shell --> Node["Node spawns test-servers.js"]
+        Node --> Spawn1["spawn() server 1"]
+        Spawn1 --> Block1["⏳ BLOCKS waiting"]
+        Block1 --> Spawn2["spawn() server 2"]
+        Spawn2 --> Block2["⏳ BLOCKS waiting"]
+        Block2 --> Spawn3["spawn() server 3..."]
+        Spawn3 --> Error["💥 Server 15 fails"]
+        Error --> Cascade["💀 ALL FAIL - no recovery"]
+        Cascade --> UserConfused["😤 User gets cryptic error"]
+        
+        %% No Events During This Flow
+        Node -.->|"❌ No progress events"| Block1
+        Block1 -.->|"❌ No status updates"| Block2  
+        Block2 -.->|"❌ No intermediate results"| Error
+    end
+
+    %% Style the problems
+    classDef problemNode fill:#ff6b6b,stroke:#d63031,stroke-width:3px,color:#fff
+    classDef missingNode fill:#6c5ce7,stroke:#5f3dc4,stroke-width:2px,color:#fff
+    classDef terribleFlow fill:#fd79a8,stroke:#e84393,stroke-width:2px,color:#fff
+    classDef duplicateEdge stroke:#ff6b6b,stroke-width:3px,stroke-dasharray:10,5
+    
+    class Scripts,ProcessHell,UXDisaster,TaskRunners problemNode
+    class NoEvents,NoCommands,NoEventBus,NoEventLog,NoPubSub missingNode
+    class BadFlow,Start,Shell,Node,Spawn1,Block1,Spawn2,Block2,Error,Cascade terribleFlow

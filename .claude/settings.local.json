@@ -12,7 +12,9 @@
       "Bash(./mcp-validate schema list)",
       "Bash(./validation/mcp-validate:*)",
       "Bash(time just:*)",
-      "Bash(mktemp:*)"
+      "Bash(mktemp:*)",
+      "Bash(time node:*)",
+      "Bash(TMPDIR=\"/var/folders/07/y9f_lh8s1zq2kr67_k94w22h0000gn/T/tmp.quQS26kLK2\")"
     ],
     "deny": []
   }

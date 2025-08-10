@@ -156,7 +156,28 @@ async function validateStructure(configPath, result) {
       return null;
     }
 
-    console.log(`📋 Found ${serverCount} configured servers`);
+    // Expected server names (19 servers as of current configuration)
+    const expectedServers = [
+      'context7', 'deepwiki', 'github', 'filesystem', 'playwright', 'puppeteer',
+      'memory', 'sequential-thinking', 'everything', 'kubernetes', 'ssh',
+      'sqlite', 'turso', 'terraform', 'nixos', 'prometheus', 'helm',
+      'fetch', 'youtube-transcript'
+    ];
+    
+    // Check for missing or unexpected servers
+    const configuredServers = Object.keys(config.mcpServers);
+    const missingServers = expectedServers.filter(server => !configuredServers.includes(server));
+    const unexpectedServers = configuredServers.filter(server => !expectedServers.includes(server));
+    
+    if (missingServers.length > 0) {
+      result.errors.push(`Missing expected servers: ${missingServers.join(', ')}`);
+    }
+    
+    if (unexpectedServers.length > 0) {
+      console.log(`⚠️ Unexpected servers found: ${unexpectedServers.join(', ')}`);
+    }
+
+    console.log(`📋 Found ${serverCount} configured servers (expected ${expectedServers.length})`);
     return config;
 
   } catch (error) {
@@ -207,6 +228,11 @@ async function validateSingleServer(serverName, serverConfig, result) {
     if (isHttpServer) {
       try {
         new URL(serverConfig.serverUrl);
+        
+        // Special validation for SSE servers
+        if (serverName === 'deepwiki' && !serverConfig.serverUrl.includes('sse')) {
+          result.warnings.push(`Server "${serverName}": URL should include 'sse' for Server-Sent Events`);
+        }
       } catch {
         result.valid = false;
         result.errors.push(`Server "${serverName}": Invalid serverUrl format`);
@@ -223,6 +249,36 @@ async function validateSingleServer(serverName, serverConfig, result) {
       if (serverConfig.args && !Array.isArray(serverConfig.args)) {
         result.valid = false;
         result.errors.push(`Server "${serverName}": "args" must be an array`);
+      }
+
+      // Validate server-specific package names
+      const expectedPackages = {
+        'context7': '@upstash/context7-mcp',
+        'github': '@modelcontextprotocol/server-github',
+        'filesystem': '@modelcontextprotocol/server-filesystem',
+        'playwright': '@playwright/mcp',
+        'puppeteer': '@modelcontextprotocol/server-puppeteer',
+        'memory': '@modelcontextprotocol/server-memory',
+        'sequential-thinking': '@modelcontextprotocol/server-sequential-thinking',
+        'everything': '@modelcontextprotocol/server-everything',
+        'kubernetes': 'mcp-server-kubernetes',
+        'ssh': '@modelcontextprotocol/server-ssh',
+        'sqlite': '@modelcontextprotocol/server-sqlite',
+        'turso': '@modelcontextprotocol/server-turso',
+        'terraform': '@modelcontextprotocol/server-terraform',
+        'nixos': '@modelcontextprotocol/server-nixos',
+        'prometheus': '@modelcontextprotocol/server-prometheus',
+        'helm': '@modelcontextprotocol/server-helm',
+        'fetch': '@modelcontextprotocol/server-fetch',
+        'youtube-transcript': '@modelcontextprotocol/server-youtube-transcript'
+      };
+
+      if (expectedPackages[serverName] && serverConfig.args) {
+        const expectedPackage = expectedPackages[serverName];
+        const hasCorrectPackage = serverConfig.args.some(arg => arg.includes(expectedPackage));
+        if (!hasCorrectPackage) {
+          result.warnings.push(`Server "${serverName}": Expected package "${expectedPackage}" in args`);
+        }
       }
 
       // Validate command exists
@@ -334,7 +390,66 @@ async function validateEnvironment(servers, result) {
     result.warnings.push('Found .env file - make sure to load it before running MCP servers');
   }
 
+  // Additional validation for specific environment variables
+  validateSpecificEnvVars(result);
+
   console.log(`🌍 Environment validation: ${requiredEnvVars.size} required, ${optionalEnvVars.size} optional`);
+}
+
+/**
+ * Validate specific environment variables with format checks
+ * @param {Object} result 
+ */
+function validateSpecificEnvVars(result) {
+  // GitHub token validation
+  const githubToken = process.env.GITHUB_PERSONAL_ACCESS_TOKEN;
+  if (githubToken) {
+    if (githubToken === 'your_token_here' || githubToken.includes('xxxx') || githubToken === 'ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx') {
+      result.warnings.push('GITHUB_PERSONAL_ACCESS_TOKEN appears to be a placeholder - update with real token');
+    } else if (!githubToken.startsWith('ghp_')) {
+      result.warnings.push('GITHUB_PERSONAL_ACCESS_TOKEN should start with "ghp_" for personal access tokens');
+    } else if (githubToken.length !== 40) {
+      result.warnings.push('GITHUB_PERSONAL_ACCESS_TOKEN should be 40 characters long');
+    }
+  }
+
+  // Turso database validation
+  const tursoUrl = process.env.TURSO_DATABASE_URL;
+  if (tursoUrl) {
+    if (tursoUrl.includes('your-database-name') || tursoUrl === 'libsql://your-database-name.turso.io') {
+      result.warnings.push('TURSO_DATABASE_URL appears to be a placeholder - update with real database URL');
+    } else if (!tursoUrl.startsWith('libsql://')) {
+      result.warnings.push('TURSO_DATABASE_URL should start with "libsql://"');
+    } else if (!tursoUrl.includes('.turso.io')) {
+      result.warnings.push('TURSO_DATABASE_URL should include ".turso.io" domain');
+    }
+  }
+
+  const tursoToken = process.env.TURSO_AUTH_TOKEN;
+  if (tursoToken) {
+    if (tursoToken === 'your-auth-token-here') {
+      result.warnings.push('TURSO_AUTH_TOKEN appears to be a placeholder - update with real token');
+    }
+  }
+
+  // Prometheus URL validation
+  const prometheusUrl = process.env.PROMETHEUS_URL;
+  if (prometheusUrl) {
+    try {
+      new URL(prometheusUrl);
+    } catch {
+      result.warnings.push('PROMETHEUS_URL is not a valid URL format');
+    }
+  }
+
+  // Kubernetes config validation
+  const kubeconfig = process.env.KUBECONFIG;
+  if (kubeconfig) {
+    const expandedPath = kubeconfig.replace(/\$\{HOME\}/g, require('os').homedir());
+    if (!require('fs').existsSync(expandedPath)) {
+      result.warnings.push(`KUBECONFIG file not found: ${expandedPath}`);
+    }
+  }
 }
 
 /**

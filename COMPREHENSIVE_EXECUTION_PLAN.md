@@ -22,7 +22,7 @@
 - **Solution:** Use it or remove it
 
 ### 4. **No Testing Strategy**
-- **Problem:** 18 servers, only 1 tested
+- **Problem:** 15 servers, only 1 tested
 - **Impact:** Users get broken configurations
 - **Solution:** Comprehensive testing suite
 
@@ -53,7 +53,7 @@
 
 | Task | Time | Impact | Effort | Customer Value | Priority |
 |------|------|--------|--------|----------------|----------|
-| Test all 18 MCP servers | 90min | CRITICAL | HIGH | CRITICAL | 1 |
+| Test all 15 MCP servers | 90min | CRITICAL | HIGH | CRITICAL | 1 |
 | Add package.json with deps | 45min | HIGH | MEDIUM | HIGH | 2 |
 | Fix GitHub server timeout | 30min | HIGH | LOW | HIGH | 3 |
 | Create validation script | 60min | HIGH | MEDIUM | HIGH | 4 |
@@ -182,7 +182,7 @@
 ## 🎯 EXECUTION STRATEGY
 
 ### Group 1: Core Testing (Agent 1)
-- Test all 18 MCP servers
+- Test all 15 MCP servers
 - Fix broken servers
 - Document results
 
@@ -208,7 +208,7 @@
 
 ## 📈 SUCCESS METRICS
 
-- ✅ All 18 MCP servers start successfully
+- ✅ All 15 MCP servers start successfully
 - ✅ Package.json with proper dependencies
 - ✅ Validation scripts catch errors
 - ✅ Justfile automates common tasks  

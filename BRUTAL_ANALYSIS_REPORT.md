@@ -22,7 +22,7 @@
 
 **STUPID SHIT WE'RE DOING:**
 - 🤡 **Using "bunx -y" for everything** - Downloads packages every time instead of proper dependency management
-- 🤡 **No actual testing** - We have 18 MCP servers and haven't tested a single one
+- 🤡 **No actual testing** - We have 15 MCP servers and haven't tested a single one
 - 🤡 **Symlink approach in documentation** - Fragile, breaks easily, not cross-platform
 - 🤡 **Manual README maintenance** while having readme-generator configured
 - 🤡 **GitHub server requires token** but we don't validate if the token works or has correct permissions
@@ -76,7 +76,7 @@
 ### File Structure Assessment
 ```
 template-mcp-config/
-├── .mcp.json           ✅ Valid JSON, 18 servers configured
+├── .mcp.json           ✅ Valid JSON, 15 servers configured
 ├── .env.example        ✅ Comprehensive, good documentation
 ├── README.md           ✅ Excellent documentation (14KB)
 ├── USAGE.md           ✅ Detailed usage guide (8KB)
@@ -262,7 +262,7 @@ All other servers not verified - massive risk
 5. **Verify before moving to next phase**
 
 ### Success Criteria:
-- ✅ All 18 MCP servers start successfully  
+- ✅ All 15 MCP servers start successfully  
 - ✅ All transport protocols documented
 - ✅ Configuration validation works
 - ✅ Integration methods tested

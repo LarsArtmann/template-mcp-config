@@ -86,23 +86,6 @@
       "args": ["-y", "@modelcontextprotocol/server-terraform"],
       "env": {}
     },
-    "nixos": {
-      "command": "bunx",
-      "args": ["-y", "@modelcontextprotocol/server-nixos"],
-      "env": {}
-    },
-    "prometheus": {
-      "command": "bunx",
-      "args": ["-y", "@modelcontextprotocol/server-prometheus"],
-      "env": {
-        "PROMETHEUS_URL": "${PROMETHEUS_URL:-http://localhost:9090}"
-      }
-    },
-    "helm": {
-      "command": "bunx",
-      "args": ["-y", "@modelcontextprotocol/server-helm"],
-      "env": {}
-    },
     "fetch": {
       "command": "bunx",
       "args": ["-y", "@modelcontextprotocol/server-fetch"],

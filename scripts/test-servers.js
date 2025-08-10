@@ -10,7 +10,8 @@ class MCPServerTester {
         this.mcpConfigPath = path.join(this.projectRoot, '.mcp.json');
         this.envPath = path.join(this.projectRoot, '.env');
         this.results = {};
-        this.testTimeout = 15000; // 15 seconds per test
+        this.testTimeout = 20000; // 20 seconds per test (increased)
+        this.maxConcurrency = 5; // Maximum concurrent tests
     }
 
     log(message, type = 'info') {
@@ -229,48 +230,63 @@ class MCPServerTester {
         const config = JSON.parse(fs.readFileSync(this.mcpConfigPath, 'utf8'));
         const servers = Object.entries(config.mcpServers);
         
-        console.log(`🧪 Testing ${servers.length} MCP servers...\n`);
+        console.log(`🧪 Testing ${servers.length} MCP servers with ${this.maxConcurrency} concurrent tests...\n`);
         
-        for (const [serverName, serverConfig] of servers) {
-            this.log(`Testing ${serverName}...`, 'progress');
+        // Process servers in batches for controlled concurrency
+        const batches = [];
+        for (let i = 0; i < servers.length; i += this.maxConcurrency) {
+            batches.push(servers.slice(i, i + this.maxConcurrency));
+        }
+        
+        for (const batch of batches) {
+            const batchPromises = batch.map(([serverName, serverConfig]) => 
+                this.testSingleServer(serverName, serverConfig)
+            );
             
-            try {
-                let result;
-                
-                // Test server availability
-                if (serverConfig.serverUrl) {
-                    // Remote SSE server
-                    result = await this.testRemoteServer(serverName, serverConfig);
-                } else {
-                    // Local command server
-                    result = await this.testLocalServer(serverName, serverConfig);
-                }
-                
-                // If basic test passed, run capability tests
-                if (result.success) {
-                    const capabilityResult = await this.testServerCapabilities(serverName, serverConfig);
-                    if (!capabilityResult.success) {
-                        result = capabilityResult;
-                    } else if (capabilityResult.message !== 'Basic test passed') {
-                        result.message = capabilityResult.message;
-                    }
-                }
-                
-                this.results[serverName] = result;
-                
-                if (result.success) {
-                    this.log(`${serverName}: ${result.message}`, 'success');
-                } else {
-                    this.log(`${serverName}: ${result.message}`, 'error');
-                }
-                
-            } catch (error) {
-                this.results[serverName] = {
-                    success: false,
-                    message: `Test error: ${error.message}`
-                };
-                this.log(`${serverName}: ${error.message}`, 'error');
+            // Wait for current batch to complete before starting next
+            await Promise.allSettled(batchPromises);
+        }
+    }
+
+    async testSingleServer(serverName, serverConfig) {
+        this.log(`Testing ${serverName}...`, 'progress');
+        
+        try {
+            let result;
+            
+            // Test server availability
+            if (serverConfig.serverUrl) {
+                // Remote SSE server
+                result = await this.testRemoteServer(serverName, serverConfig);
+            } else {
+                // Local command server
+                result = await this.testLocalServer(serverName, serverConfig);
             }
+            
+            // If basic test passed, run capability tests
+            if (result.success) {
+                const capabilityResult = await this.testServerCapabilities(serverName, serverConfig);
+                if (!capabilityResult.success) {
+                    result = capabilityResult;
+                } else if (capabilityResult.message !== 'Basic test passed') {
+                    result.message = capabilityResult.message;
+                }
+            }
+            
+            this.results[serverName] = result;
+            
+            if (result.success) {
+                this.log(`${serverName}: ${result.message}`, 'success');
+            } else {
+                this.log(`${serverName}: ${result.message}`, 'error');
+            }
+            
+        } catch (error) {
+            this.results[serverName] = {
+                success: false,
+                message: `Test error: ${error.message}`
+            };
+            this.log(`${serverName}: ${error.message}`, 'error');
         }
     }
 

@@ -93,14 +93,14 @@ Features:
 Template MCP Config is a **production-ready MCP configuration template** with:
 - Context7 integration for real-time documentation
 - Comprehensive tooling for modern development workflows
-- 18 MCP servers with minimal API dependencies
+- 15 MCP servers with minimal API dependencies
 - Focus on development team collaboration
 
 ### Key Features from README Analysis
 1. **Context7 & DeepWiki Integration** - Real-time documentation access
 2. **Curated Server Selection** - Minimal API dependencies, development-focused
 3. **Multiple Integration Methods** - Direct copy, Git Subtree, Git Submodule
-4. **18 MCP Servers** covering:
+4. **15 MCP Servers** covering:
    - Documentation (Context7, DeepWiki)
    - Version Control (GitHub)
    - File System access

@@ -54,11 +54,8 @@ A curated Model Context Protocol (MCP) configuration template that provides esse
 | **🗄️ Local Database** | SQLite | Local database operations & queries | ❌ |
 | **☁️ Distributed Database** | Turso | Edge SQLite with global replication | ⚠️ Optional |
 | **🏗️ Infrastructure** | Terraform | Infrastructure as Code management | ❌ |
-| **❄️ Package Management** | NixOS | Nix package & system management | ❌ |
-| **📊 Monitoring** | Prometheus | Metrics collection & analysis | ❌ |
-| **📦 Kubernetes Packages** | Helm | Kubernetes application management | ❌ |
 
-**Total: 18 MCP servers** - Only **1 required API key** (GitHub), **1 optional** (Turso)
+**Total: 16 MCP servers** - Only **1 required API key** (GitHub), **1 optional** (Turso)
 
 ## 🚀 Quick Start
 
@@ -231,13 +228,23 @@ Create a `.env` file in your project root:
 # Required for GitHub integration
 GITHUB_PERSONAL_ACCESS_TOKEN=ghp_xxxxxxxxxxxx
 
+# Optional for SSH server (remote access)
+SSH_HOST=your-server-hostname-or-ip
+SSH_USER=your-ssh-username
+SSH_PASSWORD=your-ssh-password
+SSH_KEY_PATH=${HOME}/.ssh/id_rsa
+
+# Optional for SQLite database (local database)
+SQLITE_DB_PATH=${HOME}/databases/app.db
+
 # Optional for Turso database (edge SQLite)
 TURSO_DATABASE_URL=libsql://your-database.turso.io
 TURSO_AUTH_TOKEN=your-auth-token
+TURSO_API_TOKEN=tsla_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+TURSO_ORGANIZATION=your-organization-name
 
 # Optional infrastructure settings (have sensible defaults)
 KUBECONFIG=${HOME}/.kube/config
-PROMETHEUS_URL=http://localhost:9090
 ```
 
 ### Customizing Server Selection

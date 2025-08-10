@@ -6,7 +6,7 @@ This document explains the different transport protocols used by Model Context P
 
 MCP servers can communicate through different transport mechanisms. This template uses two distinct protocols:
 
-- **STDIO Transport**: Used by 17 out of 18 servers
+- **STDIO Transport**: Used by 14 out of 15 servers
 - **SSE Transport**: Used exclusively by DeepWiki server
 
 ## STDIO Transport (Standard I/O)

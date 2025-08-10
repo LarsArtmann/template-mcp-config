@@ -156,12 +156,11 @@ async function validateStructure(configPath, result) {
       return null;
     }
 
-    // Expected server names (19 servers as of current configuration)
+    // Expected server names (15 servers as of current configuration)
     const expectedServers = [
       'context7', 'deepwiki', 'github', 'filesystem', 'playwright', 'puppeteer',
       'memory', 'sequential-thinking', 'everything', 'kubernetes', 'ssh',
-      'sqlite', 'turso', 'terraform', 'nixos', 'prometheus', 'helm',
-      'fetch', 'youtube-transcript'
+      'sqlite', 'turso', 'fetch', 'youtube-transcript'
     ];
     
     // Check for missing or unexpected servers
@@ -265,10 +264,6 @@ async function validateSingleServer(serverName, serverConfig, result) {
         'ssh': '@modelcontextprotocol/server-ssh',
         'sqlite': '@modelcontextprotocol/server-sqlite',
         'turso': '@modelcontextprotocol/server-turso',
-        'terraform': '@modelcontextprotocol/server-terraform',
-        'nixos': '@modelcontextprotocol/server-nixos',
-        'prometheus': '@modelcontextprotocol/server-prometheus',
-        'helm': '@modelcontextprotocol/server-helm',
         'fetch': '@modelcontextprotocol/server-fetch',
         'youtube-transcript': '@modelcontextprotocol/server-youtube-transcript'
       };

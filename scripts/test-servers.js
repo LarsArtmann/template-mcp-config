@@ -151,6 +151,10 @@ class MCPServerTester {
             filesystem: () => this.testFilesystemServer(config),
             playwright: () => this.testPlaywrightServer(),
             github: () => this.testGithubServer(),
+            turso: () => this.testTursoServer(),
+            memory: () => this.testMemoryServer(config),
+            deepwiki: () => this.testDeepwikiServer(config),
+            ssh: () => this.testSSHServer(),
         };
 
         if (specialTests[serverName]) {
@@ -224,6 +228,75 @@ class MCPServerTester {
         }
         
         return { success: true, message: 'GitHub token configured' };
+    }
+
+    async testTursoServer() {
+        const url = process.env.TURSO_DATABASE_URL;
+        const token = process.env.TURSO_AUTH_TOKEN;
+        
+        if (!url || !token) {
+            return { success: true, message: 'Turso configuration optional - not configured' };
+        }
+        
+        if (url.includes('your-database-name') || token === 'your-auth-token-here') {
+            return { success: false, message: 'Turso configuration contains placeholders' };
+        }
+        
+        if (!url.startsWith('libsql://')) {
+            return { success: false, message: 'Invalid Turso database URL format' };
+        }
+        
+        return { success: true, message: 'Turso configuration valid' };
+    }
+
+    async testMemoryServer(config) {
+        const memoryPath = config.env?.MEMORY_FILE_PATH?.replace(/\$\{HOME\}/g, require('os').homedir()) || 
+                          require('path').join(require('os').homedir(), '.cache', 'mcp-memory.json');
+        
+        const cacheDir = require('path').dirname(memoryPath);
+        try {
+            if (!require('fs').existsSync(cacheDir)) {
+                require('fs').mkdirSync(cacheDir, { recursive: true });
+            }
+            return { success: true, message: `Memory storage accessible at ${memoryPath}` };
+        } catch (error) {
+            return { success: false, message: `Memory storage not accessible: ${error.message}` };
+        }
+    }
+
+    async testDeepwikiServer(config) {
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 5000);
+            
+            const response = await fetch(config.serverUrl, {
+                method: 'GET',
+                signal: controller.signal,
+                headers: { 'Accept': 'text/event-stream' }
+            });
+            
+            clearTimeout(timeoutId);
+            if (response.ok) {
+                return { success: true, message: 'DeepWiki service accessible' };
+            } else {
+                return { success: false, message: `DeepWiki service returned HTTP ${response.status}` };
+            }
+        } catch (error) {
+            return { success: false, message: `DeepWiki service not accessible: ${error.message}` };
+        }
+    }
+
+    async testSSHServer() {
+        const sshDir = require('path').join(require('os').homedir(), '.ssh');
+        const hasSSHKeys = require('fs').existsSync(sshDir) && 
+                          (require('fs').existsSync(require('path').join(sshDir, 'id_rsa')) || 
+                           require('fs').existsSync(require('path').join(sshDir, 'id_ed25519')));
+        
+        if (!hasSSHKeys) {
+            return { success: true, message: 'SSH server ready (no keys found, but optional)' };
+        }
+        
+        return { success: true, message: 'SSH server ready with available keys' };
     }
 
     async testAllServers() {

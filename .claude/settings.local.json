@@ -10,7 +10,8 @@
       "Bash(./mcp-validate --help)",
       "Bash(./mcp-validate help)",
       "Bash(./mcp-validate schema list)",
-      "Bash(./validation/mcp-validate:*)"
+      "Bash(./validation/mcp-validate:*)",
+      "Bash(time just:*)"
     ],
     "deny": []
   }

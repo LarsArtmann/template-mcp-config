@@ -65,35 +65,40 @@
     },
     "ssh": {
       "command": "bunx",
-      "args": ["-y", "@modelcontextprotocol/server-ssh"],
-      "env": {}
+      "args": ["-y", "ssh-mcp"],
+      "env": {
+        "SSH_HOST": "${SSH_HOST:-}",
+        "SSH_USER": "${SSH_USER:-}",
+        "SSH_PASSWORD": "${SSH_PASSWORD:-}",
+        "SSH_KEY_PATH": "${SSH_KEY_PATH:-}"
+      }
     },
     "sqlite": {
       "command": "bunx",
-      "args": ["-y", "@modelcontextprotocol/server-sqlite"],
+      "args": ["-y", "mcp-sqlite", "${SQLITE_DB_PATH:-./database.db}"],
       "env": {}
     },
     "turso": {
       "command": "bunx",
-      "args": ["-y", "@modelcontextprotocol/server-turso"],
+      "args": ["-y", "mcp-turso-cloud"],
       "env": {
-        "TURSO_DATABASE_URL": "${TURSO_DATABASE_URL:-}",
-        "TURSO_AUTH_TOKEN": "${TURSO_AUTH_TOKEN:-}"
+        "TURSO_API_TOKEN": "${TURSO_API_TOKEN:-}",
+        "TURSO_ORGANIZATION": "${TURSO_ORGANIZATION:-}"
       }
     },
     "terraform": {
       "command": "bunx",
-      "args": ["-y", "@modelcontextprotocol/server-terraform"],
+      "args": ["-y", "terraform-mcp-server"],
       "env": {}
     },
     "fetch": {
       "command": "bunx",
-      "args": ["-y", "@modelcontextprotocol/server-fetch"],
+      "args": ["-y", "fetch-mcp"],
       "env": {}
     },
     "youtube-transcript": {
       "command": "bunx",
-      "args": ["-y", "@modelcontextprotocol/server-youtube-transcript"],
+      "args": ["-y", "@kimtaeyoon83/mcp-server-youtube-transcript"],
       "env": {}
     }
   }

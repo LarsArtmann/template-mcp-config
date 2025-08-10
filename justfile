@@ -7,7 +7,7 @@ default:
 # 🚀 Setup everything - install dependencies and configure environment
 setup:
     @echo "🚀 Setting up MCP configuration environment..."
-    node scripts/setup.js
+    bun run setup
 
 # ✅ Validate configuration - check .mcp.json and environment variables  
 validate:
@@ -19,10 +19,10 @@ test:
     @echo "🧪 Testing all MCP servers..."
     node scripts/test-servers.js
 
-# 💚 Check server health - monitor running MCP servers
+# 💚 Check server health - monitor running MCP servers (parallel)
 health:
     @echo "💚 Checking MCP server health..."
-    node scripts/health-check.js
+    bun run health:check
 
 # 🧹 Clean up - remove temporary files and caches
 clean:
@@ -74,8 +74,19 @@ quick-start:
 # 🔄 Update dependencies - refresh MCP server packages
 update:
     @echo "🔄 Updating MCP server dependencies..."
-    bunx --bun update
-    @echo "✅ Dependencies updated"
+    bun update
+    bun run cache:optimize
+    @echo "✅ Dependencies updated and optimized"
+
+# 🚀 Optimize performance - prepare all packages for fast startup
+optimize:
+    @echo "🚀 Optimizing MCP server performance..."
+    bun run cache:optimize
+
+# 📊 Performance analysis - benchmark and health check
+perf:
+    @echo "📊 Running performance analysis..."
+    bun run perf:analyze
 
 # 📊 Generate status report - comprehensive system status
 status:

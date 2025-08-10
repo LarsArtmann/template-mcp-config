@@ -53,6 +53,7 @@
     "health:check": "node scripts/parallel-health-check.js",
     "perf:benchmark": "node scripts/benchmark-performance.js",
     "perf:analyze": "bun run cache:optimize && bun run health:check",
+    "perf:summary": "node scripts/performance-summary.js",
     "clean": "rm -rf node_modules bun.lockb",
     "fresh-install": "bun run clean && bun install && bun run cache:optimize",
     "setup": "cp .env.example .env && bun run cache:optimize && echo '✅ Setup complete! Edit .env with your configuration, then restart your MCP client'",

@@ -1,104 +1,23 @@
 {
   "mcpServers": {
-    "context7": {
-      "command": "node",
-      "args": ["node_modules/@upstash/context7-mcp/dist/index.js"],
-      "env": {}
-    },
-    "deepwiki": {
-      "serverUrl": "https://mcp.deepwiki.com/sse"
-    },
-    "github": {
-      "command": "node",
-      "args": ["node_modules/@modelcontextprotocol/server-github/dist/index.js"],
-      "env": {
-        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_PERSONAL_ACCESS_TOKEN:-}"
-      }
-    },
     "filesystem": {
-      "command": "node",
+      "command": "bunx",
       "args": [
-        "node_modules/@modelcontextprotocol/server-filesystem/dist/index.js",
-        "${HOME}/projects",
-        "${HOME}/GolandProjects",
-        "${HOME}/IdeaProjects",
-        "${HOME}/WebStormProjects",
-        "${HOME}/Desktop",
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "/Users/larsartmann/IdeaProjects/",
+        "/Users/larsartmann/GolandProjects/",
+        "/Users/larsartmann/WebstormProjects/",
+        "/Users/larsartmann/projects/",
         "/tmp"
-      ],
-      "env": {}
-    },
-    "playwright": {
-      "command": "node",
-      "args": ["node_modules/@playwright/mcp/index.js"],
-      "env": {}
-    },
-    "puppeteer": {
-      "command": "node",
-      "args": ["node_modules/@modelcontextprotocol/server-puppeteer/dist/index.js"],
-      "env": {}
-    },
-    "memory": {
-      "command": "node",
-      "args": ["node_modules/@modelcontextprotocol/server-memory/dist/index.js"],
-      "env": {
-        "MEMORY_FILE_PATH": "${HOME}/.cache/mcp-memory.json"
-      }
+      ]
     },
     "sequential-thinking": {
-      "command": "node",
-      "args": ["node_modules/@modelcontextprotocol/server-sequential-thinking/dist/index.js"],
-      "env": {}
-    },
-    "everything": {
-      "command": "node",
-      "args": ["node_modules/@modelcontextprotocol/server-everything/dist/index.js"],
-      "env": {}
-    },
-    "kubernetes": {
-      "command": "node",
-      "args": ["node_modules/mcp-server-kubernetes/dist/index.js"],
-      "env": {
-        "KUBECONFIG": "${KUBECONFIG:-${HOME}/.kube/config}"
-      }
-    },
-    "ssh": {
-      "command": "node",
-      "args": ["node_modules/ssh-mcp/build/index.js"],
-      "env": {
-        "SSH_HOST": "${SSH_HOST:-}",
-        "SSH_USER": "${SSH_USER:-}",
-        "SSH_PASSWORD": "${SSH_PASSWORD:-}",
-        "SSH_KEY_PATH": "${SSH_KEY_PATH:-}"
-      }
-    },
-    "sqlite": {
-      "command": "node",
-      "args": ["node_modules/mcp-sqlite/mcp-sqlite-server.js", "${SQLITE_DB_PATH:-./database.db}"],
-      "env": {}
-    },
-    "turso": {
-      "command": "node",
-      "args": ["node_modules/mcp-turso-cloud/dist/index.js"],
-      "env": {
-        "TURSO_API_TOKEN": "${TURSO_API_TOKEN:-}",
-        "TURSO_ORGANIZATION": "${TURSO_ORGANIZATION:-}"
-      }
-    },
-    "terraform": {
-      "command": "node",
-      "args": ["node_modules/terraform-mcp-server/dist/index.js"],
-      "env": {}
-    },
-    "fetch": {
-      "command": "node",
-      "args": ["node_modules/fetch-mcp/dist/index.js"],
-      "env": {}
-    },
-    "youtube-transcript": {
-      "command": "node",
-      "args": ["node_modules/@kimtaeyoon83/mcp-server-youtube-transcript/dist/index.js"],
-      "env": {}
+      "command": "bunx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-sequential-thinking"
+      ]
     }
   }
 }

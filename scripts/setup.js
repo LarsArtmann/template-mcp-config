@@ -1,120 +1,123 @@
 #!/usr/bin/env node
 
-const fs = require('fs');
-const path = require('path');
-const { execSync } = require('child_process');
-const os = require('os');
+const fs = require("fs");
+const path = require("path");
+const { execSync } = require("child_process");
+const os = require("os");
 
 class MCPSetup {
-    constructor() {
-        this.platform = os.platform();
-        this.arch = os.arch();
-        this.projectRoot = path.dirname(__dirname);
-        this.mcpConfigPath = path.join(this.projectRoot, '.mcp.json');
-        this.envExamplePath = path.join(this.projectRoot, '.env.example');
-        this.envPath = path.join(this.projectRoot, '.env');
+  constructor() {
+    this.platform = os.platform();
+    this.arch = os.arch();
+    this.projectRoot = path.dirname(__dirname);
+    this.mcpConfigPath = path.join(this.projectRoot, ".mcp.json");
+    this.envExamplePath = path.join(this.projectRoot, ".env.example");
+    this.envPath = path.join(this.projectRoot, ".env");
+  }
+
+  log(message, type = "info") {
+    const prefix = {
+      info: "📋",
+      success: "✅",
+      warning: "⚠️",
+      error: "❌",
+      progress: "⏳",
+    }[type];
+    console.log(`${prefix} ${message}`);
+  }
+
+  exec(command, options = {}) {
+    try {
+      const result = execSync(command, {
+        stdio: "pipe",
+        encoding: "utf8",
+        ...options,
+      });
+      return result.trim();
+    } catch (error) {
+      throw new Error(`Command failed: ${command}\nError: ${error.message}`);
+    }
+  }
+
+  detectPlatform() {
+    this.log(`Detected platform: ${this.platform} ${this.arch}`);
+
+    const supportedPlatforms = ["darwin", "linux", "win32"];
+    if (!supportedPlatforms.includes(this.platform)) {
+      throw new Error(`Unsupported platform: ${this.platform}`);
     }
 
-    log(message, type = 'info') {
-        const prefix = {
-            info: '📋',
-            success: '✅',
-            warning: '⚠️',
-            error: '❌',
-            progress: '⏳'
-        }[type];
-        console.log(`${prefix} ${message}`);
+    return {
+      isMac: this.platform === "darwin",
+      isLinux: this.platform === "linux",
+      isWindows: this.platform === "win32",
+    };
+  }
+
+  checkNodeVersion() {
+    this.log("Checking Node.js version...", "progress");
+    try {
+      const nodeVersion = this.exec("node --version");
+      const majorVersion = parseInt(nodeVersion.slice(1).split(".")[0]);
+
+      if (majorVersion < 16) {
+        throw new Error(`Node.js v16+ required, found ${nodeVersion}`);
+      }
+
+      this.log(`Node.js ${nodeVersion} - OK`, "success");
+      return true;
+    } catch (error) {
+      this.log(
+        `Node.js not found or invalid version: ${error.message}`,
+        "error",
+      );
+      return false;
+    }
+  }
+
+  installBun() {
+    this.log("Installing Bun runtime...", "progress");
+    try {
+      // Check if bun is already installed
+      try {
+        const bunVersion = this.exec("bunx --version");
+        this.log(`Bun already installed: ${bunVersion}`, "success");
+        return true;
+      } catch {
+        // Bun not installed, proceed with installation
+      }
+
+      const platform = this.detectPlatform();
+
+      if (platform.isWindows) {
+        this.log("Installing Bun on Windows...", "progress");
+        this.exec('powershell -c "iwr bun.sh/install.ps1|iex"');
+      } else {
+        this.log("Installing Bun on Unix-like system...", "progress");
+        this.exec("curl -fsSL https://bun.sh/install | bash");
+      }
+
+      // Verify installation
+      const bunVersion = this.exec("bunx --version");
+      this.log(`Bun installed successfully: ${bunVersion}`, "success");
+      return true;
+    } catch (error) {
+      this.log(`Failed to install Bun: ${error.message}`, "error");
+      return false;
+    }
+  }
+
+  createEnvironmentFile() {
+    this.log("Setting up environment configuration...", "progress");
+
+    if (fs.existsSync(this.envPath)) {
+      this.log(".env file already exists", "warning");
+      return;
     }
 
-    exec(command, options = {}) {
-        try {
-            const result = execSync(command, {
-                stdio: 'pipe',
-                encoding: 'utf8',
-                ...options
-            });
-            return result.trim();
-        } catch (error) {
-            throw new Error(`Command failed: ${command}\nError: ${error.message}`);
-        }
-    }
-
-    detectPlatform() {
-        this.log(`Detected platform: ${this.platform} ${this.arch}`);
-        
-        const supportedPlatforms = ['darwin', 'linux', 'win32'];
-        if (!supportedPlatforms.includes(this.platform)) {
-            throw new Error(`Unsupported platform: ${this.platform}`);
-        }
-
-        return {
-            isMac: this.platform === 'darwin',
-            isLinux: this.platform === 'linux', 
-            isWindows: this.platform === 'win32'
-        };
-    }
-
-    checkNodeVersion() {
-        this.log('Checking Node.js version...', 'progress');
-        try {
-            const nodeVersion = this.exec('node --version');
-            const majorVersion = parseInt(nodeVersion.slice(1).split('.')[0]);
-            
-            if (majorVersion < 16) {
-                throw new Error(`Node.js v16+ required, found ${nodeVersion}`);
-            }
-            
-            this.log(`Node.js ${nodeVersion} - OK`, 'success');
-            return true;
-        } catch (error) {
-            this.log(`Node.js not found or invalid version: ${error.message}`, 'error');
-            return false;
-        }
-    }
-
-    installBun() {
-        this.log('Installing Bun runtime...', 'progress');
-        try {
-            // Check if bun is already installed
-            try {
-                const bunVersion = this.exec('bunx --version');
-                this.log(`Bun already installed: ${bunVersion}`, 'success');
-                return true;
-            } catch {
-                // Bun not installed, proceed with installation
-            }
-
-            const platform = this.detectPlatform();
-            
-            if (platform.isWindows) {
-                this.log('Installing Bun on Windows...', 'progress');
-                this.exec('powershell -c "iwr bun.sh/install.ps1|iex"');
-            } else {
-                this.log('Installing Bun on Unix-like system...', 'progress');
-                this.exec('curl -fsSL https://bun.sh/install | bash');
-            }
-            
-            // Verify installation
-            const bunVersion = this.exec('bunx --version');
-            this.log(`Bun installed successfully: ${bunVersion}`, 'success');
-            return true;
-        } catch (error) {
-            this.log(`Failed to install Bun: ${error.message}`, 'error');
-            return false;
-        }
-    }
-
-    createEnvironmentFile() {
-        this.log('Setting up environment configuration...', 'progress');
-        
-        if (fs.existsSync(this.envPath)) {
-            this.log('.env file already exists', 'warning');
-            return;
-        }
-        
-        if (!fs.existsSync(this.envExamplePath)) {
-            this.log('.env.example not found, creating minimal .env', 'warning');
-            const minimalEnv = `# MCP Configuration Environment Variables
+    if (!fs.existsSync(this.envExamplePath)) {
+      this.log(".env.example not found, creating minimal .env", "warning");
+      const minimalEnv = `# MCP Configuration Environment Variables
 # Generated by setup script - ${new Date().toISOString()}
 
 # =================================================================
@@ -155,179 +158,202 @@ MEMORY_FILE_PATH=\${HOME}/.cache/mcp-memory.json
 # - Use \${VAR:-default} pattern for optional variables with defaults
 # - All other servers work without API keys or external configuration
 `;
-            fs.writeFileSync(this.envPath, minimalEnv);
+      fs.writeFileSync(this.envPath, minimalEnv);
+    } else {
+      fs.copyFileSync(this.envExamplePath, this.envPath);
+    }
+
+    this.log(".env file created - please configure your tokens", "success");
+    this.log(
+      "Edit .env file and add your GITHUB_PERSONAL_ACCESS_TOKEN",
+      "warning",
+    );
+  }
+
+  validateMCPConfig() {
+    this.log("Validating MCP configuration...", "progress");
+
+    if (!fs.existsSync(this.mcpConfigPath)) {
+      throw new Error(".mcp.json not found");
+    }
+
+    try {
+      const config = JSON.parse(fs.readFileSync(this.mcpConfigPath, "utf8"));
+      const serverCount = Object.keys(config.mcpServers || {}).length;
+
+      // Validate expected server count
+      const expectedServers = 15;
+      if (serverCount !== expectedServers) {
+        this.log(
+          `Warning: Expected ${expectedServers} servers, found ${serverCount}`,
+          "warning",
+        );
+      }
+
+      // Check for required server types
+      const requiredServers = ["context7", "github", "filesystem", "memory"];
+      const configuredServers = Object.keys(config.mcpServers || {});
+      const missingRequired = requiredServers.filter(
+        (server) => !configuredServers.includes(server),
+      );
+
+      if (missingRequired.length > 0) {
+        this.log(
+          `Missing required servers: ${missingRequired.join(", ")}`,
+          "warning",
+        );
+      }
+
+      this.log(
+        `MCP configuration valid - ${serverCount} servers configured`,
+        "success",
+      );
+      return config;
+    } catch (error) {
+      throw new Error(`Invalid MCP configuration: ${error.message}`);
+    }
+  }
+
+  installPlaywrightBrowsers() {
+    this.log("Installing Playwright browsers...", "progress");
+    try {
+      this.exec("bunx playwright install", { timeout: 300000 }); // 5 minute timeout
+      this.log("Playwright browsers installed", "success");
+    } catch (error) {
+      this.log(
+        `Failed to install Playwright browsers: ${error.message}`,
+        "warning",
+      );
+    }
+  }
+
+  testMCPServerAccess() {
+    this.log("Testing MCP server package access...", "progress");
+
+    const testServers = [
+      "@upstash/context7-mcp",
+      "@modelcontextprotocol/server-github",
+      "@modelcontextprotocol/server-filesystem",
+      "@playwright/mcp",
+      "@modelcontextprotocol/server-puppeteer",
+      "@modelcontextprotocol/server-memory",
+      "@modelcontextprotocol/server-sequential-thinking",
+      "@modelcontextprotocol/server-everything",
+      "mcp-server-kubernetes",
+      "@modelcontextprotocol/server-ssh",
+      "@modelcontextprotocol/server-sqlite",
+      "@modelcontextprotocol/server-turso",
+      "@modelcontextprotocol/server-fetch",
+      "@modelcontextprotocol/server-youtube-transcript",
+    ];
+
+    for (const server of testServers) {
+      try {
+        this.exec(`bunx ${server} --help`, { timeout: 30000 });
+        this.log(`✓ ${server}`, "success");
+      } catch (error) {
+        this.log(`⚠ ${server} - may need installation on first use`, "warning");
+      }
+    }
+  }
+
+  createBackup() {
+    if (fs.existsSync(this.mcpConfigPath)) {
+      const backupPath = `${this.mcpConfigPath}.backup.${Date.now()}`;
+      fs.copyFileSync(this.mcpConfigPath, backupPath);
+      this.log(`Backup created: ${path.basename(backupPath)}`, "info");
+    }
+  }
+
+  setupDirectories() {
+    this.log("Setting up required directories...", "progress");
+
+    const directories = [
+      path.join(os.homedir(), ".cache"),
+      path.join(this.projectRoot, "reports"),
+    ];
+
+    for (const dir of directories) {
+      try {
+        if (!fs.existsSync(dir)) {
+          fs.mkdirSync(dir, { recursive: true });
+          this.log(`Created directory: ${dir}`, "success");
         } else {
-            fs.copyFileSync(this.envExamplePath, this.envPath);
+          this.log(`Directory exists: ${dir}`, "info");
         }
-        
-        this.log('.env file created - please configure your tokens', 'success');
-        this.log('Edit .env file and add your GITHUB_PERSONAL_ACCESS_TOKEN', 'warning');
+      } catch (error) {
+        this.log(
+          `Failed to create directory ${dir}: ${error.message}`,
+          "warning",
+        );
+      }
     }
+  }
 
-    validateMCPConfig() {
-        this.log('Validating MCP configuration...', 'progress');
-        
-        if (!fs.existsSync(this.mcpConfigPath)) {
-            throw new Error('.mcp.json not found');
-        }
-        
-        try {
-            const config = JSON.parse(fs.readFileSync(this.mcpConfigPath, 'utf8'));
-            const serverCount = Object.keys(config.mcpServers || {}).length;
-            
-            // Validate expected server count
-            const expectedServers = 15;
-            if (serverCount !== expectedServers) {
-                this.log(`Warning: Expected ${expectedServers} servers, found ${serverCount}`, 'warning');
-            }
-            
-            // Check for required server types
-            const requiredServers = ['context7', 'github', 'filesystem', 'memory'];
-            const configuredServers = Object.keys(config.mcpServers || {});
-            const missingRequired = requiredServers.filter(server => !configuredServers.includes(server));
-            
-            if (missingRequired.length > 0) {
-                this.log(`Missing required servers: ${missingRequired.join(', ')}`, 'warning');
-            }
-            
-            this.log(`MCP configuration valid - ${serverCount} servers configured`, 'success');
-            return config;
-        } catch (error) {
-            throw new Error(`Invalid MCP configuration: ${error.message}`);
-        }
-    }
+  displayNextSteps() {
+    console.log("\n🎉 Setup Complete!\n");
+    console.log("Next steps:");
+    console.log("1. Edit .env file and add your GitHub token:");
+    console.log("   GITHUB_PERSONAL_ACCESS_TOKEN=your_token_here");
+    console.log("");
+    console.log("2. Test your configuration:");
+    console.log("   just validate");
+    console.log("");
+    console.log("3. Test MCP servers:");
+    console.log("   just test");
+    console.log("");
+    console.log("4. Monitor server health:");
+    console.log("   just health");
+    console.log("");
+    console.log("5. Get system status:");
+    console.log("   just status");
+    console.log("");
+    console.log(
+      "Documentation: https://github.com/LarsArtmann/template-mcp-config",
+    );
+  }
 
-    installPlaywrightBrowsers() {
-        this.log('Installing Playwright browsers...', 'progress');
-        try {
-            this.exec('bunx playwright install', { timeout: 300000 }); // 5 minute timeout
-            this.log('Playwright browsers installed', 'success');
-        } catch (error) {
-            this.log(`Failed to install Playwright browsers: ${error.message}`, 'warning');
-        }
-    }
+  async run() {
+    try {
+      console.log("🚀 MCP Configuration Setup\n");
 
-    testMCPServerAccess() {
-        this.log('Testing MCP server package access...', 'progress');
-        
-        const testServers = [
-            '@upstash/context7-mcp',
-            '@modelcontextprotocol/server-github',
-            '@modelcontextprotocol/server-filesystem',
-            '@playwright/mcp',
-            '@modelcontextprotocol/server-puppeteer',
-            '@modelcontextprotocol/server-memory',
-            '@modelcontextprotocol/server-sequential-thinking',
-            '@modelcontextprotocol/server-everything',
-            'mcp-server-kubernetes',
-            '@modelcontextprotocol/server-ssh',
-            '@modelcontextprotocol/server-sqlite',
-            '@modelcontextprotocol/server-turso',
-            '@modelcontextprotocol/server-fetch',
-            '@modelcontextprotocol/server-youtube-transcript'
-        ];
-        
-        for (const server of testServers) {
-            try {
-                this.exec(`bunx ${server} --help`, { timeout: 30000 });
-                this.log(`✓ ${server}`, 'success');
-            } catch (error) {
-                this.log(`⚠ ${server} - may need installation on first use`, 'warning');
-            }
-        }
-    }
+      // Platform and system checks
+      this.detectPlatform();
 
-    createBackup() {
-        if (fs.existsSync(this.mcpConfigPath)) {
-            const backupPath = `${this.mcpConfigPath}.backup.${Date.now()}`;
-            fs.copyFileSync(this.mcpConfigPath, backupPath);
-            this.log(`Backup created: ${path.basename(backupPath)}`, 'info');
-        }
-    }
+      if (!this.checkNodeVersion()) {
+        throw new Error("Node.js v16+ is required");
+      }
 
-    setupDirectories() {
-        this.log('Setting up required directories...', 'progress');
-        
-        const directories = [
-            path.join(os.homedir(), '.cache'),
-            path.join(this.projectRoot, 'reports')
-        ];
-        
-        for (const dir of directories) {
-            try {
-                if (!fs.existsSync(dir)) {
-                    fs.mkdirSync(dir, { recursive: true });
-                    this.log(`Created directory: ${dir}`, 'success');
-                } else {
-                    this.log(`Directory exists: ${dir}`, 'info');
-                }
-            } catch (error) {
-                this.log(`Failed to create directory ${dir}: ${error.message}`, 'warning');
-            }
-        }
-    }
+      // Create backup
+      this.createBackup();
 
-    displayNextSteps() {
-        console.log('\n🎉 Setup Complete!\n');
-        console.log('Next steps:');
-        console.log('1. Edit .env file and add your GitHub token:');
-        console.log('   GITHUB_PERSONAL_ACCESS_TOKEN=your_token_here');
-        console.log('');
-        console.log('2. Test your configuration:');
-        console.log('   just validate');
-        console.log('');
-        console.log('3. Test MCP servers:');
-        console.log('   just test');
-        console.log('');
-        console.log('4. Monitor server health:');
-        console.log('   just health');
-        console.log('');
-        console.log('5. Get system status:');
-        console.log('   just status');
-        console.log('');
-        console.log('Documentation: https://github.com/LarsArtmann/template-mcp-config');
-    }
+      // Install dependencies
+      await this.installBun();
 
-    async run() {
-        try {
-            console.log('🚀 MCP Configuration Setup\n');
-            
-            // Platform and system checks
-            this.detectPlatform();
-            
-            if (!this.checkNodeVersion()) {
-                throw new Error('Node.js v16+ is required');
-            }
-            
-            // Create backup
-            this.createBackup();
-            
-            // Install dependencies
-            await this.installBun();
-            
-            // Setup configuration
-            this.createEnvironmentFile();
-            this.validateMCPConfig();
-            this.setupDirectories();
-            
-            // Install additional dependencies
-            this.installPlaywrightBrowsers();
-            this.testMCPServerAccess();
-            
-            this.displayNextSteps();
-            
-        } catch (error) {
-            this.log(`Setup failed: ${error.message}`, 'error');
-            console.log('\nFor help, see: https://github.com/LarsArtmann/template-mcp-config/issues');
-            process.exit(1);
-        }
+      // Setup configuration
+      this.createEnvironmentFile();
+      this.validateMCPConfig();
+      this.setupDirectories();
+
+      // Install additional dependencies
+      this.installPlaywrightBrowsers();
+      this.testMCPServerAccess();
+
+      this.displayNextSteps();
+    } catch (error) {
+      this.log(`Setup failed: ${error.message}`, "error");
+      console.log(
+        "\nFor help, see: https://github.com/LarsArtmann/template-mcp-config/issues",
+      );
+      process.exit(1);
     }
+  }
 }
 
 // Run setup if called directly
 if (require.main === module) {
-    const setup = new MCPSetup();
-    setup.run();
+  const setup = new MCPSetup();
+  setup.run();
 }
 
 module.exports = MCPSetup;

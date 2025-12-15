@@ -67,10 +67,7 @@ class MCPSetup {
       this.log(`Node.js ${nodeVersion} - OK`, "success");
       return true;
     } catch (error) {
-      this.log(
-        `Node.js not found or invalid version: ${error.message}`,
-        "error",
-      );
+      this.log(`Node.js not found or invalid version: ${error.message}`, "error");
       return false;
     }
   }
@@ -164,10 +161,7 @@ MEMORY_FILE_PATH=\${HOME}/.cache/mcp-memory.json
     }
 
     this.log(".env file created - please configure your tokens", "success");
-    this.log(
-      "Edit .env file and add your GITHUB_PERSONAL_ACCESS_TOKEN",
-      "warning",
-    );
+    this.log("Edit .env file and add your GITHUB_PERSONAL_ACCESS_TOKEN", "warning");
   }
 
   validateMCPConfig() {
@@ -184,10 +178,7 @@ MEMORY_FILE_PATH=\${HOME}/.cache/mcp-memory.json
       // Validate expected server count
       const expectedServers = 15;
       if (serverCount !== expectedServers) {
-        this.log(
-          `Warning: Expected ${expectedServers} servers, found ${serverCount}`,
-          "warning",
-        );
+        this.log(`Warning: Expected ${expectedServers} servers, found ${serverCount}`, "warning");
       }
 
       // Check for required server types
@@ -198,16 +189,10 @@ MEMORY_FILE_PATH=\${HOME}/.cache/mcp-memory.json
       );
 
       if (missingRequired.length > 0) {
-        this.log(
-          `Missing required servers: ${missingRequired.join(", ")}`,
-          "warning",
-        );
+        this.log(`Missing required servers: ${missingRequired.join(", ")}`, "warning");
       }
 
-      this.log(
-        `MCP configuration valid - ${serverCount} servers configured`,
-        "success",
-      );
+      this.log(`MCP configuration valid - ${serverCount} servers configured`, "success");
       return config;
     } catch (error) {
       throw new Error(`Invalid MCP configuration: ${error.message}`);
@@ -220,10 +205,7 @@ MEMORY_FILE_PATH=\${HOME}/.cache/mcp-memory.json
       this.exec("bunx playwright install", { timeout: 300000 }); // 5 minute timeout
       this.log("Playwright browsers installed", "success");
     } catch (error) {
-      this.log(
-        `Failed to install Playwright browsers: ${error.message}`,
-        "warning",
-      );
+      this.log(`Failed to install Playwright browsers: ${error.message}`, "warning");
     }
   }
 
@@ -268,10 +250,7 @@ MEMORY_FILE_PATH=\${HOME}/.cache/mcp-memory.json
   setupDirectories() {
     this.log("Setting up required directories...", "progress");
 
-    const directories = [
-      path.join(os.homedir(), ".cache"),
-      path.join(this.projectRoot, "reports"),
-    ];
+    const directories = [path.join(os.homedir(), ".cache"), path.join(this.projectRoot, "reports")];
 
     for (const dir of directories) {
       try {
@@ -282,10 +261,7 @@ MEMORY_FILE_PATH=\${HOME}/.cache/mcp-memory.json
           this.log(`Directory exists: ${dir}`, "info");
         }
       } catch (error) {
-        this.log(
-          `Failed to create directory ${dir}: ${error.message}`,
-          "warning",
-        );
+        this.log(`Failed to create directory ${dir}: ${error.message}`, "warning");
       }
     }
   }
@@ -308,9 +284,7 @@ MEMORY_FILE_PATH=\${HOME}/.cache/mcp-memory.json
     console.log("5. Get system status:");
     console.log("   just status");
     console.log("");
-    console.log(
-      "Documentation: https://github.com/LarsArtmann/template-mcp-config",
-    );
+    console.log("Documentation: https://github.com/LarsArtmann/template-mcp-config");
   }
 
   async run() {
@@ -342,9 +316,7 @@ MEMORY_FILE_PATH=\${HOME}/.cache/mcp-memory.json
       this.displayNextSteps();
     } catch (error) {
       this.log(`Setup failed: ${error.message}`, "error");
-      console.log(
-        "\nFor help, see: https://github.com/LarsArtmann/template-mcp-config/issues",
-      );
+      console.log("\nFor help, see: https://github.com/LarsArtmann/template-mcp-config/issues");
       process.exit(1);
     }
   }

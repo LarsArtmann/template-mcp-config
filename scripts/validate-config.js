@@ -95,9 +95,7 @@ class MCPValidator {
   validateServerConfigurations() {
     const config = JSON.parse(fs.readFileSync(this.mcpConfigPath, "utf8"));
 
-    for (const [serverName, serverConfig] of Object.entries(
-      config.mcpServers,
-    )) {
+    for (const [serverName, serverConfig] of Object.entries(config.mcpServers)) {
       this.test(`Server config: ${serverName}`, () => {
         // Remote servers (SSE endpoints)
         if (serverConfig.serverUrl) {
@@ -135,9 +133,7 @@ class MCPValidator {
 
   validateEnvironmentVariables() {
     if (!fs.existsSync(this.envPath)) {
-      this.warnings.push(
-        "Skipping environment validation - .env file not found",
-      );
+      this.warnings.push("Skipping environment validation - .env file not found");
       return;
     }
 
@@ -158,13 +154,10 @@ class MCPValidator {
       const hasToken =
         envVars.GITHUB_PERSONAL_ACCESS_TOKEN &&
         envVars.GITHUB_PERSONAL_ACCESS_TOKEN !== "your_token_here" &&
-        envVars.GITHUB_PERSONAL_ACCESS_TOKEN !==
-          "ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+        envVars.GITHUB_PERSONAL_ACCESS_TOKEN !== "ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
 
       if (hasGitHubServer && !hasToken) {
-        throw new Error(
-          "GitHub server configured but GITHUB_PERSONAL_ACCESS_TOKEN not set",
-        );
+        throw new Error("GitHub server configured but GITHUB_PERSONAL_ACCESS_TOKEN not set");
       }
 
       if (hasToken && !hasToken.startsWith("ghp_")) {
@@ -175,11 +168,9 @@ class MCPValidator {
     this.test("Turso configuration", () => {
       const hasTursoServer = config.mcpServers.turso;
       const hasUrl =
-        envVars.TURSO_DATABASE_URL &&
-        !envVars.TURSO_DATABASE_URL.includes("your-database");
+        envVars.TURSO_DATABASE_URL && !envVars.TURSO_DATABASE_URL.includes("your-database");
       const hasToken =
-        envVars.TURSO_AUTH_TOKEN &&
-        !envVars.TURSO_AUTH_TOKEN.includes("your-auth-token");
+        envVars.TURSO_AUTH_TOKEN && !envVars.TURSO_AUTH_TOKEN.includes("your-auth-token");
 
       if (hasTursoServer && (!hasUrl || !hasToken)) {
         return "Turso server configured but credentials incomplete (optional)";
@@ -258,10 +249,7 @@ class MCPValidator {
 
         paths.forEach((pathTemplate) => {
           // Expand environment variables
-          let expandedPath = pathTemplate.replace(
-            /\$\{HOME\}/g,
-            require("os").homedir(),
-          );
+          let expandedPath = pathTemplate.replace(/\$\{HOME\}/g, require("os").homedir());
 
           if (fs.existsSync(expandedPath)) {
             validPaths.push(expandedPath);

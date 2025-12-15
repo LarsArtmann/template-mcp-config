@@ -5,7 +5,7 @@ This guide provides detailed instructions for integrating the MCP template into 
 ## 📋 Table of Contents
 
 - [Integration Strategies](#-integration-strategies)
-- [Git Subtree Deep Dive](#-git-subtree-deep-dive)  
+- [Git Subtree Deep Dive](#-git-subtree-deep-dive)
 - [Git Submodule Deep Dive](#-git-submodule-deep-dive)
 - [Direct Copy Usage](#-direct-copy-usage)
 - [Customization Guide](#-customization-guide)
@@ -15,13 +15,13 @@ This guide provides detailed instructions for integrating the MCP template into 
 
 ### Decision Matrix
 
-| Use Case | Subtree | Submodule | Direct Copy |
-|----------|---------|-----------|-------------|
-| **Team collaboration** | ✅ Best | ⚠️ Complex | ❌ Manual sync |
-| **Frequent modifications** | ✅ Excellent | ⚠️ Complex | ✅ Simple |
-| **Contributing back** | ✅ Easy | ✅ Easy | ❌ Hard |
-| **Repository size** | ❌ Larger | ✅ Minimal | ⚠️ Medium |
-| **Setup complexity** | ⚠️ Medium | ❌ High | ✅ Simple |
+| Use Case                       | Subtree          | Submodule             | Direct Copy      |
+| ------------------------------ | ---------------- | --------------------- | ---------------- |
+| **Team collaboration**         | ✅ Best          | ⚠️ Complex            | ❌ Manual sync   |
+| **Frequent modifications**     | ✅ Excellent     | ⚠️ Complex            | ✅ Simple        |
+| **Contributing back**          | ✅ Easy          | ✅ Easy               | ❌ Hard          |
+| **Repository size**            | ❌ Larger        | ✅ Minimal            | ⚠️ Medium        |
+| **Setup complexity**           | ⚠️ Medium        | ❌ High               | ✅ Simple        |
 | **New contributor onboarding** | ✅ Zero friction | ❌ Requires knowledge | ✅ Zero friction |
 
 ## 🌳 Git Subtree Deep Dive
@@ -29,8 +29,9 @@ This guide provides detailed instructions for integrating the MCP template into 
 ### Why Choose Subtree?
 
 Git subtree is **recommended for most teams** because:
+
 - **Seamless cloning**: New team members get everything in one `git clone`
-- **Unified history**: Changes integrate naturally with your project history  
+- **Unified history**: Changes integrate naturally with your project history
 - **Easy modifications**: Edit files directly without complex workflows
 - **Optional updates**: Pull upstream changes only when you want them
 
@@ -71,7 +72,7 @@ git commit -m "Remove MCP template subtree"
 git clone https://your-org/your-project.git
 cd your-project
 
-# Configure environment and start using immediately  
+# Configure environment and start using immediately
 cp .env.example .env
 # Edit .env with your API keys
 # Restart MCP client - ready to go!
@@ -82,8 +83,9 @@ cp .env.example .env
 ### Why Choose Submodule?
 
 Choose submodules when:
+
 - **Strict versioning**: Need precise control over template versions
-- **Component architecture**: Template is treated as external dependency  
+- **Component architecture**: Template is treated as external dependency
 - **Repository size matters**: Keep main repo minimal
 - **Independent development**: Template and project evolve separately
 
@@ -116,7 +118,7 @@ git commit -m "Update MCP template to latest version"
 cd .mcp-template
 git checkout v1.2.0  # or specific commit hash
 cd ..
-git add .mcp-template  
+git add .mcp-template
 git commit -m "Pin MCP template to v1.2.0"
 
 # Update all submodules
@@ -142,6 +144,7 @@ git submodule update --init --recursive
 ### When to Use Direct Copy
 
 Perfect for:
+
 - **Quick experiments**: Testing MCP configurations
 - **Personal projects**: No team collaboration needed
 - **Learning**: Understanding MCP server configurations
@@ -239,7 +242,7 @@ Create multiple configuration files:
 cp .mcp.json .mcp.dev.json
 # Add development-only servers (like local databases)
 
-# Production configuration  
+# Production configuration
 cp .mcp.json .mcp.prod.json
 # Remove development servers, add production monitoring
 
@@ -253,6 +256,7 @@ ln -sf .mcp.prod.json .mcp.json   # Production
 ### Common Issues
 
 #### "Server not found" errors
+
 ```bash
 # Check if bunx can find the package
 bunx --help @upstash/context7-mcp
@@ -262,6 +266,7 @@ bunx --help @upstash/context7-mcp
 ```
 
 #### Environment variable not set
+
 ```bash
 # Check if variables are loaded
 echo $GITHUB_PERSONAL_ACCESS_TOKEN
@@ -271,6 +276,7 @@ set -a && source .env && set +a
 ```
 
 #### Subtree merge conflicts
+
 ```bash
 # Resolve conflicts manually, then:
 git add .
@@ -278,6 +284,7 @@ git commit -m "Resolve subtree merge conflicts"
 ```
 
 #### Submodule update failures
+
 ```bash
 # Reset submodule to known good state
 git submodule deinit .mcp-template

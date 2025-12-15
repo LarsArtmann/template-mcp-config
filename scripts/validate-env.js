@@ -96,10 +96,7 @@ function validateEnvironment() {
 
   // Check if .env file exists
   if (!envFile) {
-    log(
-      `⚠️ No .env file found. Copy .env.example to .env and configure:`,
-      COLORS.YELLOW,
-    );
+    log(`⚠️ No .env file found. Copy .env.example to .env and configure:`, COLORS.YELLOW);
     log(`   cp .env.example .env`, COLORS.BLUE);
     console.log("");
   } else {

@@ -133,10 +133,7 @@ class PerformanceBenchmark {
         } else if (killed) {
           log(`    ⏰ Timeout after ${formatTime(duration)}`, COLORS.YELLOW);
         } else {
-          log(
-            `    ❌ Failed (${exitCode}) after ${formatTime(duration)}`,
-            COLORS.RED,
-          );
+          log(`    ❌ Failed (${exitCode}) after ${formatTime(duration)}`, COLORS.RED);
         }
 
         resolve(result);
@@ -210,10 +207,7 @@ class PerformanceBenchmark {
 
     for (const [serverName, config] of Object.entries(mcpServers)) {
       if (config.command === "bunx") {
-        benchmarks[serverName] = await this.benchmarkMcpServerCheck(
-          serverName,
-          config,
-        );
+        benchmarks[serverName] = await this.benchmarkMcpServerCheck(serverName, config);
       }
     }
 
@@ -265,8 +259,7 @@ class PerformanceBenchmark {
 
   generateReport() {
     const totalServers = Object.keys(this.loadMcpConfig()).length;
-    const validationTime =
-      this.results.benchmarks.validation?.fullValidation?.duration || 0;
+    const validationTime = this.results.benchmarks.validation?.fullValidation?.duration || 0;
     const packageChecks = this.results.benchmarks.packageAccess || {};
 
     const packageCheckTimes = Object.values(packageChecks)
@@ -275,17 +268,14 @@ class PerformanceBenchmark {
 
     const avgPackageCheck =
       packageCheckTimes.length > 0
-        ? packageCheckTimes.reduce((a, b) => a + b, 0) /
-          packageCheckTimes.length
+        ? packageCheckTimes.reduce((a, b) => a + b, 0) / packageCheckTimes.length
         : 0;
 
     log(`\n${COLORS.BOLD}📊 PERFORMANCE ANALYSIS REPORT${COLORS.RESET}`);
     log(`${"=".repeat(50)}`);
 
     log(`\n${COLORS.BOLD}System Information:${COLORS.RESET}`);
-    log(
-      `  Platform: ${this.results.system.platform} ${this.results.system.arch}`,
-    );
+    log(`  Platform: ${this.results.system.platform} ${this.results.system.arch}`);
     log(`  CPUs: ${this.results.system.cpus}`);
     log(
       `  Memory: ${formatBytes(this.results.system.totalMemory)} total, ${formatBytes(this.results.system.freeMemory)} free`,
@@ -300,19 +290,11 @@ class PerformanceBenchmark {
     log(`\n${COLORS.BOLD}Performance Metrics:${COLORS.RESET}`);
     log(
       `  Full validation: ${formatTime(validationTime)}`,
-      validationTime > 2000
-        ? COLORS.RED
-        : validationTime > 1000
-          ? COLORS.YELLOW
-          : COLORS.GREEN,
+      validationTime > 2000 ? COLORS.RED : validationTime > 1000 ? COLORS.YELLOW : COLORS.GREEN,
     );
     log(
       `  Avg package check: ${formatTime(avgPackageCheck)}`,
-      avgPackageCheck > 5000
-        ? COLORS.RED
-        : avgPackageCheck > 2000
-          ? COLORS.YELLOW
-          : COLORS.GREEN,
+      avgPackageCheck > 5000 ? COLORS.RED : avgPackageCheck > 2000 ? COLORS.YELLOW : COLORS.GREEN,
     );
 
     // Performance issues identified
@@ -331,9 +313,7 @@ class PerformanceBenchmark {
     ).length;
 
     if (bunxServers > 0) {
-      issues.push(
-        `${bunxServers} servers use bunx -y (downloads every startup)`,
-      );
+      issues.push(`${bunxServers} servers use bunx -y (downloads every startup)`);
     }
 
     if (issues.length > 0) {
@@ -345,10 +325,7 @@ class PerformanceBenchmark {
 
     // Recommendations
     log(`\n${COLORS.BOLD}💡 Optimization Recommendations:${COLORS.RESET}`);
-    log(
-      `  1. Replace bunx -y with local node_modules dependencies`,
-      COLORS.GREEN,
-    );
+    log(`  1. Replace bunx -y with local node_modules dependencies`, COLORS.GREEN);
     log(`  2. Use npm/bun install for package management`, COLORS.GREEN);
     log(`  3. Implement package caching strategy`, COLORS.GREEN);
     log(`  4. Use parallel execution for independent operations`, COLORS.GREEN);
@@ -358,9 +335,7 @@ class PerformanceBenchmark {
   }
 
   async run() {
-    log(
-      `${COLORS.BOLD}🏎️ MCP Performance Benchmark Starting...${COLORS.RESET}\n`,
-    );
+    log(`${COLORS.BOLD}🏎️ MCP Performance Benchmark Starting...${COLORS.RESET}\n`);
 
     // Get system info
     this.results.system.bunVersion = await this.getBunVersion();
@@ -374,11 +349,7 @@ class PerformanceBenchmark {
     // Generate and save report
     const report = this.generateReport();
 
-    const reportPath = path.join(
-      process.cwd(),
-      "reports",
-      `performance-${Date.now()}.json`,
-    );
+    const reportPath = path.join(process.cwd(), "reports", `performance-${Date.now()}.json`);
     if (!fs.existsSync(path.dirname(reportPath))) {
       fs.mkdirSync(path.dirname(reportPath), { recursive: true });
     }

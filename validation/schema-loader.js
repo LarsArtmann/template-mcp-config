@@ -14,13 +14,7 @@ const Ajv = require("ajv");
 const addFormats = require("ajv-formats");
 
 // Schema file paths
-const SCHEMA_DIR = path.join(
-  __dirname,
-  "..",
-  "schemas",
-  "generated",
-  "json-schema",
-);
+const SCHEMA_DIR = path.join(__dirname, "..", "schemas", "generated", "json-schema");
 
 /**
  * Schema cache to avoid reloading
@@ -352,8 +346,7 @@ function formatValidationErrors(errors) {
   return errors.map((error) => {
     const path = error.instancePath || "root";
     const message = error.message || "Unknown error";
-    const value =
-      error.data !== undefined ? ` (got: ${JSON.stringify(error.data)})` : "";
+    const value = error.data !== undefined ? ` (got: ${JSON.stringify(error.data)})` : "";
 
     return `${path}: ${message}${value}`;
   });
@@ -380,17 +373,10 @@ function getAvailableSchemas() {
  * @returns {Object} Validation result with missing schemas
  */
 function validateSchemaAvailability() {
-  const requiredSchemas = [
-    "MCPConfiguration",
-    "MCPServer",
-    "StdioMCPServer",
-    "HttpMCPServer",
-  ];
+  const requiredSchemas = ["MCPConfiguration", "MCPServer", "StdioMCPServer", "HttpMCPServer"];
 
   const availableSchemas = getAvailableSchemas();
-  const missingSchemas = requiredSchemas.filter(
-    (schema) => !availableSchemas.includes(schema),
-  );
+  const missingSchemas = requiredSchemas.filter((schema) => !availableSchemas.includes(schema));
 
   return {
     valid: missingSchemas.length === 0,
@@ -421,9 +407,7 @@ if (require.main === module) {
     console.log(`📋 Schema availability check:`, availability);
 
     if (!availability.valid) {
-      console.error(
-        `❌ Missing schemas: ${availability.missingSchemas.join(", ")}`,
-      );
+      console.error(`❌ Missing schemas: ${availability.missingSchemas.join(", ")}`);
       process.exit(1);
     }
 
@@ -433,9 +417,7 @@ if (require.main === module) {
 
     // List available schemas
     const schemas = getAvailableSchemas();
-    console.log(
-      `📚 Available schemas (${schemas.length}): ${schemas.join(", ")}`,
-    );
+    console.log(`📚 Available schemas (${schemas.length}): ${schemas.join(", ")}`);
 
     // Test basic validation
     const testConfig = {

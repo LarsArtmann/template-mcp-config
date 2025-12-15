@@ -55,10 +55,7 @@ class MCPHealthChecker {
       memory: {
         total: Math.round((os.totalmem() / 1024 / 1024 / 1024) * 100) / 100,
         free: Math.round((os.freemem() / 1024 / 1024 / 1024) * 100) / 100,
-        used:
-          Math.round(
-            ((os.totalmem() - os.freemem()) / 1024 / 1024 / 1024) * 100,
-          ) / 100,
+        used: Math.round(((os.totalmem() - os.freemem()) / 1024 / 1024 / 1024) * 100) / 100,
       },
       uptime: Math.round(os.uptime() / 60), // minutes
       loadAverage: os.loadavg(),
@@ -107,9 +104,7 @@ class MCPHealthChecker {
             status: response.ok ? "healthy" : "unhealthy",
             responseTime,
             httpStatus: response.status,
-            message: response.ok
-              ? "Server responding"
-              : `HTTP ${response.status}`,
+            message: response.ok ? "Server responding" : `HTTP ${response.status}`,
             type: "remote",
             attempt: attemptNumber,
           });
@@ -119,24 +114,17 @@ class MCPHealthChecker {
           const responseTime = Date.now() - startTime;
 
           // Retry logic for remote servers
-          if (
-            attemptNumber < this.retryCount &&
-            !error.message.includes("abort")
-          ) {
+          if (attemptNumber < this.retryCount && !error.message.includes("abort")) {
             await this.sleep(this.retryDelay);
-            return this.checkRemoteServerHealth(
-              serverName,
-              config,
-              attemptNumber + 1,
-            ).then(resolve);
+            return this.checkRemoteServerHealth(serverName, config, attemptNumber + 1).then(
+              resolve,
+            );
           }
 
           resolve({
             status: "unhealthy",
             responseTime,
-            message: error.message.includes("abort")
-              ? "Timeout"
-              : error.message,
+            message: error.message.includes("abort") ? "Timeout" : error.message,
             type: "remote",
             attempt: attemptNumber,
           });
@@ -169,11 +157,7 @@ class MCPHealthChecker {
         // Retry logic for local servers
         if (attemptNumber < this.retryCount) {
           setTimeout(() => {
-            this.checkLocalServerHealth(
-              serverName,
-              config,
-              attemptNumber + 1,
-            ).then(resolve);
+            this.checkLocalServerHealth(serverName, config, attemptNumber + 1).then(resolve);
           }, this.retryDelay);
           return;
         }
@@ -212,11 +196,7 @@ class MCPHealthChecker {
         // Retry if unhealthy and attempts remaining
         if (!isHealthy && attemptNumber < this.retryCount) {
           await this.sleep(this.retryDelay);
-          return this.checkLocalServerHealth(
-            serverName,
-            config,
-            attemptNumber + 1,
-          ).then(resolve);
+          return this.checkLocalServerHealth(serverName, config, attemptNumber + 1).then(resolve);
         }
 
         resolve({
@@ -236,11 +216,7 @@ class MCPHealthChecker {
         // Retry on process errors (except ENOENT which means command not found)
         if (!error.code === "ENOENT" && attemptNumber < this.retryCount) {
           await this.sleep(this.retryDelay);
-          return this.checkLocalServerHealth(
-            serverName,
-            config,
-            attemptNumber + 1,
-          ).then(resolve);
+          return this.checkLocalServerHealth(serverName, config, attemptNumber + 1).then(resolve);
         }
 
         resolve({
@@ -323,10 +299,7 @@ class MCPHealthChecker {
   checkGitHubAuth() {
     const token = process.env.GITHUB_PERSONAL_ACCESS_TOKEN;
     const isConfigured =
-      token &&
-      token !== "your_token_here" &&
-      !token.includes("xxxx") &&
-      token.startsWith("ghp_");
+      token && token !== "your_token_here" && !token.includes("xxxx") && token.startsWith("ghp_");
 
     return {
       configured: isConfigured,
@@ -339,10 +312,7 @@ class MCPHealthChecker {
     const token = process.env.TURSO_AUTH_TOKEN;
 
     const isConfigured =
-      url &&
-      token &&
-      !url.includes("your-database") &&
-      !token.includes("your-auth-token");
+      url && token && !url.includes("your-database") && !token.includes("your-auth-token");
 
     return {
       configured: isConfigured,
@@ -455,9 +425,7 @@ class MCPHealthChecker {
         resolve({
           installed: browsersInstalled,
           status: browsersInstalled ? "healthy" : "needs_installation",
-          message: browsersInstalled
-            ? "Browsers available"
-            : "Run: bunx playwright install",
+          message: browsersInstalled ? "Browsers available" : "Run: bunx playwright install",
         });
       });
 
@@ -474,22 +442,17 @@ class MCPHealthChecker {
 
   checkMemoryStorage(config) {
     const memoryPath =
-      config.env?.MEMORY_FILE_PATH?.replace(
-        /\$\{HOME\}/g,
-        require("os").homedir(),
-      ) || path.join(require("os").homedir(), ".cache", "mcp-memory.json");
+      config.env?.MEMORY_FILE_PATH?.replace(/\$\{HOME\}/g, require("os").homedir()) ||
+      path.join(require("os").homedir(), ".cache", "mcp-memory.json");
 
     const cacheDir = path.dirname(memoryPath);
-    const canWrite =
-      fs.existsSync(cacheDir) || this.canCreateDirectory(cacheDir);
+    const canWrite = fs.existsSync(cacheDir) || this.canCreateDirectory(cacheDir);
 
     return {
       writable: canWrite,
       status: canWrite ? "healthy" : "needs_setup",
       path: memoryPath,
-      message: canWrite
-        ? "Storage accessible"
-        : "Cache directory not accessible",
+      message: canWrite ? "Storage accessible" : "Cache directory not accessible",
     };
   }
 
@@ -515,9 +478,7 @@ class MCPHealthChecker {
     return {
       configured: hasSSHKeys,
       status: hasSSHKeys ? "healthy" : "optional",
-      message: hasSSHKeys
-        ? "SSH keys available"
-        : "No SSH keys found (optional)",
+      message: hasSSHKeys ? "SSH keys available" : "No SSH keys found (optional)",
     };
   }
 
@@ -538,21 +499,14 @@ class MCPHealthChecker {
         }
 
         // Add capability checks
-        health.capabilities = await this.checkServerCapabilities(
-          serverName,
-          serverConfig,
-        );
+        health.capabilities = await this.checkServerCapabilities(serverName, serverConfig);
         health.timestamp = new Date().toISOString();
 
         this.healthData[serverName] = health;
 
         const statusIcon = health.status === "healthy" ? "✅" : "❌";
-        const responseTime = health.responseTime
-          ? `(${health.responseTime}ms)`
-          : "";
-        this.log(
-          `${statusIcon} ${serverName}: ${health.message} ${responseTime}`,
-        );
+        const responseTime = health.responseTime ? `(${health.responseTime}ms)` : "";
+        this.log(`${statusIcon} ${serverName}: ${health.message} ${responseTime}`);
       } catch (error) {
         this.healthData[serverName] = {
           status: "error",
@@ -600,9 +554,7 @@ class MCPHealthChecker {
     }
 
     if (responseTimeCount > 0) {
-      report.summary.avgResponseTime = Math.round(
-        totalResponseTime / responseTimeCount,
-      );
+      report.summary.avgResponseTime = Math.round(totalResponseTime / responseTimeCount);
     }
 
     return report;
@@ -611,14 +563,10 @@ class MCPHealthChecker {
   displayHealthSummary(report) {
     console.log("\n💚 MCP Health Summary");
     console.log("====================");
-    console.log(
-      `Servers: ${report.summary.healthy}/${report.summary.total} healthy`,
-    );
+    console.log(`Servers: ${report.summary.healthy}/${report.summary.total} healthy`);
     console.log(`Average response time: ${report.summary.avgResponseTime}ms`);
     console.log(`System uptime: ${report.system.uptime} minutes`);
-    console.log(
-      `Memory usage: ${report.system.memory.used}/${report.system.memory.total} GB`,
-    );
+    console.log(`Memory usage: ${report.system.memory.used}/${report.system.memory.total} GB`);
 
     if (report.summary.unhealthy > 0) {
       console.log("\n❌ Unhealthy servers:");

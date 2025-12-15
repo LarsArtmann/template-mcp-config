@@ -1,14 +1,17 @@
 # MCP Configuration Session Prompt Template
+
 **Date:** 2025-08-10 22:17  
 **Session:** MCP Config Template Development  
-**Agent:** GitHub Documentation Manager  
+**Agent:** GitHub Documentation Manager
 
 ## 🎯 Session Context
+
 This prompt template captures the systematic approach used to create proper documentation structure and close GitHub issues for the MCP configuration template project.
 
 ## 📋 Prompt Template
 
 ### Role Definition
+
 ```
 You are Agent 4: GITHUB DOCUMENTATION MANAGER
 
@@ -16,27 +19,30 @@ You are Agent 4: GITHUB DOCUMENTATION MANAGER
 ```
 
 ### Task Structure
+
 ```
 **YOUR TASKS:**
 1. Create docs/ folder structure:
-   ```
-   docs/
-   ├── complaints/
-   ├── learnings/
-   ├── prompts/
-   └── architecture-understanding/
-   ```
+```
+
+docs/
+├── complaints/
+├── learnings/
+├── prompts/
+└── architecture-understanding/
+
+```
 
 2. Create complaint report at docs/complaints/[DATE]_[TIME]-[PROJECT]-session.md about:
-   - Missing information about which servers actually work
-   - Confusing multiple config files
-   - Unclear integration points
+- Missing information about which servers actually work
+- Confusing multiple config files
+- Unclear integration points
 
 3. Create learnings at docs/learnings/[DATE]_[TIME]-[PROJECT]-session.md:
-   - Test everything before claiming it works
-   - Don't create excessive documentation files
-   - Use built schemas if you create them
-   - One source of truth principle
+- Test everything before claiming it works
+- Don't create excessive documentation files
+- Use built schemas if you create them
+- One source of truth principle
 
 4. Create prompt template at docs/prompts/[DATE]_[TIME]-[PROJECT]-session.md
 
@@ -44,6 +50,7 @@ You are Agent 4: GITHUB DOCUMENTATION MANAGER
 ```
 
 ### Success Criteria Template
+
 ```
 **SUCCESS CRITERIA:**
 - Proper docs/ structure created
@@ -54,6 +61,7 @@ You are Agent 4: GITHUB DOCUMENTATION MANAGER
 ```
 
 ### Working Context Template
+
 ```
 **WORKING DIRECTORY:** [PROJECT_PATH]
 **GITHUB ISSUE:** #[ISSUE_NUMBER]
@@ -63,6 +71,7 @@ You are Agent 4: GITHUB DOCUMENTATION MANAGER
 ## 🔧 Reusable Components
 
 ### Complaint Report Structure
+
 ```markdown
 # [Project] Session Complaints Report
 **Date:** [DATE]
@@ -84,6 +93,7 @@ You are Agent 4: GITHUB DOCUMENTATION MANAGER
 ```
 
 ### Learnings Document Structure
+
 ```markdown
 # [Project] Session Learnings
 **Date:** [DATE]
@@ -103,12 +113,13 @@ You are Agent 4: GITHUB DOCUMENTATION MANAGER
 ```
 
 ### GitHub Issue Closing Template
+
 ```markdown
 ## Work Completed ✅
 
 ### Documentation Structure Created
 - [x] Created docs/ folder structure
-- [x] Added complaints/ subdirectory  
+- [x] Added complaints/ subdirectory
 - [x] Added learnings/ subdirectory
 - [x] Added prompts/ subdirectory
 - [x] Added architecture-understanding/ subdirectory
@@ -138,28 +149,33 @@ Closing as documentation structure is complete and provides framework for ongoin
 ## 🎨 Customization Guidelines
 
 ### For Different Project Types
+
 - **MCP Projects:** Focus on server validation and configuration issues
 - **API Projects:** Emphasize endpoint testing and documentation
 - **Frontend Projects:** Highlight user experience and component organization
 - **DevOps Projects:** Focus on deployment reliability and monitoring
 
 ### For Different Agent Roles
+
 - **Documentation Manager:** Structure and organization focus
-- **Quality Assurance:** Testing and validation emphasis  
+- **Quality Assurance:** Testing and validation emphasis
 - **Architecture:** System design and integration points
 - **User Experience:** Usability and workflow optimization
 
 ## 📊 Metrics and Tracking
 
 ### Documentation Quality Metrics
+
 - Time to find information (target: <2 minutes)
 - Documentation accuracy (target: >95%)
 - User satisfaction with clarity (target: 4.5/5)
 
 ### Process Improvement Metrics
+
 - Issues prevented by learnings application
 - Time saved on similar future tasks
 - Reduction in repeated mistakes
 
 ---
-*This prompt template enables consistent, high-quality documentation management across different projects and sessions.*
+
+_This prompt template enables consistent, high-quality documentation management across different projects and sessions._

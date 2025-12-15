@@ -12,15 +12,18 @@ MCP servers can communicate through different transport mechanisms. This templat
 ## STDIO Transport (Standard I/O)
 
 ### Description
+
 STDIO transport is the standard communication method for MCP servers. It uses stdin (standard input) and stdout (standard output) for bidirectional communication between the client and server.
 
 ### How It Works
+
 1. Client launches server process using `command` and `args`
 2. Server runs as a child process of the MCP client
 3. Communication flows through stdin/stdout pipes
 4. Server lifecycle is managed by the client process
 
 ### Configuration Pattern
+
 ```json
 {
   "server-name": {
@@ -34,6 +37,7 @@ STDIO transport is the standard communication method for MCP servers. It uses st
 ```
 
 ### Used By These Servers (17/18)
+
 - context7: `bunx -y @upstash/context7-mcp@latest`
 - github: `bunx -y @modelcontextprotocol/server-github`
 - filesystem: `bunx -y @modelcontextprotocol/server-filesystem`
@@ -54,6 +58,7 @@ STDIO transport is the standard communication method for MCP servers. It uses st
 - youtube-transcript: `bunx -y @modelcontextprotocol/server-youtube-transcript`
 
 ### Advantages
+
 - **Process isolation**: Each server runs in its own process
 - **Resource management**: Client can monitor and control server resources
 - **Error isolation**: Server crashes don't affect other servers
@@ -61,6 +66,7 @@ STDIO transport is the standard communication method for MCP servers. It uses st
 - **Local execution**: No network overhead or security concerns
 
 ### Best For
+
 - Local development environments
 - Desktop applications (Claude Desktop, Cursor, VS Code)
 - Servers requiring file system access
@@ -69,15 +75,18 @@ STDIO transport is the standard communication method for MCP servers. It uses st
 ## SSE Transport (Server-Sent Events)
 
 ### Description
+
 SSE transport uses HTTP Server-Sent Events for communication. Instead of launching a local process, the client connects to a remote HTTP endpoint that streams MCP protocol messages.
 
 ### How It Works
+
 1. Client connects to the specified `serverUrl` endpoint
 2. Server streams MCP protocol messages via HTTP SSE
 3. Bidirectional communication over HTTP connection
 4. Server runs independently of client process
 
 ### Configuration Pattern
+
 ```json
 {
   "server-name": {
@@ -87,9 +96,11 @@ SSE transport uses HTTP Server-Sent Events for communication. Instead of launchi
 ```
 
 ### Used By These Servers (1/18)
+
 - deepwiki: `https://mcp.deepwiki.com/sse`
 
 ### Advantages
+
 - **Remote execution**: Server can run anywhere with HTTP access
 - **Web integration**: Perfect for browser-based applications
 - **Scalability**: Server can handle multiple clients
@@ -97,12 +108,14 @@ SSE transport uses HTTP Server-Sent Events for communication. Instead of launchi
 - **Cross-platform**: Works in any environment with HTTP support
 
 ### Considerations
+
 - **Network dependency**: Requires stable internet connection
-- **Latency**: Network round-trip time affects performance  
+- **Latency**: Network round-trip time affects performance
 - **Security**: Relies on HTTPS and server authentication
 - **Availability**: Dependent on remote server uptime
 
 ### Best For
+
 - Web-based MCP clients
 - Remote or cloud-based services
 - Shared services across multiple users
@@ -111,6 +124,7 @@ SSE transport uses HTTP Server-Sent Events for communication. Instead of launchi
 ## When to Use Each Protocol
 
 ### Choose STDIO Transport When:
+
 - Building for desktop applications
 - Need direct file system access
 - Want process isolation and resource control
@@ -119,6 +133,7 @@ SSE transport uses HTTP Server-Sent Events for communication. Instead of launchi
 - Need to work offline
 
 ### Choose SSE Transport When:
+
 - Building web-based applications
 - Need to share services across multiple users
 - Server requires specialized cloud infrastructure
@@ -129,6 +144,7 @@ SSE transport uses HTTP Server-Sent Events for communication. Instead of launchi
 ## Implementation Examples
 
 ### Adding a New STDIO Server
+
 ```json
 {
   "my-new-server": {
@@ -143,6 +159,7 @@ SSE transport uses HTTP Server-Sent Events for communication. Instead of launchi
 ```
 
 ### Adding a New SSE Server
+
 ```json
 {
   "my-remote-server": {
@@ -157,12 +174,14 @@ SSE transport uses HTTP Server-Sent Events for communication. Instead of launchi
 ## Security Considerations
 
 ### STDIO Transport Security
+
 - Servers run with client process permissions
 - Environment variables passed to server process
 - File system access limited by server implementation
 - Process isolation provides security boundaries
 
 ### SSE Transport Security
+
 - Communication over HTTPS recommended
 - Authentication typically via headers or URL parameters
 - Server certificate validation by HTTP client
@@ -171,12 +190,14 @@ SSE transport uses HTTP Server-Sent Events for communication. Instead of launchi
 ## Troubleshooting
 
 ### STDIO Transport Issues
+
 - **Server not starting**: Check command path and permissions
 - **Communication errors**: Verify stdin/stdout are not being used by other code
 - **Environment variables**: Ensure all required variables are set
 - **Process crashes**: Check server logs and resource usage
 
 ### SSE Transport Issues
+
 - **Connection failures**: Verify URL accessibility and network connectivity
 - **Authentication errors**: Check headers and credentials
 - **Protocol errors**: Ensure server implements MCP over SSE correctly
@@ -185,12 +206,14 @@ SSE transport uses HTTP Server-Sent Events for communication. Instead of launchi
 ## Migration Between Protocols
 
 ### STDIO to SSE
+
 1. Deploy server to cloud infrastructure
 2. Implement SSE endpoint for MCP protocol
 3. Update configuration to use `serverUrl`
 4. Remove `command`, `args`, and local `env` settings
 
 ### SSE to STDIO
+
 1. Package server as installable npm package
 2. Implement STDIO transport in server
 3. Update configuration to use `command` and `args`

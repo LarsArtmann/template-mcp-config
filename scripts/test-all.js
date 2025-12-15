@@ -244,9 +244,7 @@ class UnifiedMCPTester {
           clearTimeout(timeoutId);
           resolve({
             success: false,
-            message: error.message.includes("abort")
-              ? "Timeout"
-              : error.message,
+            message: error.message.includes("abort") ? "Timeout" : error.message,
             error: error.message,
           });
         });
@@ -373,10 +371,7 @@ class UnifiedMCPTester {
     let accessiblePaths = 0;
 
     for (const pathTemplate of paths) {
-      const expandedPath = pathTemplate.replace(
-        /\$\{HOME\}/g,
-        require("os").homedir(),
-      );
+      const expandedPath = pathTemplate.replace(/\$\{HOME\}/g, require("os").homedir());
       if (fs.existsSync(expandedPath)) {
         accessiblePaths++;
       }
@@ -423,10 +418,8 @@ class UnifiedMCPTester {
 
   async testMemoryStorage(config) {
     const memoryPath =
-      config.env?.MEMORY_FILE_PATH?.replace(
-        /\$\{HOME\}/g,
-        require("os").homedir(),
-      ) || path.join(require("os").homedir(), ".cache", "mcp-memory.json");
+      config.env?.MEMORY_FILE_PATH?.replace(/\$\{HOME\}/g, require("os").homedir()) ||
+      path.join(require("os").homedir(), ".cache", "mcp-memory.json");
 
     const cacheDir = path.dirname(memoryPath);
     try {
@@ -486,10 +479,7 @@ class UnifiedMCPTester {
       };
     }
 
-    if (
-      url.includes("your-database-name") ||
-      token === "your-auth-token-here"
-    ) {
+    if (url.includes("your-database-name") || token === "your-auth-token-here") {
       return {
         success: false,
         message: "Turso configuration contains placeholders",
@@ -569,10 +559,7 @@ class UnifiedMCPTester {
     }
 
     for (const [batchIndex, batch] of batches.entries()) {
-      this.log(
-        `Processing batch ${batchIndex + 1}/${batches.length}...`,
-        "progress",
-      );
+      this.log(`Processing batch ${batchIndex + 1}/${batches.length}...`, "progress");
 
       const batchPromises = batch.map(async ([serverName, serverConfig]) => {
         const requirements = serverRequirements[serverName] || {
@@ -589,22 +576,12 @@ class UnifiedMCPTester {
         );
 
         // Test the server (with retry logic)
-        let result = await this.testSingleServer(
-          serverName,
-          serverConfig,
-          requirements,
-          1,
-        );
+        let result = await this.testSingleServer(serverName, serverConfig, requirements, 1);
 
         // Retry failed tests if configured
         if (!result.success && this.retryCount > 0) {
           this.log(`Retrying ${serverName}...`, "warning");
-          result = await this.testSingleServer(
-            serverName,
-            serverConfig,
-            requirements,
-            2,
-          );
+          result = await this.testSingleServer(serverName, serverConfig, requirements, 2);
         }
 
         // Store comprehensive result
@@ -619,15 +596,9 @@ class UnifiedMCPTester {
 
         // Log result
         if (result.success) {
-          this.log(
-            `${serverName}: ${result.message} (${result.duration}ms)`,
-            "success",
-          );
+          this.log(`${serverName}: ${result.message} (${result.duration}ms)`, "success");
         } else {
-          this.log(
-            `${serverName}: ${result.message} (${result.duration}ms)`,
-            "error",
-          );
+          this.log(`${serverName}: ${result.message} (${result.duration}ms)`, "error");
         }
 
         return this.results[serverName];
@@ -655,18 +626,14 @@ class UnifiedMCPTester {
       `✅ Successful: ${successful.length}/${total} (${Math.round((successful.length / total) * 100)}%)`,
     );
     console.log(`❌ Failed: ${failed.length}/${total}`);
-    console.log(
-      `🔥 Critical: ${critical.length} (${criticalFailed.length} failed)`,
-    );
+    console.log(`🔥 Critical: ${critical.length} (${criticalFailed.length} failed)`);
     console.log(`⏱️  Total Time: ${Math.round(totalTime / 1000)}s`);
     console.log(`⚡ Avg per Server: ${avgTime}ms`);
 
     if (criticalFailed.length > 0) {
       console.log("\n🚨 CRITICAL FAILURES:");
       criticalFailed.forEach((server) => {
-        const name = Object.keys(this.results).find(
-          (k) => this.results[k] === server,
-        );
+        const name = Object.keys(this.results).find((k) => this.results[k] === server);
         console.log(`   ❌ ${name}: ${server.message}`);
       });
     }
@@ -674,9 +641,7 @@ class UnifiedMCPTester {
     if (failed.length > 0) {
       console.log("\n❌ Failed Servers:");
       failed.forEach((server) => {
-        const name = Object.keys(this.results).find(
-          (k) => this.results[k] === server,
-        );
+        const name = Object.keys(this.results).find((k) => this.results[k] === server);
         console.log(`   ❌ ${name}: ${server.message}`);
       });
     }
@@ -684,9 +649,7 @@ class UnifiedMCPTester {
     if (successful.length > 0) {
       console.log("\n✅ Working Servers:");
       successful.forEach((server) => {
-        const name = Object.keys(this.results).find(
-          (k) => this.results[k] === server,
-        );
+        const name = Object.keys(this.results).find((k) => this.results[k] === server);
         const criticalTag = server.critical ? " (CRITICAL)" : "";
         console.log(`   ✅ ${name}: ${server.message}${criticalTag}`);
       });
@@ -717,10 +680,7 @@ class UnifiedMCPTester {
       details: this.results,
     };
 
-    const reportPath = path.join(
-      this.projectRoot,
-      `test-results-${Date.now()}.json`,
-    );
+    const reportPath = path.join(this.projectRoot, `test-results-${Date.now()}.json`);
     fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
 
     this.log(`Detailed report saved: ${reportPath}`, "info");

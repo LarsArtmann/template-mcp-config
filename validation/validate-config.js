@@ -67,10 +67,7 @@ async function validateMCPConfig(configPath = DEFAULT_CONFIG_PATH) {
 
   try {
     // 1. Validate file structure and JSON schema
-    const config = await validateStructure(
-      configPath,
-      result.details.structure,
-    );
+    const config = await validateStructure(configPath, result.details.structure);
     if (!result.details.structure.valid) {
       result.valid = false;
       result.errors.push(...result.details.structure.errors);
@@ -95,14 +92,9 @@ async function validateMCPConfig(configPath = DEFAULT_CONFIG_PATH) {
 
     // 4. Test server connectivity (optional, non-blocking)
     try {
-      await validateConnectivity(
-        config.mcpServers,
-        result.details.connectivity,
-      );
+      await validateConnectivity(config.mcpServers, result.details.connectivity);
     } catch (error) {
-      result.details.connectivity.warnings.push(
-        `Connectivity tests failed: ${error.message}`,
-      );
+      result.details.connectivity.warnings.push(`Connectivity tests failed: ${error.message}`);
     }
     result.warnings.push(...result.details.connectivity.warnings);
 
@@ -156,13 +148,9 @@ async function validateStructure(configPath, result) {
     if (!schemaResult.valid) {
       result.valid = false;
       const formattedErrors = formatValidationErrors(schemaResult.errors);
-      result.errors.push(
-        ...formattedErrors.map((error) => `Schema validation: ${error}`),
-      );
+      result.errors.push(...formattedErrors.map((error) => `Schema validation: ${error}`));
 
-      console.log(
-        `❌ Schema validation failed with ${formattedErrors.length} errors`,
-      );
+      console.log(`❌ Schema validation failed with ${formattedErrors.length} errors`);
       formattedErrors.forEach((error) => console.log(`   • ${error}`));
       return null;
     }
@@ -191,9 +179,7 @@ async function validateStructure(configPath, result) {
 
     // Check for missing or unexpected servers (warnings only)
     const configuredServers = Object.keys(config.mcpServers);
-    const missingServers = expectedServers.filter(
-      (server) => !configuredServers.includes(server),
-    );
+    const missingServers = expectedServers.filter((server) => !configuredServers.includes(server));
     const unexpectedServers = configuredServers.filter(
       (server) => !expectedServers.includes(server),
     );
@@ -203,15 +189,11 @@ async function validateStructure(configPath, result) {
     }
 
     if (unexpectedServers.length > 0) {
-      console.log(
-        `⚠️ Unexpected servers found: ${unexpectedServers.join(", ")}`,
-      );
+      console.log(`⚠️ Unexpected servers found: ${unexpectedServers.join(", ")}`);
     }
 
     console.log(`✅ Schema validation passed for ${serverCount} servers`);
-    console.log(
-      `📋 Found ${serverCount} configured servers (expected ${expectedServers.length})`,
-    );
+    console.log(`📋 Found ${serverCount} configured servers (expected ${expectedServers.length})`);
     return config;
   } catch (error) {
     result.valid = false;
@@ -231,9 +213,7 @@ async function validateServers(servers, result) {
   const validationPromises = [];
 
   for (const [serverName, serverConfig] of Object.entries(servers)) {
-    validationPromises.push(
-      validateSingleServer(serverName, serverConfig, result, validator),
-    );
+    validationPromises.push(validateSingleServer(serverName, serverConfig, result, validator));
   }
 
   await Promise.all(validationPromises);
@@ -250,12 +230,7 @@ async function validateServers(servers, result) {
  * @param {Object} result
  * @param {Object} validator - Pre-created validator instance
  */
-async function validateSingleServer(
-  serverName,
-  serverConfig,
-  result,
-  validator = null,
-) {
+async function validateSingleServer(serverName, serverConfig, result, validator = null) {
   try {
     // Use TypeSpec schema validation first
     const ajv = validator || createValidator();
@@ -277,10 +252,7 @@ async function validateSingleServer(
     // Special validation for specific servers
     if (isHttpServer) {
       // Special validation for SSE servers
-      if (
-        serverName === "deepwiki" &&
-        !serverConfig.serverUrl.includes("sse")
-      ) {
+      if (serverName === "deepwiki" && !serverConfig.serverUrl.includes("sse")) {
         result.warnings.push(
           `Server "${serverName}": URL should include 'sse' for Server-Sent Events`,
         );
@@ -296,8 +268,7 @@ async function validateSingleServer(
         playwright: "@playwright/mcp",
         puppeteer: "@modelcontextprotocol/server-puppeteer",
         memory: "@modelcontextprotocol/server-memory",
-        "sequential-thinking":
-          "@modelcontextprotocol/server-sequential-thinking",
+        "sequential-thinking": "@modelcontextprotocol/server-sequential-thinking",
         everything: "@modelcontextprotocol/server-everything",
         kubernetes: "mcp-server-kubernetes",
         ssh: "@modelcontextprotocol/server-ssh",
@@ -309,9 +280,7 @@ async function validateSingleServer(
 
       if (expectedPackages[serverName] && serverConfig.args) {
         const expectedPackage = expectedPackages[serverName];
-        const hasCorrectPackage = serverConfig.args.some((arg) =>
-          arg.includes(expectedPackage),
-        );
+        const hasCorrectPackage = serverConfig.args.some((arg) => arg.includes(expectedPackage));
         if (!hasCorrectPackage) {
           result.warnings.push(
             `Server "${serverName}": Expected package "${expectedPackage}" in args`,
@@ -332,9 +301,7 @@ async function validateSingleServer(
     }
   } catch (error) {
     result.valid = false;
-    result.errors.push(
-      `Server "${serverName}": Validation failed - ${error.message}`,
-    );
+    result.errors.push(`Server "${serverName}": Validation failed - ${error.message}`);
   }
 }
 
@@ -412,25 +379,16 @@ async function validateEnvironment(servers, result) {
 
   if (missingRequired.length > 0) {
     result.valid = false;
-    result.errors.push(
-      `Missing required environment variables: ${missingRequired.join(", ")}`,
-    );
+    result.errors.push(`Missing required environment variables: ${missingRequired.join(", ")}`);
   }
 
   if (missingOptional.length > 0) {
-    result.warnings.push(
-      `Missing optional environment variables: ${missingOptional.join(", ")}`,
-    );
+    result.warnings.push(`Missing optional environment variables: ${missingOptional.join(", ")}`);
   }
 
   // Check for .env file if environment variables are missing
-  if (
-    (missingRequired.length > 0 || missingOptional.length > 0) &&
-    fs.existsSync(ENV_FILE_PATH)
-  ) {
-    result.warnings.push(
-      "Found .env file - make sure to load it before running MCP servers",
-    );
+  if ((missingRequired.length > 0 || missingOptional.length > 0) && fs.existsSync(ENV_FILE_PATH)) {
+    result.warnings.push("Found .env file - make sure to load it before running MCP servers");
   }
 
   // Additional validation for specific environment variables
@@ -462,9 +420,7 @@ function validateSpecificEnvVars(result) {
         'GITHUB_PERSONAL_ACCESS_TOKEN should start with "ghp_" for personal access tokens',
       );
     } else if (githubToken.length !== 40) {
-      result.warnings.push(
-        "GITHUB_PERSONAL_ACCESS_TOKEN should be 40 characters long",
-      );
+      result.warnings.push("GITHUB_PERSONAL_ACCESS_TOKEN should be 40 characters long");
     }
   }
 
@@ -481,18 +437,14 @@ function validateSpecificEnvVars(result) {
     } else if (!tursoUrl.startsWith("libsql://")) {
       result.warnings.push('TURSO_DATABASE_URL should start with "libsql://"');
     } else if (!tursoUrl.includes(".turso.io")) {
-      result.warnings.push(
-        'TURSO_DATABASE_URL should include ".turso.io" domain',
-      );
+      result.warnings.push('TURSO_DATABASE_URL should include ".turso.io" domain');
     }
   }
 
   const tursoToken = process.env.TURSO_AUTH_TOKEN;
   if (tursoToken) {
     if (tursoToken === "your-auth-token-here") {
-      result.warnings.push(
-        "TURSO_AUTH_TOKEN appears to be a placeholder - update with real token",
-      );
+      result.warnings.push("TURSO_AUTH_TOKEN appears to be a placeholder - update with real token");
     }
   }
 
@@ -509,10 +461,7 @@ function validateSpecificEnvVars(result) {
   // Kubernetes config validation
   const kubeconfig = process.env.KUBECONFIG;
   if (kubeconfig) {
-    const expandedPath = kubeconfig.replace(
-      /\$\{HOME\}/g,
-      require("os").homedir(),
-    );
+    const expandedPath = kubeconfig.replace(/\$\{HOME\}/g, require("os").homedir());
     if (!require("fs").existsSync(expandedPath)) {
       result.warnings.push(`KUBECONFIG file not found: ${expandedPath}`);
     }
@@ -532,9 +481,7 @@ async function validateConnectivity(servers, result) {
   for (const [serverName, serverConfig] of Object.entries(servers)) {
     if (serverConfig.serverUrl) {
       // Test HTTP server connectivity
-      connectivityTests.push(
-        testHttpServer(serverName, serverConfig.serverUrl, result),
-      );
+      connectivityTests.push(testHttpServer(serverName, serverConfig.serverUrl, result));
     } else if (serverConfig.command) {
       // Test stdio server command availability
       connectivityTests.push(testStdioServer(serverName, serverConfig, result));
@@ -550,9 +497,7 @@ async function validateConnectivity(servers, result) {
     }
   });
 
-  console.log(
-    `🔗 Connectivity tests: ${successCount}/${results.length} servers reachable`,
-  );
+  console.log(`🔗 Connectivity tests: ${successCount}/${results.length} servers reachable`);
 }
 
 /**
@@ -564,8 +509,7 @@ async function validateConnectivity(servers, result) {
 async function testHttpServer(serverName, serverUrl, result) {
   try {
     const url = new URL(serverUrl);
-    const https =
-      url.protocol === "https:" ? require("https") : require("http");
+    const https = url.protocol === "https:" ? require("https") : require("http");
 
     return new Promise((resolve, reject) => {
       const options = {
@@ -580,17 +524,13 @@ async function testHttpServer(serverName, serverUrl, result) {
         if (res.statusCode < 400) {
           resolve();
         } else {
-          result.warnings.push(
-            `Server "${serverName}": HTTP ${res.statusCode} from ${serverUrl}`,
-          );
+          result.warnings.push(`Server "${serverName}": HTTP ${res.statusCode} from ${serverUrl}`);
           resolve();
         }
       });
 
       req.on("error", (error) => {
-        result.warnings.push(
-          `Server "${serverName}": Connection failed - ${error.message}`,
-        );
+        result.warnings.push(`Server "${serverName}": Connection failed - ${error.message}`);
         resolve();
       });
 
@@ -603,9 +543,7 @@ async function testHttpServer(serverName, serverUrl, result) {
       req.end();
     });
   } catch (error) {
-    result.warnings.push(
-      `Server "${serverName}": Connectivity test failed - ${error.message}`,
-    );
+    result.warnings.push(`Server "${serverName}": Connectivity test failed - ${error.message}`);
   }
 }
 

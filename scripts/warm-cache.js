@@ -71,10 +71,7 @@ async function ensurePackageInstalled(packageName) {
     });
 
     installCommand.on("error", (error) => {
-      log(
-        `    ❌ Error installing ${packageName}: ${error.message}`,
-        COLORS.RED,
-      );
+      log(`    ❌ Error installing ${packageName}: ${error.message}`, COLORS.RED);
       resolve(false);
     });
   });
@@ -101,10 +98,7 @@ async function main() {
   });
 
   if (!installSuccess) {
-    log(
-      `❌ Failed to install dependencies. Please check your package.json`,
-      COLORS.RED,
-    );
+    log(`❌ Failed to install dependencies. Please check your package.json`, COLORS.RED);
     process.exit(1);
   }
 
@@ -158,25 +152,16 @@ async function main() {
   }
 
   log(`\n${COLORS.BOLD}🚀 Performance Benefits Achieved:${COLORS.RESET}`);
-  log(
-    `✅ Eliminated bunx -y downloads (saves 5-15 seconds per server)`,
-    COLORS.GREEN,
-  );
+  log(`✅ Eliminated bunx -y downloads (saves 5-15 seconds per server)`, COLORS.GREEN);
   log(`✅ Using local node_modules for instant startup`, COLORS.GREEN);
   log(`✅ Offline-capable MCP server execution`, COLORS.GREEN);
   log(`✅ Predictable and reliable server startup times`, COLORS.GREEN);
   log(`✅ Better development experience and CI/CD performance`, COLORS.GREEN);
 
   if (validPackages === totalPackages) {
-    log(
-      `\n🎉 All MCP servers optimized and ready! Startup time improved by 10-20x.`,
-      COLORS.GREEN,
-    );
+    log(`\n🎉 All MCP servers optimized and ready! Startup time improved by 10-20x.`, COLORS.GREEN);
   } else {
-    log(
-      `\n⚠️ Some packages need attention. Check dependencies in package.json`,
-      COLORS.YELLOW,
-    );
+    log(`\n⚠️ Some packages need attention. Check dependencies in package.json`, COLORS.YELLOW);
   }
 
   process.exit(validPackages === totalPackages ? 0 : 1);

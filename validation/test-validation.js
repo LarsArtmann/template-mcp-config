@@ -58,8 +58,7 @@ async function runValidationTests() {
     const result = await validateMCPConfig("nonexistent.json");
     const testResult = {
       name: "Missing file",
-      passed:
-        !result.valid && result.errors.some((e) => e.includes("not found")),
+      passed: !result.valid && result.errors.some((e) => e.includes("not found")),
       errors: result.errors,
       warnings: result.warnings,
     };
@@ -92,8 +91,7 @@ async function runValidationTests() {
     const result = await validateMCPConfig(invalidJsonPath);
     const testResult = {
       name: "Invalid JSON",
-      passed:
-        !result.valid && result.errors.some((e) => e.includes("Invalid JSON")),
+      passed: !result.valid && result.errors.some((e) => e.includes("Invalid JSON")),
       errors: result.errors,
       warnings: result.warnings,
     };
@@ -133,8 +131,7 @@ async function runValidationTests() {
     const result = await validateMCPConfig(missingServersPath);
     const testResult = {
       name: "Missing mcpServers",
-      passed:
-        !result.valid && result.errors.some((e) => e.includes("mcpServers")),
+      passed: !result.valid && result.errors.some((e) => e.includes("mcpServers")),
       errors: result.errors,
       warnings: result.warnings,
     };
@@ -174,9 +171,7 @@ async function runValidationTests() {
     const result = await validateMCPConfig(emptyServersPath);
     const testResult = {
       name: "Empty servers",
-      passed:
-        !result.valid &&
-        result.errors.some((e) => e.includes("No MCP servers")),
+      passed: !result.valid && result.errors.some((e) => e.includes("No MCP servers")),
       errors: result.errors,
       warnings: result.warnings,
     };
@@ -230,9 +225,7 @@ async function runValidationTests() {
     const result = await validateMCPConfig(invalidServerPath);
     const testResult = {
       name: "Invalid server config",
-      passed:
-        !result.valid &&
-        result.errors.some((e) => e.includes("Missing required")),
+      passed: !result.valid && result.errors.some((e) => e.includes("Missing required")),
       errors: result.errors,
       warnings: result.warnings,
     };
@@ -321,22 +314,14 @@ async function runValidationTests() {
   console.log("\n🔍 Test 8: TypeSpec schema validation");
   try {
     // Check if generated schemas exist
-    const schemaDir = path.join(
-      __dirname,
-      "..",
-      "schemas",
-      "generated",
-      "json-schema",
-    );
+    const schemaDir = path.join(__dirname, "..", "schemas", "generated", "json-schema");
     const mainSchemaPath = path.join(schemaDir, "MCPConfiguration.yaml");
 
     if (fs.existsSync(mainSchemaPath)) {
       const schemaContent = fs.readFileSync(mainSchemaPath, "utf8");
       const testResult = {
         name: "TypeSpec schema generation",
-        passed:
-          schemaContent.includes("mcpServers") &&
-          schemaContent.includes("$schema"),
+        passed: schemaContent.includes("mcpServers") && schemaContent.includes("$schema"),
         errors: [],
         warnings: [],
       };

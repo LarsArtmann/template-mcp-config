@@ -34,6 +34,7 @@ For development environments, cache warming provides several benefits:
 For production deployments, consider these caching strategies:
 
 #### Container Images
+
 ```dockerfile
 # Pre-cache MCP packages during image build
 RUN bunx --help @upstash/context7-mcp@latest
@@ -42,6 +43,7 @@ RUN bunx --help @modelcontextprotocol/server-github
 ```
 
 #### Docker Compose
+
 ```yaml
 services:
   mcp-app:
@@ -55,6 +57,7 @@ volumes:
 ## Cache Management Scripts
 
 ### Warm Cache
+
 ```bash
 bun run cache:warm
 ```
@@ -62,6 +65,7 @@ bun run cache:warm
 Proactively downloads all MCP server packages referenced in `.mcp.json`.
 
 ### Test Servers
+
 ```bash
 bun run test-servers
 ```
@@ -69,6 +73,7 @@ bun run test-servers
 Validates that all MCP servers can be accessed and started correctly.
 
 ### Validate Environment
+
 ```bash
 bun run validate:env
 ```
@@ -77,17 +82,18 @@ Checks environment variables and configuration before starting servers.
 
 ## Cache Locations
 
-| Runtime | Cache Location |
-|---------|----------------|
-| Bun | `~/.bun/install/cache/` |
-| Node.js | `~/.npm/_cacache/` |
-| Global | `/tmp/bunx-cache-*` |
+| Runtime | Cache Location          |
+| ------- | ----------------------- |
+| Bun     | `~/.bun/install/cache/` |
+| Node.js | `~/.npm/_cacache/`      |
+| Global  | `/tmp/bunx-cache-*`     |
 
 ## Performance Optimization
 
 ### Development Workflow
 
 1. **Initial setup**: Run cache warming after cloning
+
    ```bash
    git clone <repo>
    cd <repo>
@@ -117,6 +123,7 @@ Checks environment variables and configuration before starting servers.
 ## Troubleshooting Cache Issues
 
 ### Clear Cache
+
 ```bash
 # Clear all Bun caches
 rm -rf ~/.bun/install/cache/
@@ -126,6 +133,7 @@ bun run cache:warm
 ```
 
 ### Verify Cache Status
+
 ```bash
 # Check cache size
 du -sh ~/.bun/install/cache/
@@ -135,6 +143,7 @@ ls -la ~/.bun/install/cache/
 ```
 
 ### Network Issues
+
 If bunx fails to download packages:
 
 1. Check network connectivity

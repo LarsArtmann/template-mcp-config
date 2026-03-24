@@ -52,8 +52,8 @@
     "clean": "rm -rf node_modules bun.lockb",
     "fresh-install": "bun run clean && bun install && bun run cache:optimize",
     "setup": "cp .env.example .env && bun run cache:optimize && echo '✅ Setup complete! Edit .env with your configuration, then restart your MCP client'",
-    "lint": "eslint . --ext .js,.ts,.json && prettier --check .",
-    "lint:fix": "eslint . --ext .js,.ts,.json --fix && prettier --write .",
+    "lint": "eslint . && prettier --check .",
+    "lint:fix": "eslint . --fix && prettier --write .",
     "format": "prettier --write .",
     "type-check": "tsc --noEmit",
     "test": "vitest run",
@@ -90,6 +90,7 @@
     "terraform-mcp-server": "^0.13.0"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@types/node": "^25.5.0",
     "@typespec/compiler": "^1.10.0",
     "@typespec/http": "^1.10.0",
@@ -99,6 +100,9 @@
     "@typespec/rest": "^0.80.0",
     "@typespec/versioning": "^0.80.0",
     "eslint": "^10.1.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-json": "3",
+    "globals": "^17.4.0",
     "prettier": "^3.8.1",
     "typescript": "^5.9.3",
     "vitest": "^4.1.0"

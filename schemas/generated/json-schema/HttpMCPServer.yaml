@@ -12,7 +12,7 @@ properties:
     pattern: ^https?://
     description: Server URL (must be valid HTTP/HTTPS URL)
   headers:
-    $ref: "#/$defs/RecordString"
+    $ref: '#/$defs/RecordString'
     description: Authentication headers for HTTP requests
   connectTimeoutMs:
     type: integer

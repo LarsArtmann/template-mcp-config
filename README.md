@@ -1,6 +1,15 @@
 # Template MCP Config
 
-> **Production-ready MCP configuration template with Context7 integration and comprehensive tooling for modern development workflows**
+A production-ready Model Context Protocol (MCP) configuration template that provides 15 pre-configured servers for AI-assisted development workflows. Connect your AI assistant (Claude, Cursor, VS Code) to real-time documentation, GitHub repositories, web browsing, filesystem access, databases, and more.
+
+**15 MCP servers included** — most work out-of-the-box, only GitHub token required
+
+- **📚 Documentation**: Context7 (real-time library docs), DeepWiki (repository docs)
+- **🔧 Development**: GitHub, Filesystem, Memory, Sequential Thinking, Everything
+- **🌐 Browser**: Playwright (modern), Puppeteer (legacy), Fetch (HTTP)
+- **☁️ Infrastructure**: Kubernetes, SSH, SQLite, Turso, Terraform
+
+Supports Claude Desktop, Cursor, VS Code, and any MCP-compatible client.
 
 [![License: EUPL v1.2](https://img.shields.io/badge/License-EUPLv1.2-blue.svg)](https://joinup.ec.europa.eu/software/page/eupl)
 [![GitHub stars](https://img.shields.io/github/stars/LarsArtmann/template-mcp-config.svg?style=social&label=Star)](https://github.com/LarsArtmann/template-mcp-config)
@@ -10,8 +19,6 @@
 ```bash
 git subtree add --prefix=.mcp-config https://github.com/LarsArtmann/template-mcp-config.git main --squash && ln -s .mcp-config/.mcp.json .mcp.json && cp .mcp-config/.env.example .env
 ```
-
-A curated Model Context Protocol (MCP) configuration template that provides essential MCP servers for development teams. Features **Context7** for real-time documentation, plus carefully selected servers for filesystem access, GitHub integration, browser automation, and DevOps tools—all without requiring external API keys (except GitHub and optional Turso).
 
 ## 🌟 Key Features
 

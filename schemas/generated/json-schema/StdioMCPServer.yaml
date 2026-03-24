@@ -16,7 +16,7 @@ properties:
       type: string
     description: Command line arguments for the server
   env:
-    $ref: "#/$defs/RecordString"
+    $ref: '#/$defs/RecordString'
     description: Environment variables for the server process
   cwd:
     type: string
@@ -36,7 +36,7 @@ properties:
     minimum: 1
     maximum: 10
     default: 3
-    description: "Maximum restart attempts (requires autoRestart: true)"
+    description: 'Maximum restart attempts (requires autoRestart: true)'
 required:
   - type
   - command

@@ -2,7 +2,7 @@
 
 /**
  * MCP Configuration Validation CLI
- * 
+ *
  * Command-line interface for validating MCP configurations.
  * Provides easy-to-use commands for validation, testing, and schema operations.
  */
@@ -18,7 +18,8 @@ const VERSION = '1.0.0';
  * Display help information
  */
 function showHelp() {
-  console.log(`
+  console.log(
+    `
 📋 MCP Configuration Validation CLI v${VERSION}
 
 USAGE:
@@ -58,7 +59,8 @@ ENVIRONMENT:
 
 For more information, visit:
 https://github.com/LarsArtmann/template-mcp-config
-  `.trim());
+  `.trim()
+  );
 }
 
 /**
@@ -67,7 +69,7 @@ https://github.com/LarsArtmann/template-mcp-config
 function showVersion() {
   console.log(`MCP Configuration Validation CLI v${VERSION}`);
   console.log('Built with TypeSpec and Node.js');
-  
+
   try {
     const packageJson = JSON.parse(fs.readFileSync(path.join(__dirname, 'package.json'), 'utf8'));
     console.log(`Package version: ${packageJson.version}`);
@@ -87,10 +89,10 @@ async function handleSchemaCommand(subcommand) {
         const { spawn } = require('child_process');
         const child = spawn('npx', ['tsp', 'compile', './schemas'], {
           stdio: 'inherit',
-          cwd: __dirname
+          cwd: __dirname,
         });
-        
-        child.on('close', (code) => {
+
+        child.on('close', code => {
           if (code === 0) {
             console.log('✅ Schemas compiled successfully');
           } else {
@@ -98,8 +100,8 @@ async function handleSchemaCommand(subcommand) {
             process.exit(1);
           }
         });
-        
-        child.on('error', (error) => {
+
+        child.on('error', error => {
           console.error('❌ Failed to run TypeSpec compiler:', error.message);
           process.exit(1);
         });
@@ -112,15 +114,15 @@ async function handleSchemaCommand(subcommand) {
     case 'validate':
       console.log('🔍 Validating TypeSpec schemas...');
       const schemaDir = path.join(__dirname, 'schemas', 'generated', 'json-schema');
-      
+
       if (!fs.existsSync(schemaDir)) {
         console.error('❌ Generated schemas not found. Run: mcp-validate schema compile');
         process.exit(1);
       }
-      
+
       const schemaFiles = fs.readdirSync(schemaDir).filter(f => f.endsWith('.yaml'));
       console.log(`📋 Found ${schemaFiles.length} generated schema files:`);
-      
+
       schemaFiles.forEach(file => {
         try {
           const content = fs.readFileSync(path.join(schemaDir, file), 'utf8');
@@ -138,12 +140,12 @@ async function handleSchemaCommand(subcommand) {
     case 'list':
       console.log('📋 Generated TypeSpec Schemas:');
       const listSchemaDir = path.join(__dirname, 'schemas', 'generated', 'json-schema');
-      
+
       if (!fs.existsSync(listSchemaDir)) {
         console.log('  (No schemas found - run: mcp-validate schema compile)');
         return;
       }
-      
+
       const listFiles = fs.readdirSync(listSchemaDir).filter(f => f.endsWith('.yaml'));
       listFiles.forEach(file => {
         const filePath = path.join(listSchemaDir, file);
@@ -151,7 +153,7 @@ async function handleSchemaCommand(subcommand) {
         const size = (stats.size / 1024).toFixed(1);
         console.log(`  📄 ${file} (${size} KB)`);
       });
-      
+
       console.log(`\nTotal: ${listFiles.length} schema files`);
       break;
 
@@ -173,12 +175,12 @@ function parseArgs(args) {
     quiet: false,
     json: false,
     noConnectivity: false,
-    envFile: '.env'
+    envFile: '.env',
   };
 
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
-    
+
     switch (arg) {
       case 'validate':
       case 'test':
@@ -190,31 +192,31 @@ function parseArgs(args) {
           options.subcommand = args[++i];
         }
         break;
-        
+
       case '-v':
       case '--verbose':
         options.verbose = true;
         break;
-        
+
       case '-q':
       case '--quiet':
         options.quiet = true;
         break;
-        
+
       case '--json':
         options.json = true;
         break;
-        
+
       case '--no-connectivity':
         options.noConnectivity = true;
         break;
-        
+
       case '--env-file':
         if (args[i + 1] && !args[i + 1].startsWith('-')) {
           options.envFile = args[++i];
         }
         break;
-        
+
       default:
         // Assume it's a config file path if it doesn't start with -
         if (!arg.startsWith('-') && options.command === 'validate') {
@@ -247,17 +249,17 @@ function formatOutput(result, options) {
   if (options.verbose) {
     // Show detailed results
     console.log('\n📊 Detailed Validation Results:');
-    console.log('=' .repeat(50));
-    
+    console.log('='.repeat(50));
+
     Object.entries(result.details).forEach(([category, details]) => {
       const status = details.valid ? '✅' : '❌';
       console.log(`\n${status} ${category.toUpperCase()}:`);
-      
+
       if (details.errors && details.errors.length > 0) {
         console.log('  Errors:');
         details.errors.forEach(error => console.log(`    - ${error}`));
       }
-      
+
       if (details.warnings && details.warnings.length > 0) {
         console.log('  Warnings:');
         details.warnings.forEach(warning => console.log(`    - ${warning}`));
@@ -280,11 +282,11 @@ function formatOutput(result, options) {
  */
 async function main() {
   const args = process.argv.slice(2);
-  
+
   // Handle no arguments - show help
   if (args.length === 0) {
     const options = parseArgs(['validate']);
-    
+
     try {
       const result = await validateMCPConfig(options.configPath);
       formatOutput(result, options);
@@ -295,14 +297,14 @@ async function main() {
     }
     return;
   }
-  
+
   const options = parseArgs(args);
 
   // Handle environment variables
   if (process.env.MCP_CONFIG_PATH && options.configPath === '.mcp.json') {
     options.configPath = process.env.MCP_CONFIG_PATH;
   }
-  
+
   if (process.env.MCP_ENV_FILE) {
     options.envFile = process.env.MCP_ENV_FILE;
   }

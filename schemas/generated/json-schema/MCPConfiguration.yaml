@@ -3,7 +3,7 @@ $id: MCPConfiguration.yaml
 type: object
 properties:
   mcpServers:
-    $ref: "#/$defs/RecordMCPServer"
+    $ref: '#/$defs/RecordMCPServer'
     description: Collection of MCP servers with their configurations
   global:
     $ref: GlobalConfiguration.yaml

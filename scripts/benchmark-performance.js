@@ -5,21 +5,21 @@
  * Measures startup times, memory usage, and identifies bottlenecks for MCP servers
  */
 
-const { spawn, exec } = require('child_process');
-const fs = require('fs');
-const path = require('path');
-const os = require('os');
+const { spawn, exec } = require("child_process");
+const fs = require("fs");
+const path = require("path");
+const os = require("os");
 
 const COLORS = {
-  GREEN: '\x1b[32m',
-  RED: '\x1b[31m',
-  YELLOW: '\x1b[33m',
-  BLUE: '\x1b[34m',
-  CYAN: '\x1b[36m',
-  MAGENTA: '\x1b[35m',
-  RESET: '\x1b[0m',
-  BOLD: '\x1b[1m',
-  DIM: '\x1b[2m',
+  GREEN: "\x1b[32m",
+  RED: "\x1b[31m",
+  YELLOW: "\x1b[33m",
+  BLUE: "\x1b[34m",
+  CYAN: "\x1b[36m",
+  MAGENTA: "\x1b[35m",
+  RESET: "\x1b[0m",
+  BOLD: "\x1b[1m",
+  DIM: "\x1b[2m",
 };
 
 function log(message, color = COLORS.RESET) {
@@ -33,9 +33,9 @@ function formatTime(ms) {
 }
 
 function formatBytes(bytes) {
-  if (bytes === 0) return '0 B';
+  if (bytes === 0) return "0 B";
   const k = 1024;
-  const sizes = ['B', 'KB', 'MB', 'GB'];
+  const sizes = ["B", "KB", "MB", "GB"];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
 }
@@ -62,17 +62,17 @@ class PerformanceBenchmark {
   }
 
   async getBunVersion() {
-    return new Promise(resolve => {
-      exec('bunx --version', (error, stdout) => {
-        resolve(error ? 'Not available' : stdout.trim());
+    return new Promise((resolve) => {
+      exec("bunx --version", (error, stdout) => {
+        resolve(error ? "Not available" : stdout.trim());
       });
     });
   }
 
   loadMcpConfig() {
     try {
-      const configPath = path.join(process.cwd(), '.mcp.json');
-      const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+      const configPath = path.join(process.cwd(), ".mcp.json");
+      const config = JSON.parse(fs.readFileSync(configPath, "utf8"));
       return config.mcpServers || {};
     } catch (error) {
       log(`❌ Failed to load .mcp.json: ${error.message}`, COLORS.RED);
@@ -84,22 +84,22 @@ class PerformanceBenchmark {
     const startTime = process.hrtime.bigint();
     const startMemory = process.memoryUsage();
 
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       log(`  🔍 ${description}...`, COLORS.BLUE);
 
       const child = spawn(command, args, {
-        stdio: 'pipe',
+        stdio: "pipe",
       });
 
-      let stdout = '';
-      let stderr = '';
+      let stdout = "";
+      let stderr = "";
       let completed = false;
 
-      child.stdout.on('data', data => {
+      child.stdout.on("data", (data) => {
         stdout += data.toString();
       });
 
-      child.stderr.on('data', data => {
+      child.stderr.on("data", (data) => {
         stderr += data.toString();
       });
 
@@ -112,7 +112,7 @@ class PerformanceBenchmark {
         const duration = Number(endTime - startTime) / 1000000; // Convert to milliseconds
 
         const result = {
-          command: `${command} ${args.join(' ')}`,
+          command: `${command} ${args.join(" ")}`,
           description,
           duration,
           exitCode,
@@ -139,18 +139,18 @@ class PerformanceBenchmark {
         resolve(result);
       };
 
-      child.on('close', code => {
+      child.on("close", (code) => {
         finishBenchmark(code);
       });
 
-      child.on('error', () => {
+      child.on("error", () => {
         finishBenchmark(1);
       });
 
       // Timeout
       setTimeout(() => {
         if (!completed) {
-          child.kill('SIGTERM');
+          child.kill("SIGTERM");
           finishBenchmark(null, true);
         }
       }, timeout);
@@ -158,15 +158,15 @@ class PerformanceBenchmark {
   }
 
   async benchmarkMcpServerCheck(serverName, config) {
-    if (config.command === 'bunx' && config.args) {
+    if (config.command === "bunx" && config.args) {
       // Extract package name (skip -y flag)
-      const packageName = config.args.find(arg => !arg.startsWith('-'));
+      const packageName = config.args.find((arg) => !arg.startsWith("-"));
       if (packageName) {
         return await this.benchmarkCommand(
-          'bunx',
-          ['--help', packageName],
+          "bunx",
+          ["--help", packageName],
           `Check ${serverName} package availability`,
-          10000
+          10000,
         );
       }
     }
@@ -180,20 +180,20 @@ class PerformanceBenchmark {
 
     // JSON validation
     benchmarks.jsonValidation = await this.benchmarkCommand(
-      'node',
+      "node",
       [
-        '-e',
+        "-e",
         'JSON.parse(require("fs").readFileSync(".mcp.json", "utf8")); console.log("Valid JSON")',
       ],
-      'JSON syntax validation'
+      "JSON syntax validation",
     );
 
     // Full validation
     benchmarks.fullValidation = await this.benchmarkCommand(
-      'node',
-      ['scripts/validate-config.js'],
-      'Full configuration validation',
-      15000
+      "node",
+      ["scripts/validate-config.js"],
+      "Full configuration validation",
+      15000,
     );
 
     return benchmarks;
@@ -206,7 +206,7 @@ class PerformanceBenchmark {
     const benchmarks = {};
 
     for (const [serverName, config] of Object.entries(mcpServers)) {
-      if (config.command === 'bunx') {
+      if (config.command === "bunx") {
         benchmarks[serverName] = await this.benchmarkMcpServerCheck(serverName, config);
       }
     }
@@ -220,22 +220,22 @@ class PerformanceBenchmark {
     const benchmarks = {};
 
     // Warm cache script
-    if (fs.existsSync('scripts/warm-cache.js')) {
+    if (fs.existsSync("scripts/warm-cache.js")) {
       benchmarks.warmCache = await this.benchmarkCommand(
-        'node',
-        ['scripts/warm-cache.js'],
-        'Cache warming script',
-        60000
+        "node",
+        ["scripts/warm-cache.js"],
+        "Cache warming script",
+        60000,
       );
     }
 
     // Health check script
-    if (fs.existsSync('scripts/health-check.js')) {
+    if (fs.existsSync("scripts/health-check.js")) {
       benchmarks.healthCheck = await this.benchmarkCommand(
-        'node',
-        ['scripts/health-check.js'],
-        'Health check script',
-        30000
+        "node",
+        ["scripts/health-check.js"],
+        "Health check script",
+        30000,
       );
     }
 
@@ -249,9 +249,9 @@ class PerformanceBenchmark {
 
     // Test just info command
     benchmarks.justInfo = await this.benchmarkCommand(
-      'just',
-      ['info'],
-      'System information gathering'
+      "just",
+      ["info"],
+      "System information gathering",
     );
 
     return benchmarks;
@@ -263,8 +263,8 @@ class PerformanceBenchmark {
     const packageChecks = this.results.benchmarks.packageAccess || {};
 
     const packageCheckTimes = Object.values(packageChecks)
-      .filter(result => result && result.duration)
-      .map(result => result.duration);
+      .filter((result) => result && result.duration)
+      .map((result) => result.duration);
 
     const avgPackageCheck =
       packageCheckTimes.length > 0
@@ -272,13 +272,13 @@ class PerformanceBenchmark {
         : 0;
 
     log(`\n${COLORS.BOLD}📊 PERFORMANCE ANALYSIS REPORT${COLORS.RESET}`);
-    log(`${'='.repeat(50)}`);
+    log(`${"=".repeat(50)}`);
 
     log(`\n${COLORS.BOLD}System Information:${COLORS.RESET}`);
     log(`  Platform: ${this.results.system.platform} ${this.results.system.arch}`);
     log(`  CPUs: ${this.results.system.cpus}`);
     log(
-      `  Memory: ${formatBytes(this.results.system.totalMemory)} total, ${formatBytes(this.results.system.freeMemory)} free`
+      `  Memory: ${formatBytes(this.results.system.totalMemory)} total, ${formatBytes(this.results.system.freeMemory)} free`,
     );
     log(`  Node.js: ${this.results.system.nodeVersion}`);
     log(`  Bun: ${this.results.system.bunVersion}`);
@@ -290,26 +290,26 @@ class PerformanceBenchmark {
     log(`\n${COLORS.BOLD}Performance Metrics:${COLORS.RESET}`);
     log(
       `  Full validation: ${formatTime(validationTime)}`,
-      validationTime > 2000 ? COLORS.RED : validationTime > 1000 ? COLORS.YELLOW : COLORS.GREEN
+      validationTime > 2000 ? COLORS.RED : validationTime > 1000 ? COLORS.YELLOW : COLORS.GREEN,
     );
     log(
       `  Avg package check: ${formatTime(avgPackageCheck)}`,
-      avgPackageCheck > 5000 ? COLORS.RED : avgPackageCheck > 2000 ? COLORS.YELLOW : COLORS.GREEN
+      avgPackageCheck > 5000 ? COLORS.RED : avgPackageCheck > 2000 ? COLORS.YELLOW : COLORS.GREEN,
     );
 
     // Performance issues identified
     const issues = [];
 
     if (validationTime > 2000) {
-      issues.push('Validation takes > 2 seconds - consider optimization');
+      issues.push("Validation takes > 2 seconds - consider optimization");
     }
 
     if (avgPackageCheck > 3000) {
-      issues.push('Package checks slow - bunx -y downloads every time');
+      issues.push("Package checks slow - bunx -y downloads every time");
     }
 
     const bunxServers = Object.entries(this.loadMcpConfig()).filter(
-      ([_, config]) => config.command === 'bunx' && config.args?.includes('-y')
+      ([_, config]) => config.command === "bunx" && config.args?.includes("-y"),
     ).length;
 
     if (bunxServers > 0) {
@@ -318,7 +318,7 @@ class PerformanceBenchmark {
 
     if (issues.length > 0) {
       log(`\n${COLORS.BOLD}🚨 Performance Issues Identified:${COLORS.RESET}`);
-      issues.forEach(issue => {
+      issues.forEach((issue) => {
         log(`  - ${issue}`, COLORS.RED);
       });
     }
@@ -349,7 +349,7 @@ class PerformanceBenchmark {
     // Generate and save report
     const report = this.generateReport();
 
-    const reportPath = path.join(process.cwd(), 'reports', `performance-${Date.now()}.json`);
+    const reportPath = path.join(process.cwd(), "reports", `performance-${Date.now()}.json`);
     if (!fs.existsSync(path.dirname(reportPath))) {
       fs.mkdirSync(path.dirname(reportPath), { recursive: true });
     }
@@ -367,7 +367,7 @@ async function main() {
 }
 
 if (require.main === module) {
-  main().catch(error => {
+  main().catch((error) => {
     log(`❌ Benchmark failed: ${error.message}`, COLORS.RED);
     process.exit(1);
   });

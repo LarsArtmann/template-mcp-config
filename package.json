@@ -16,13 +16,12 @@
   "bugs": {
     "url": "https://github.com/LarsArtmann/template-mcp-config/issues"
   },
+  "license": "EUPL-1.2",
+  "author": "Lars Artmann",
   "repository": {
     "type": "git",
     "url": "https://github.com/LarsArtmann/template-mcp-config.git"
   },
-  "author": "Lars Artmann",
-  "license": "EUPL-1.2",
-  "main": ".mcp.json",
   "files": [
     ".env.example",
     ".mcp.json",
@@ -33,6 +32,16 @@
     "scripts/",
     "validation/"
   ],
+  "os": [
+    "darwin",
+    "linux",
+    "win32"
+  ],
+  "cpu": [
+    "x64",
+    "arm64"
+  ],
+  "main": ".mcp.json",
   "scripts": {
     "install-all": "bun install",
     "test-servers": "node scripts/test-all.js",
@@ -111,18 +120,9 @@
     "playwright": "^1.58.2"
   },
   "bundleDependencies": false,
-  "packageManager": "bun@1.0.0",
   "engines": {
     "bun": ">=1.0.0",
     "node": ">=18.0.0"
   },
-  "os": [
-    "darwin",
-    "linux",
-    "win32"
-  ],
-  "cpu": [
-    "x64",
-    "arm64"
-  ]
+  "packageManager": "bun@1.0.0"
 }

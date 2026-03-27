@@ -7,14 +7,14 @@
  * Converts YAML schema files to JavaScript objects and sets up Ajv validators.
  */
 
-const fs = require('fs');
-const path = require('path');
-const yaml = require('js-yaml');
-const Ajv = require('ajv');
-const addFormats = require('ajv-formats');
+const fs = require("fs");
+const path = require("path");
+const yaml = require("js-yaml");
+const Ajv = require("ajv");
+const addFormats = require("ajv-formats");
 
 // Schema file paths
-const SCHEMA_DIR = path.join(__dirname, '..', 'schemas', 'generated', 'json-schema');
+const SCHEMA_DIR = path.join(__dirname, "..", "schemas", "generated", "json-schema");
 
 /**
  * Schema cache to avoid reloading
@@ -39,7 +39,7 @@ function loadSchema(schemaName) {
       throw new Error(`Schema file not found: ${schemaPath}`);
     }
 
-    const yamlContent = fs.readFileSync(schemaPath, 'utf8');
+    const yamlContent = fs.readFileSync(schemaPath, "utf8");
     const schema = yaml.load(yamlContent);
 
     // Cache the loaded schema
@@ -58,165 +58,165 @@ function loadSchema(schemaName) {
  */
 function createInlineMCPSchema() {
   return {
-    type: 'object',
+    type: "object",
     properties: {
       mcpServers: {
-        type: 'object',
+        type: "object",
         patternProperties: {
-          '.*': {
+          ".*": {
             oneOf: [
               {
                 // Explicit Stdio Server (with type field)
-                type: 'object',
+                type: "object",
                 properties: {
-                  type: { type: 'string', const: 'stdio' },
-                  command: { type: 'string', minLength: 1 },
-                  args: { type: 'array', items: { type: 'string' } },
+                  type: { type: "string", const: "stdio" },
+                  command: { type: "string", minLength: 1 },
+                  args: { type: "array", items: { type: "string" } },
                   env: {
-                    type: 'object',
-                    patternProperties: { '.*': { type: 'string' } },
+                    type: "object",
+                    patternProperties: { ".*": { type: "string" } },
                   },
-                  cwd: { type: 'string' },
+                  cwd: { type: "string" },
                   initTimeoutMs: {
-                    type: 'integer',
+                    type: "integer",
                     minimum: 1000,
                     maximum: 60000,
                     default: 10000,
                   },
-                  autoRestart: { type: 'boolean', default: false },
+                  autoRestart: { type: "boolean", default: false },
                   maxRestarts: {
-                    type: 'integer',
+                    type: "integer",
                     minimum: 1,
                     maximum: 10,
                     default: 3,
                   },
                 },
-                required: ['type', 'command'],
+                required: ["type", "command"],
                 additionalProperties: false,
               },
               {
                 // Explicit HTTP Server (with type field)
-                type: 'object',
+                type: "object",
                 properties: {
-                  type: { type: 'string', const: 'http' },
+                  type: { type: "string", const: "http" },
                   serverUrl: {
-                    type: 'string',
-                    format: 'uri',
-                    pattern: '^https?://',
+                    type: "string",
+                    format: "uri",
+                    pattern: "^https?://",
                   },
                   headers: {
-                    type: 'object',
-                    patternProperties: { '.*': { type: 'string' } },
+                    type: "object",
+                    patternProperties: { ".*": { type: "string" } },
                   },
                   connectTimeoutMs: {
-                    type: 'integer',
+                    type: "integer",
                     minimum: 1000,
                     maximum: 30000,
                     default: 5000,
                   },
                   requestTimeoutMs: {
-                    type: 'integer',
+                    type: "integer",
                     minimum: 1000,
                     maximum: 60000,
                     default: 30000,
                   },
-                  verifySsl: { type: 'boolean', default: true },
+                  verifySsl: { type: "boolean", default: true },
                   maxRetries: {
-                    type: 'integer',
+                    type: "integer",
                     minimum: 0,
                     maximum: 10,
                     default: 3,
                   },
                   retryDelayMs: {
-                    type: 'integer',
+                    type: "integer",
                     minimum: 100,
                     maximum: 10000,
                     default: 1000,
                   },
                 },
-                required: ['type', 'serverUrl'],
+                required: ["type", "serverUrl"],
                 additionalProperties: false,
               },
               {
                 // Legacy Stdio Server (no type field, has command)
-                type: 'object',
+                type: "object",
                 properties: {
-                  command: { type: 'string', minLength: 1 },
-                  args: { type: 'array', items: { type: 'string' } },
+                  command: { type: "string", minLength: 1 },
+                  args: { type: "array", items: { type: "string" } },
                   env: {
-                    type: 'object',
-                    patternProperties: { '.*': { type: 'string' } },
+                    type: "object",
+                    patternProperties: { ".*": { type: "string" } },
                   },
-                  cwd: { type: 'string' },
+                  cwd: { type: "string" },
                   initTimeoutMs: {
-                    type: 'integer',
+                    type: "integer",
                     minimum: 1000,
                     maximum: 60000,
                     default: 10000,
                   },
-                  autoRestart: { type: 'boolean', default: false },
+                  autoRestart: { type: "boolean", default: false },
                   maxRestarts: {
-                    type: 'integer',
+                    type: "integer",
                     minimum: 1,
                     maximum: 10,
                     default: 3,
                   },
                 },
-                required: ['command'],
+                required: ["command"],
                 additionalProperties: false,
                 not: {
                   properties: {
-                    serverUrl: { type: 'string' },
+                    serverUrl: { type: "string" },
                   },
-                  required: ['serverUrl'],
+                  required: ["serverUrl"],
                 },
               },
               {
                 // Legacy HTTP Server (no type field, has serverUrl)
-                type: 'object',
+                type: "object",
                 properties: {
                   serverUrl: {
-                    type: 'string',
-                    format: 'uri',
-                    pattern: '^https?://',
+                    type: "string",
+                    format: "uri",
+                    pattern: "^https?://",
                   },
                   headers: {
-                    type: 'object',
-                    patternProperties: { '.*': { type: 'string' } },
+                    type: "object",
+                    patternProperties: { ".*": { type: "string" } },
                   },
                   connectTimeoutMs: {
-                    type: 'integer',
+                    type: "integer",
                     minimum: 1000,
                     maximum: 30000,
                     default: 5000,
                   },
                   requestTimeoutMs: {
-                    type: 'integer',
+                    type: "integer",
                     minimum: 1000,
                     maximum: 60000,
                     default: 30000,
                   },
-                  verifySsl: { type: 'boolean', default: true },
+                  verifySsl: { type: "boolean", default: true },
                   maxRetries: {
-                    type: 'integer',
+                    type: "integer",
                     minimum: 0,
                     maximum: 10,
                     default: 3,
                   },
                   retryDelayMs: {
-                    type: 'integer',
+                    type: "integer",
                     minimum: 100,
                     maximum: 10000,
                     default: 1000,
                   },
                 },
-                required: ['serverUrl'],
+                required: ["serverUrl"],
                 additionalProperties: false,
                 not: {
                   properties: {
-                    command: { type: 'string' },
+                    command: { type: "string" },
                   },
-                  required: ['command'],
+                  required: ["command"],
                 },
               },
             ],
@@ -225,27 +225,27 @@ function createInlineMCPSchema() {
         minProperties: 1,
       },
       global: {
-        type: 'object',
+        type: "object",
         properties: {
           timeoutMs: {
-            type: 'integer',
+            type: "integer",
             minimum: 1000,
             maximum: 300000,
             default: 30000,
           },
           maxConcurrentServers: {
-            type: 'integer',
+            type: "integer",
             minimum: 1,
             maximum: 50,
             default: 10,
           },
-          debug: { type: 'boolean', default: false },
+          debug: { type: "boolean", default: false },
         },
         additionalProperties: false,
       },
-      version: { type: 'string', default: '1.0.0' },
+      version: { type: "string", default: "1.0.0" },
     },
-    required: ['mcpServers'],
+    required: ["mcpServers"],
     additionalProperties: false,
   };
 }
@@ -267,11 +267,11 @@ function createValidator() {
 
   // Add the inline MCP configuration schema
   const mcpSchema = createInlineMCPSchema();
-  ajv.addSchema(mcpSchema, 'MCPConfiguration');
+  ajv.addSchema(mcpSchema, "MCPConfiguration");
 
   // Add individual server schema (extract from mcpServers pattern)
-  const serverSchema = mcpSchema.properties.mcpServers.patternProperties['.*'];
-  ajv.addSchema(serverSchema, 'MCPServer');
+  const serverSchema = mcpSchema.properties.mcpServers.patternProperties[".*"];
+  ajv.addSchema(serverSchema, "MCPServer");
 
   return ajv;
 }
@@ -305,9 +305,9 @@ function validateAgainstSchema(data, schemaName, validator = null) {
       valid: false,
       errors: [
         {
-          instancePath: '',
-          schemaPath: '',
-          keyword: 'system',
+          instancePath: "",
+          schemaPath: "",
+          keyword: "system",
           message: error.message,
         },
       ],
@@ -324,7 +324,7 @@ function validateAgainstSchema(data, schemaName, validator = null) {
  * @returns {Object} Validation result
  */
 function validateMCPConfiguration(config, validator = null) {
-  return validateAgainstSchema(config, 'MCPConfiguration', validator);
+  return validateAgainstSchema(config, "MCPConfiguration", validator);
 }
 
 /**
@@ -334,7 +334,7 @@ function validateMCPConfiguration(config, validator = null) {
  * @returns {Object} Validation result
  */
 function validateMCPServer(serverConfig, validator = null) {
-  return validateAgainstSchema(serverConfig, 'MCPServer', validator);
+  return validateAgainstSchema(serverConfig, "MCPServer", validator);
 }
 
 /**
@@ -343,10 +343,10 @@ function validateMCPServer(serverConfig, validator = null) {
  * @returns {Array} Formatted error messages
  */
 function formatValidationErrors(errors) {
-  return errors.map(error => {
-    const path = error.instancePath || 'root';
-    const message = error.message || 'Unknown error';
-    const value = error.data !== undefined ? ` (got: ${JSON.stringify(error.data)})` : '';
+  return errors.map((error) => {
+    const path = error.instancePath || "root";
+    const message = error.message || "Unknown error";
+    const value = error.data !== undefined ? ` (got: ${JSON.stringify(error.data)})` : "";
 
     return `${path}: ${message}${value}`;
   });
@@ -360,8 +360,8 @@ function getAvailableSchemas() {
   try {
     const files = fs.readdirSync(SCHEMA_DIR);
     return files
-      .filter(file => file.endsWith('.yaml'))
-      .map(file => file.replace('.yaml', ''))
+      .filter((file) => file.endsWith(".yaml"))
+      .map((file) => file.replace(".yaml", ""))
       .sort();
   } catch {
     return [];
@@ -373,10 +373,10 @@ function getAvailableSchemas() {
  * @returns {Object} Validation result with missing schemas
  */
 function validateSchemaAvailability() {
-  const requiredSchemas = ['MCPConfiguration', 'MCPServer', 'StdioMCPServer', 'HttpMCPServer'];
+  const requiredSchemas = ["MCPConfiguration", "MCPServer", "StdioMCPServer", "HttpMCPServer"];
 
   const availableSchemas = getAvailableSchemas();
-  const missingSchemas = requiredSchemas.filter(schema => !availableSchemas.includes(schema));
+  const missingSchemas = requiredSchemas.filter((schema) => !availableSchemas.includes(schema));
 
   return {
     valid: missingSchemas.length === 0,
@@ -399,7 +399,7 @@ module.exports = {
 
 // CLI usage for testing
 if (require.main === module) {
-  console.log('🔧 Testing TypeSpec Schema Loader...');
+  console.log("🔧 Testing TypeSpec Schema Loader...");
 
   try {
     // Test schema availability
@@ -407,7 +407,7 @@ if (require.main === module) {
     console.log(`📋 Schema availability check:`, availability);
 
     if (!availability.valid) {
-      console.error(`❌ Missing schemas: ${availability.missingSchemas.join(', ')}`);
+      console.error(`❌ Missing schemas: ${availability.missingSchemas.join(", ")}`);
       process.exit(1);
     }
 
@@ -417,14 +417,14 @@ if (require.main === module) {
 
     // List available schemas
     const schemas = getAvailableSchemas();
-    console.log(`📚 Available schemas (${schemas.length}): ${schemas.join(', ')}`);
+    console.log(`📚 Available schemas (${schemas.length}): ${schemas.join(", ")}`);
 
     // Test basic validation
     const testConfig = {
       mcpServers: {
-        'test-server': {
-          type: 'stdio',
-          command: 'bunx',
+        "test-server": {
+          type: "stdio",
+          command: "bunx",
         },
       },
     };

@@ -5,39 +5,43 @@
  * This script checks that required environment variables are set
  */
 
-const fs = require("fs");
-const path = require("path");
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const COLORS = {
-  GREEN: "\x1b[32m",
-  RED: "\x1b[31m",
-  YELLOW: "\x1b[33m",
-  BLUE: "\x1b[34m",
-  RESET: "\x1b[0m",
-  BOLD: "\x1b[1m",
+  GREEN: '\x1b[32m',
+  RED: '\x1b[31m',
+  YELLOW: '\x1b[33m',
+  BLUE: '\x1b[34m',
+  RESET: '\x1b[0m',
+  BOLD: '\x1b[1m',
 };
 
 function log(message, color = COLORS.RESET) {
   console.log(`${color}${message}${COLORS.RESET}`);
 }
 
-function loadEnvFile() {
-  const envPath = path.join(process.cwd(), ".env");
+export function loadEnvFile() {
+  const envPath = path.join(process.cwd(), '.env');
 
   if (!fs.existsSync(envPath)) {
     return null;
   }
 
   try {
-    const content = fs.readFileSync(envPath, "utf8");
+    const content = fs.readFileSync(envPath, 'utf8');
     const env = {};
 
-    content.split("\n").forEach((line) => {
+    content.split('\n').forEach(line => {
       const trimmed = line.trim();
-      if (trimmed && !trimmed.startsWith("#")) {
-        const [key, ...valueParts] = trimmed.split("=");
+      if (trimmed && !trimmed.startsWith('#')) {
+        const [key, ...valueParts] = trimmed.split('=');
         if (key) {
-          env[key.trim()] = valueParts.join("=").trim();
+          env[key.trim()] = valueParts.join('=').trim();
         }
       }
     });
@@ -49,10 +53,10 @@ function loadEnvFile() {
   }
 }
 
-function loadMcpConfig() {
+export function loadMcpConfig() {
   try {
-    const configPath = path.join(process.cwd(), ".mcp.json");
-    const config = JSON.parse(fs.readFileSync(configPath, "utf8"));
+    const configPath = path.join(process.cwd(), '.mcp.json');
+    const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
     return config.mcpServers || {};
   } catch (error) {
     log(`❌ Failed to load .mcp.json: ${error.message}`, COLORS.RED);
@@ -60,7 +64,7 @@ function loadMcpConfig() {
   }
 }
 
-function extractRequiredEnvVars(mcpServers) {
+export function extractRequiredEnvVars(mcpServers) {
   const required = [];
   const optional = [];
 
@@ -70,11 +74,11 @@ function extractRequiredEnvVars(mcpServers) {
         const info = {
           server: serverName,
           variable: envVar,
-          hasDefault: defaultValue !== undefined && defaultValue !== "",
+          hasDefault: defaultValue !== undefined && defaultValue !== '',
         };
 
         // Check if it's a required variable (no default or empty default)
-        if (!info.hasDefault || defaultValue === "${" + envVar + ":-}") {
+        if (!info.hasDefault || defaultValue === '${' + envVar + ':-}') {
           required.push(info);
         } else {
           optional.push(info);
@@ -86,7 +90,7 @@ function extractRequiredEnvVars(mcpServers) {
   return { required, optional };
 }
 
-function validateEnvironment() {
+export function validateEnvironment() {
   log(`${COLORS.BOLD}🔍 Validating Environment Configuration${COLORS.RESET}\n`);
 
   const mcpServers = loadMcpConfig();
@@ -98,7 +102,7 @@ function validateEnvironment() {
   if (!envFile) {
     log(`⚠️ No .env file found. Copy .env.example to .env and configure:`, COLORS.YELLOW);
     log(`   cp .env.example .env`, COLORS.BLUE);
-    console.log("");
+    console.log('');
   } else {
     log(`✅ .env file found`, COLORS.GREEN);
   }
@@ -112,17 +116,17 @@ function validateEnvironment() {
     for (const { server, variable } of required) {
       const envValue = processEnv[variable] || (envFile && envFile[variable]);
 
-      if (envValue && envValue.trim() && !envValue.includes("${")) {
+      if (envValue && envValue.trim() && !envValue.includes('${')) {
         log(`  ✅ ${variable} (${server}): Set`, COLORS.GREEN);
       } else {
         log(`  ❌ ${variable} (${server}): Not set or empty`, COLORS.RED);
         allRequired = false;
       }
     }
-    console.log("");
+    console.log('');
   } else {
     log(`✅ No required environment variables`, COLORS.GREEN);
-    console.log("");
+    console.log('');
   }
 
   // Show optional environment variables
@@ -132,13 +136,13 @@ function validateEnvironment() {
     for (const { server, variable } of optional) {
       const envValue = processEnv[variable] || (envFile && envFile[variable]);
 
-      if (envValue && envValue.trim() && !envValue.includes("${")) {
+      if (envValue && envValue.trim() && !envValue.includes('${')) {
         log(`  ✅ ${variable} (${server}): Set`, COLORS.GREEN);
       } else {
         log(`  ⚪ ${variable} (${server}): Using default`, COLORS.BLUE);
       }
     }
-    console.log("");
+    console.log('');
   }
 
   // Provide guidance
@@ -157,13 +161,11 @@ function validateEnvironment() {
   return allRequired;
 }
 
-function main() {
+export function main() {
   const isValid = validateEnvironment();
   process.exit(isValid ? 0 : 1);
 }
 
-if (require.main === module) {
+if (process.argv[1] && process.argv[1].includes('validate-env.js')) {
   main();
 }
-
-module.exports = { validateEnvironment, loadEnvFile, extractRequiredEnvVars };

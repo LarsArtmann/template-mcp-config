@@ -116,3 +116,23 @@ dev:
         just validate; \
         sleep 5; \
     done
+
+# 🔧 Install Git hooks for commit message validation
+hooks:
+    @echo "🔧 Installing Git hooks..."
+    bun run hooks:install
+
+# 🚀 Create a new release
+release version:
+    @echo "🚀 Creating release {{version}}..."
+    bun run release {{version}}
+
+# 🧪 Run all tests with coverage
+test-coverage:
+    @echo "🧪 Running tests with coverage..."
+    bun run test:coverage
+
+# 📋 Run linting and fix issues
+lint-fix:
+    @echo "📋 Running linting and fixing issues..."
+    bun run lint:fix

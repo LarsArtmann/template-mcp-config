@@ -14,22 +14,22 @@
  * - Multiple output modes: summary, detailed, json
  */
 
-const fs = require("fs");
-const path = require("path");
-const { spawn } = require("child_process");
+const fs = require('fs');
+const path = require('path');
+const { spawn } = require('child_process');
 
 class UnifiedMCPTester {
   constructor(options = {}) {
     this.projectRoot = path.dirname(__dirname);
-    this.mcpConfigPath = path.join(this.projectRoot, ".mcp.json");
-    this.envPath = path.join(this.projectRoot, ".env");
+    this.mcpConfigPath = path.join(this.projectRoot, '.mcp.json');
+    this.envPath = path.join(this.projectRoot, '.env');
     this.results = {};
 
     // Configuration options
     this.testTimeout = options.timeout || 20000; // 20 seconds per test
     this.maxConcurrency = options.concurrency || 5; // Maximum concurrent tests
     this.retryCount = options.retries || 1; // Retry failed tests once
-    this.outputMode = options.output || "summary"; // summary, detailed, json
+    this.outputMode = options.output || 'summary'; // summary, detailed, json
     this.fastMode = options.fast || false; // Skip capability tests in fast mode
 
     // Performance tracking
@@ -37,28 +37,28 @@ class UnifiedMCPTester {
     this.testStartTimes = {};
   }
 
-  log(message, type = "info") {
+  log(message, type = 'info') {
     const colors = {
-      info: "\x1b[36m", // cyan
-      success: "\x1b[32m", // green
-      warning: "\x1b[33m", // yellow
-      error: "\x1b[31m", // red
-      progress: "\x1b[35m", // magenta
-      reset: "\x1b[0m", // reset
+      info: '\x1b[36m', // cyan
+      success: '\x1b[32m', // green
+      warning: '\x1b[33m', // yellow
+      error: '\x1b[31m', // red
+      progress: '\x1b[35m', // magenta
+      reset: '\x1b[0m', // reset
     };
 
     const prefixes = {
-      info: "📋",
-      success: "✅",
-      warning: "⚠️",
-      error: "❌",
-      progress: "⏳",
+      info: '📋',
+      success: '✅',
+      warning: '⚠️',
+      error: '❌',
+      progress: '⏳',
     };
 
     const color = colors[type] || colors.info;
     const prefix = prefixes[type] || prefixes.info;
 
-    if (this.outputMode !== "json") {
+    if (this.outputMode !== 'json') {
       console.log(`${color}${prefix} ${message}${colors.reset}`);
     }
   }
@@ -68,103 +68,103 @@ class UnifiedMCPTester {
     return {
       context7: {
         envVars: [],
-        description: "Context management system",
+        description: 'Context management system',
         critical: true,
       },
       deepwiki: {
         envVars: [],
-        description: "Remote wiki server",
+        description: 'Remote wiki server',
         critical: false,
         remote: true,
-        testUrl: "https://mcp.deepwiki.com/sse",
+        testUrl: 'https://mcp.deepwiki.com/sse',
       },
       github: {
-        envVars: ["GITHUB_PERSONAL_ACCESS_TOKEN"],
-        description: "GitHub integration",
+        envVars: ['GITHUB_PERSONAL_ACCESS_TOKEN'],
+        description: 'GitHub integration',
         critical: true,
       },
       filesystem: {
         envVars: [],
-        description: "File system access",
+        description: 'File system access',
         critical: true,
         testPaths: true,
       },
       playwright: {
         envVars: [],
-        description: "Browser automation",
+        description: 'Browser automation',
         critical: false,
         testBrowsers: true,
       },
       puppeteer: {
         envVars: [],
-        description: "Browser automation alternative",
+        description: 'Browser automation alternative',
         critical: false,
       },
       memory: {
         envVars: [],
-        description: "Persistent memory",
+        description: 'Persistent memory',
         critical: true,
         testStorage: true,
       },
-      "sequential-thinking": {
+      'sequential-thinking': {
         envVars: [],
-        description: "Sequential reasoning",
+        description: 'Sequential reasoning',
         critical: false,
       },
       everything: {
         envVars: [],
-        description: "Everything server",
+        description: 'Everything server',
         critical: false,
       },
       kubernetes: {
-        envVars: ["KUBECONFIG"],
-        description: "Kubernetes management",
+        envVars: ['KUBECONFIG'],
+        description: 'Kubernetes management',
         critical: false,
       },
       ssh: {
         envVars: [],
-        description: "SSH connections",
+        description: 'SSH connections',
         critical: false,
         testSSH: true,
       },
       sqlite: {
         envVars: [],
-        description: "SQLite database",
+        description: 'SQLite database',
         critical: false,
       },
       turso: {
-        envVars: ["TURSO_DATABASE_URL", "TURSO_AUTH_TOKEN"],
-        description: "Turso database",
+        envVars: ['TURSO_DATABASE_URL', 'TURSO_AUTH_TOKEN'],
+        description: 'Turso database',
         critical: false,
       },
       terraform: {
         envVars: [],
-        description: "Infrastructure as code",
+        description: 'Infrastructure as code',
         critical: false,
       },
       nixos: {
         envVars: [],
-        description: "NixOS package management",
+        description: 'NixOS package management',
         critical: false,
       },
       prometheus: {
-        envVars: ["PROMETHEUS_URL"],
-        description: "Prometheus monitoring",
+        envVars: ['PROMETHEUS_URL'],
+        description: 'Prometheus monitoring',
         critical: false,
       },
       helm: {
         envVars: [],
-        description: "Helm chart management",
+        description: 'Helm chart management',
         critical: false,
       },
       fetch: {
         envVars: [],
-        description: "HTTP fetch utility",
+        description: 'HTTP fetch utility',
         critical: false,
       },
-      "youtube-transcript": {
+      'youtube-transcript': {
         envVars: [],
-        description: "YouTube transcript extraction",
+        description: 'YouTube transcript extraction',
         critical: false,
       },
     };
@@ -172,8 +172,8 @@ class UnifiedMCPTester {
 
   loadEnvironment() {
     if (fs.existsSync(this.envPath)) {
-      const envContent = fs.readFileSync(this.envPath, "utf8");
-      envContent.split("\n").forEach((line) => {
+      const envContent = fs.readFileSync(this.envPath, 'utf8');
+      envContent.split('\n').forEach(line => {
         const match = line.match(/^([^#=]+)=(.*)$/);
         if (match) {
           process.env[match[1].trim()] = match[2].trim();
@@ -198,9 +198,9 @@ class UnifiedMCPTester {
 
         // Check if it has a default value or template
         const envValue = serverConfig.env[envVar];
-        if (envValue.includes("${") && envValue.includes(":-}")) {
+        if (envValue.includes('${') && envValue.includes(':-}')) {
           results.warnings.push(`${envVar}: Optional (has default fallback)`);
-        } else if (envValue.includes("${")) {
+        } else if (envValue.includes('${')) {
           results.warnings.push(`${envVar}: Uses environment substitution`);
         }
       } else {
@@ -212,19 +212,19 @@ class UnifiedMCPTester {
   }
 
   async testRemoteServer(serverName, config) {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), this.testTimeout);
 
       fetch(config.serverUrl, {
-        method: "GET",
+        method: 'GET',
         signal: controller.signal,
         headers: {
-          Accept: "text/event-stream",
-          "User-Agent": "MCP-Test-Suite/1.0",
+          Accept: 'text/event-stream',
+          'User-Agent': 'MCP-Test-Suite/1.0',
         },
       })
-        .then((response) => {
+        .then(response => {
           clearTimeout(timeoutId);
           if (response.ok) {
             resolve({
@@ -240,11 +240,11 @@ class UnifiedMCPTester {
             });
           }
         })
-        .catch((error) => {
+        .catch(error => {
           clearTimeout(timeoutId);
           resolve({
             success: false,
-            message: error.message.includes("abort") ? "Timeout" : error.message,
+            message: error.message.includes('abort') ? 'Timeout' : error.message,
             error: error.message,
           });
         });
@@ -252,76 +252,76 @@ class UnifiedMCPTester {
   }
 
   async testLocalServer(serverName, config) {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       // Expand environment variables in command arguments
-      const expandedArgs = config.args.map((arg) =>
+      const expandedArgs = config.args.map(arg =>
         arg.replace(/\$\{([^}]+)\}/g, (match, varName) => {
-          if (varName.includes(":-")) {
-            const [name, defaultValue] = varName.split(":-");
+          if (varName.includes(':-')) {
+            const [name, defaultValue] = varName.split(':-');
             return process.env[name] || defaultValue;
           }
           return process.env[varName] || match;
-        }),
+        })
       );
 
       // Test with the full command including arguments but with --help
-      const testArgs = [...expandedArgs, "--help"];
+      const testArgs = [...expandedArgs, '--help'];
       const serverProcess = spawn(config.command, testArgs, {
         env: { ...process.env, ...config.env },
-        stdio: ["ignore", "pipe", "pipe"],
+        stdio: ['ignore', 'pipe', 'pipe'],
       });
 
-      let output = "";
-      let errorOutput = "";
+      let output = '';
+      let errorOutput = '';
 
       const timeout = setTimeout(() => {
-        serverProcess.kill("SIGKILL");
+        serverProcess.kill('SIGKILL');
         resolve({
           success: false,
-          message: "Timeout - process killed",
-          error: "timeout",
+          message: 'Timeout - process killed',
+          error: 'timeout',
         });
       }, this.testTimeout);
 
-      serverProcess.stdout?.on("data", (data) => {
+      serverProcess.stdout?.on('data', data => {
         output += data.toString();
       });
 
-      serverProcess.stderr?.on("data", (data) => {
+      serverProcess.stderr?.on('data', data => {
         errorOutput += data.toString();
       });
 
-      serverProcess.on("close", (code) => {
+      serverProcess.on('close', code => {
         clearTimeout(timeout);
 
         // Many MCP servers exit with code 0 when showing help
         if (code === 0) {
           resolve({
             success: true,
-            message: "Command accessible",
+            message: 'Command accessible',
             exitCode: code,
           });
         } else if (
-          output.includes("help") ||
-          output.includes("usage") ||
-          errorOutput.includes("help")
+          output.includes('help') ||
+          output.includes('usage') ||
+          errorOutput.includes('help')
         ) {
           resolve({
             success: true,
-            message: "Command accessible (help shown)",
+            message: 'Command accessible (help shown)',
             exitCode: code,
           });
         } else {
           resolve({
             success: false,
-            message: `Exit code ${code}: ${errorOutput.trim() || "Command failed"}`,
+            message: `Exit code ${code}: ${errorOutput.trim() || 'Command failed'}`,
             exitCode: code,
             stderr: errorOutput.slice(0, 200),
           });
         }
       });
 
-      serverProcess.on("error", (error) => {
+      serverProcess.on('error', error => {
         clearTimeout(timeout);
         resolve({
           success: false,
@@ -335,35 +335,35 @@ class UnifiedMCPTester {
   // Capability testing methods (from test-servers.js)
   async testServerCapabilities(serverName, config, requirements) {
     if (this.fastMode) {
-      return { success: true, message: "Skipped in fast mode" };
+      return { success: true, message: 'Skipped in fast mode' };
     }
 
     // Special capability tests based on server type
-    if (requirements.testPaths && serverName === "filesystem") {
+    if (requirements.testPaths && serverName === 'filesystem') {
       return this.testFilesystemPaths(config);
     }
 
-    if (requirements.testBrowsers && serverName === "playwright") {
+    if (requirements.testBrowsers && serverName === 'playwright') {
       return this.testPlaywrightBrowsers();
     }
 
-    if (requirements.testStorage && serverName === "memory") {
+    if (requirements.testStorage && serverName === 'memory') {
       return this.testMemoryStorage(config);
     }
 
-    if (requirements.testSSH && serverName === "ssh") {
+    if (requirements.testSSH && serverName === 'ssh') {
       return this.testSSHKeys();
     }
 
-    if (serverName === "github") {
+    if (serverName === 'github') {
       return this.testGithubToken();
     }
 
-    if (serverName === "turso") {
+    if (serverName === 'turso') {
       return this.testTursoConfig();
     }
 
-    return { success: true, message: "Basic test passed" };
+    return { success: true, message: 'Basic test passed' };
   }
 
   async testFilesystemPaths(config) {
@@ -371,14 +371,14 @@ class UnifiedMCPTester {
     let accessiblePaths = 0;
 
     for (const pathTemplate of paths) {
-      const expandedPath = pathTemplate.replace(/\$\{HOME\}/g, require("os").homedir());
+      const expandedPath = pathTemplate.replace(/\$\{HOME\}/g, require('os').homedir());
       if (fs.existsSync(expandedPath)) {
         accessiblePaths++;
       }
     }
 
     if (accessiblePaths === 0) {
-      return { success: false, message: "No accessible filesystem paths" };
+      return { success: false, message: 'No accessible filesystem paths' };
     }
 
     return {
@@ -389,37 +389,37 @@ class UnifiedMCPTester {
 
   async testPlaywrightBrowsers() {
     try {
-      return new Promise((resolve) => {
-        const proc = spawn("bunx", ["playwright", "install", "--dry-run"], {
-          stdio: "pipe",
+      return new Promise(resolve => {
+        const proc = spawn('bunx', ['playwright', 'install', '--dry-run'], {
+          stdio: 'pipe',
         });
 
-        let output = "";
-        proc.stdout.on("data", (data) => (output += data.toString()));
-        proc.stderr.on("data", (data) => (output += data.toString()));
+        let output = '';
+        proc.stdout.on('data', data => (output += data.toString()));
+        proc.stderr.on('data', data => (output += data.toString()));
 
-        proc.on("close", (code) => {
-          if (output.includes("browsers are already installed") || code === 0) {
-            resolve({ success: true, message: "Browsers available" });
+        proc.on('close', code => {
+          if (output.includes('browsers are already installed') || code === 0) {
+            resolve({ success: true, message: 'Browsers available' });
           } else {
-            resolve({ success: false, message: "Browsers need installation" });
+            resolve({ success: false, message: 'Browsers need installation' });
           }
         });
 
         setTimeout(() => {
           proc.kill();
-          resolve({ success: false, message: "Browser check timeout" });
+          resolve({ success: false, message: 'Browser check timeout' });
         }, 5000);
       });
     } catch {
-      return { success: false, message: "Browser check failed" };
+      return { success: false, message: 'Browser check failed' };
     }
   }
 
   async testMemoryStorage(config) {
     const memoryPath =
-      config.env?.MEMORY_FILE_PATH?.replace(/\$\{HOME\}/g, require("os").homedir()) ||
-      path.join(require("os").homedir(), ".cache", "mcp-memory.json");
+      config.env?.MEMORY_FILE_PATH?.replace(/\$\{HOME\}/g, require('os').homedir()) ||
+      path.join(require('os').homedir(), '.cache', 'mcp-memory.json');
 
     const cacheDir = path.dirname(memoryPath);
     try {
@@ -439,33 +439,33 @@ class UnifiedMCPTester {
   }
 
   async testSSHKeys() {
-    const sshDir = path.join(require("os").homedir(), ".ssh");
+    const sshDir = path.join(require('os').homedir(), '.ssh');
     const hasSSHKeys =
       fs.existsSync(sshDir) &&
-      (fs.existsSync(path.join(sshDir, "id_rsa")) ||
-        fs.existsSync(path.join(sshDir, "id_ed25519")));
+      (fs.existsSync(path.join(sshDir, 'id_rsa')) ||
+        fs.existsSync(path.join(sshDir, 'id_ed25519')));
 
     if (!hasSSHKeys) {
       return {
         success: true,
-        message: "SSH server ready (no keys found, but optional)",
+        message: 'SSH server ready (no keys found, but optional)',
       };
     }
 
-    return { success: true, message: "SSH server ready with available keys" };
+    return { success: true, message: 'SSH server ready with available keys' };
   }
 
   async testGithubToken() {
     const token = process.env.GITHUB_PERSONAL_ACCESS_TOKEN;
-    if (!token || token === "your_token_here" || token.includes("xxxx")) {
-      return { success: false, message: "GitHub token not configured" };
+    if (!token || token === 'your_token_here' || token.includes('xxxx')) {
+      return { success: false, message: 'GitHub token not configured' };
     }
 
-    if (!token.startsWith("ghp_")) {
-      return { success: false, message: "Invalid GitHub token format" };
+    if (!token.startsWith('ghp_')) {
+      return { success: false, message: 'Invalid GitHub token format' };
     }
 
-    return { success: true, message: "GitHub token configured" };
+    return { success: true, message: 'GitHub token configured' };
   }
 
   async testTursoConfig() {
@@ -475,22 +475,22 @@ class UnifiedMCPTester {
     if (!url || !token) {
       return {
         success: true,
-        message: "Turso configuration optional - not configured",
+        message: 'Turso configuration optional - not configured',
       };
     }
 
-    if (url.includes("your-database-name") || token === "your-auth-token-here") {
+    if (url.includes('your-database-name') || token === 'your-auth-token-here') {
       return {
         success: false,
-        message: "Turso configuration contains placeholders",
+        message: 'Turso configuration contains placeholders',
       };
     }
 
-    if (!url.startsWith("libsql://")) {
-      return { success: false, message: "Invalid Turso database URL format" };
+    if (!url.startsWith('libsql://')) {
+      return { success: false, message: 'Invalid Turso database URL format' };
     }
 
-    return { success: true, message: "Turso configuration valid" };
+    return { success: true, message: 'Turso configuration valid' };
   }
 
   async testSingleServer(serverName, serverConfig, requirements, attempt = 1) {
@@ -513,13 +513,13 @@ class UnifiedMCPTester {
         const capabilityResult = await this.testServerCapabilities(
           serverName,
           serverConfig,
-          requirements,
+          requirements
         );
         if (!capabilityResult.success) {
           result = capabilityResult;
         } else if (
-          capabilityResult.message !== "Basic test passed" &&
-          capabilityResult.message !== "Skipped in fast mode"
+          capabilityResult.message !== 'Basic test passed' &&
+          capabilityResult.message !== 'Skipped in fast mode'
         ) {
           result.message = capabilityResult.message;
         }
@@ -543,13 +543,13 @@ class UnifiedMCPTester {
   }
 
   async testAllServers() {
-    const config = JSON.parse(fs.readFileSync(this.mcpConfigPath, "utf8"));
+    const config = JSON.parse(fs.readFileSync(this.mcpConfigPath, 'utf8'));
     const servers = Object.entries(config.mcpServers);
     const serverRequirements = this.getServerRequirements();
 
     this.log(
       `Testing ${servers.length} MCP servers with ${this.maxConcurrency} concurrent tests...`,
-      "info",
+      'info'
     );
 
     // Process servers in batches for controlled concurrency
@@ -559,12 +559,12 @@ class UnifiedMCPTester {
     }
 
     for (const [batchIndex, batch] of batches.entries()) {
-      this.log(`Processing batch ${batchIndex + 1}/${batches.length}...`, "progress");
+      this.log(`Processing batch ${batchIndex + 1}/${batches.length}...`, 'progress');
 
       const batchPromises = batch.map(async ([serverName, serverConfig]) => {
         const requirements = serverRequirements[serverName] || {
           envVars: [],
-          description: "Unknown",
+          description: 'Unknown',
           critical: false,
         };
 
@@ -572,7 +572,7 @@ class UnifiedMCPTester {
         const envCheck = this.checkEnvironmentVariables(
           serverName,
           requirements.envVars,
-          serverConfig,
+          serverConfig
         );
 
         // Test the server (with retry logic)
@@ -580,7 +580,7 @@ class UnifiedMCPTester {
 
         // Retry failed tests if configured
         if (!result.success && this.retryCount > 0) {
-          this.log(`Retrying ${serverName}...`, "warning");
+          this.log(`Retrying ${serverName}...`, 'warning');
           result = await this.testSingleServer(serverName, serverConfig, requirements, 2);
         }
 
@@ -596,9 +596,9 @@ class UnifiedMCPTester {
 
         // Log result
         if (result.success) {
-          this.log(`${serverName}: ${result.message} (${result.duration}ms)`, "success");
+          this.log(`${serverName}: ${result.message} (${result.duration}ms)`, 'success');
         } else {
-          this.log(`${serverName}: ${result.message} (${result.duration}ms)`, "error");
+          this.log(`${serverName}: ${result.message} (${result.duration}ms)`, 'error');
         }
 
         return this.results[serverName];
@@ -611,19 +611,19 @@ class UnifiedMCPTester {
 
   generateSummaryReport() {
     const total = Object.keys(this.results).length;
-    const successful = Object.values(this.results).filter((r) => r.success);
-    const failed = Object.values(this.results).filter((r) => !r.success);
-    const critical = Object.values(this.results).filter((r) => r.critical);
-    const criticalFailed = failed.filter((r) => r.critical);
+    const successful = Object.values(this.results).filter(r => r.success);
+    const failed = Object.values(this.results).filter(r => !r.success);
+    const critical = Object.values(this.results).filter(r => r.critical);
+    const criticalFailed = failed.filter(r => r.critical);
 
     const totalTime = Date.now() - this.startTime;
     const avgTime = total > 0 ? Math.round(totalTime / total) : 0;
 
-    console.log("\n📊 UNIFIED MCP SERVER TEST SUMMARY");
-    console.log("=====================================");
+    console.log('\n📊 UNIFIED MCP SERVER TEST SUMMARY');
+    console.log('=====================================');
     console.log(`Total Servers: ${total}`);
     console.log(
-      `✅ Successful: ${successful.length}/${total} (${Math.round((successful.length / total) * 100)}%)`,
+      `✅ Successful: ${successful.length}/${total} (${Math.round((successful.length / total) * 100)}%)`
     );
     console.log(`❌ Failed: ${failed.length}/${total}`);
     console.log(`🔥 Critical: ${critical.length} (${criticalFailed.length} failed)`);
@@ -631,26 +631,26 @@ class UnifiedMCPTester {
     console.log(`⚡ Avg per Server: ${avgTime}ms`);
 
     if (criticalFailed.length > 0) {
-      console.log("\n🚨 CRITICAL FAILURES:");
-      criticalFailed.forEach((server) => {
-        const name = Object.keys(this.results).find((k) => this.results[k] === server);
+      console.log('\n🚨 CRITICAL FAILURES:');
+      criticalFailed.forEach(server => {
+        const name = Object.keys(this.results).find(k => this.results[k] === server);
         console.log(`   ❌ ${name}: ${server.message}`);
       });
     }
 
     if (failed.length > 0) {
-      console.log("\n❌ Failed Servers:");
-      failed.forEach((server) => {
-        const name = Object.keys(this.results).find((k) => this.results[k] === server);
+      console.log('\n❌ Failed Servers:');
+      failed.forEach(server => {
+        const name = Object.keys(this.results).find(k => this.results[k] === server);
         console.log(`   ❌ ${name}: ${server.message}`);
       });
     }
 
     if (successful.length > 0) {
-      console.log("\n✅ Working Servers:");
-      successful.forEach((server) => {
-        const name = Object.keys(this.results).find((k) => this.results[k] === server);
-        const criticalTag = server.critical ? " (CRITICAL)" : "";
+      console.log('\n✅ Working Servers:');
+      successful.forEach(server => {
+        const name = Object.keys(this.results).find(k => this.results[k] === server);
+        const criticalTag = server.critical ? ' (CRITICAL)' : '';
         console.log(`   ✅ ${name}: ${server.message}${criticalTag}`);
       });
     }
@@ -683,7 +683,7 @@ class UnifiedMCPTester {
     const reportPath = path.join(this.projectRoot, `test-results-${Date.now()}.json`);
     fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
 
-    this.log(`Detailed report saved: ${reportPath}`, "info");
+    this.log(`Detailed report saved: ${reportPath}`, 'info');
     return report;
   }
 
@@ -701,10 +701,10 @@ class UnifiedMCPTester {
       await this.testAllServers();
 
       // Generate reports
-      if (this.outputMode === "json") {
+      if (this.outputMode === 'json') {
         const report = this.generateDetailedReport();
         console.log(JSON.stringify(report, null, 2));
-      } else if (this.outputMode === "detailed") {
+      } else if (this.outputMode === 'detailed') {
         this.generateDetailedReport();
       } else {
         this.generateSummaryReport();
@@ -712,14 +712,14 @@ class UnifiedMCPTester {
 
       // Exit with error if any critical servers failed
       const criticalFailed = Object.values(this.results).filter(
-        (r) => !r.success && r.critical,
+        r => !r.success && r.critical
       ).length;
       if (criticalFailed > 0) {
         process.exit(1);
       }
     } catch (error) {
-      this.log(`Testing failed: ${error.message}`, "error");
-      if (this.outputMode !== "json") {
+      this.log(`Testing failed: ${error.message}`, 'error');
+      if (this.outputMode !== 'json') {
         console.error(error.stack);
       }
       process.exit(1);
@@ -734,24 +734,24 @@ function parseArgs() {
     timeout: 20000,
     concurrency: 5,
     retries: 1,
-    output: "summary", // summary, detailed, json
+    output: 'summary', // summary, detailed, json
     fast: false,
   };
 
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
 
-    if (arg === "--timeout" && i + 1 < args.length) {
+    if (arg === '--timeout' && i + 1 < args.length) {
       options.timeout = parseInt(args[++i], 10) * 1000; // Convert seconds to ms
-    } else if (arg === "--concurrency" && i + 1 < args.length) {
+    } else if (arg === '--concurrency' && i + 1 < args.length) {
       options.concurrency = parseInt(args[++i], 10);
-    } else if (arg === "--retries" && i + 1 < args.length) {
+    } else if (arg === '--retries' && i + 1 < args.length) {
       options.retries = parseInt(args[++i], 10);
-    } else if (arg === "--output" && i + 1 < args.length) {
+    } else if (arg === '--output' && i + 1 < args.length) {
       options.output = args[++i];
-    } else if (arg === "--fast") {
+    } else if (arg === '--fast') {
       options.fast = true;
-    } else if (arg === "--help" || arg === "-h") {
+    } else if (arg === '--help' || arg === '-h') {
       console.log(
         `
 Unified MCP Server Test Suite
@@ -772,7 +772,7 @@ Examples:
   node test-all.js --output detailed        # Save detailed report
   node test-all.js --output json            # JSON output only
   node test-all.js --timeout 30 --retries 2 # Custom timeout and retries
-            `.trim(),
+            `.trim()
       );
       process.exit(0);
     }

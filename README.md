@@ -63,8 +63,9 @@ git subtree add --prefix=.mcp-config https://github.com/LarsArtmann/template-mcp
 | **🔐 Remote Access**           | SSH                 | Secure remote server management                      | ❌               |
 | **🗄️ Local Database**          | SQLite              | Local database operations & queries                  | ❌               |
 | **☁️ Distributed Database**    | Turso               | Edge SQLite with global replication                  | ⚠️ Optional      |
+| **🔧 Infrastructure**          | Terraform           | Infrastructure as Code validation & management       | ❌               |
 
-**Total: 15 MCP servers** - Only **1 required API key** (GitHub), **1 optional** (Turso)
+**Total: 16 MCP servers** - Only **1 required API key** (GitHub), **1 optional** (Turso)
 
 ## 🚀 Quick Start
 

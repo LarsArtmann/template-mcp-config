@@ -1,6 +1,7 @@
 {
   "name": "template-mcp-config",
   "version": "2.0.0",
+  "type": "module",
   "description": "Production-ready MCP configuration template with Context7 integration and comprehensive tooling for modern development workflows",
   "keywords": [
     "ai",
@@ -25,12 +26,16 @@
   "files": [
     ".env.example",
     ".mcp.json",
+    ".github/",
+    ".git-hooks/",
     "LICENSE",
     "README.md",
     "USAGE.md",
     "schemas/",
     "scripts/",
-    "validation/"
+    "validation/",
+    "vitest.config.js",
+    "tests/"
   ],
   "os": [
     "darwin",
@@ -76,7 +81,9 @@
     "test:fast": "node scripts/test-all.js --fast",
     "test:json": "node scripts/test-all.js --output json",
     "build": "tsc && bun run schema:build",
-    "dev": "bun run typespec:watch"
+    "dev": "bun run typespec:watch",
+    "hooks:install": "sh scripts/install-hooks.sh",
+    "release": "node scripts/release.js"
   },
   "dependencies": {
     "@kimtaeyoon83/mcp-server-youtube-transcript": "^0.1.1",

@@ -78,7 +78,7 @@ bunx validate-mcp-packages
 
 ```javascript
 // Use generated schemas for validation
-import { validateConfig } from "./schemas/generated/validators.js";
+import { validateConfig } from './schemas/generated/validators.js';
 const result = validateConfig(userConfig);
 ```
 

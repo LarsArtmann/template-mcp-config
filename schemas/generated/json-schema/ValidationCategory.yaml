@@ -16,7 +16,7 @@ properties:
       $ref: ValidationWarning.yaml
     description: Warnings specific to this validation category
   metadata:
-    $ref: "#/$defs/RecordUnknown"
+    $ref: '#/$defs/RecordUnknown'
     description: Additional metadata specific to this category
 required:
   - valid

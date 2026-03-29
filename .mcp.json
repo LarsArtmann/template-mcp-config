@@ -1,20 +1,94 @@
 {
   "mcpServers": {
+    "context7": {
+      "command": "bunx",
+      "args": ["-y", "@upstash/context7-mcp"]
+    },
+    "github": {
+      "command": "bunx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_PERSONAL_ACCESS_TOKEN}"
+      }
+    },
     "filesystem": {
       "command": "bunx",
       "args": [
         "-y",
         "@modelcontextprotocol/server-filesystem",
-        "/Users/larsartmann/IdeaProjects/",
-        "/Users/larsartmann/GolandProjects/",
-        "/Users/larsartmann/WebstormProjects/",
-        "/Users/larsartmann/projects/",
+        "${HOME}/IdeaProjects",
+        "${HOME}/GolandProjects",
+        "${HOME}/WebstormProjects",
+        "${HOME}/projects",
         "/tmp"
       ]
+    },
+    "memory": {
+      "command": "bunx",
+      "args": ["-y", "@modelcontextprotocol/server-memory"]
     },
     "sequential-thinking": {
       "command": "bunx",
       "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
+    },
+    "playwright": {
+      "command": "bunx",
+      "args": ["-y", "@playwright/mcp"]
+    },
+    "puppeteer": {
+      "command": "bunx",
+      "args": ["-y", "@modelcontextprotocol/server-puppeteer"]
+    },
+    "everything": {
+      "command": "bunx",
+      "args": ["-y", "@modelcontextprotocol/server-everything"]
+    },
+    "kubernetes": {
+      "command": "bunx",
+      "args": ["-y", "mcp-server-kubernetes"],
+      "env": {
+        "KUBECONFIG": "${KUBECONFIG:-${HOME}/.kube/config}"
+      }
+    },
+    "ssh": {
+      "command": "bunx",
+      "args": ["-y", "ssh-mcp"],
+      "env": {
+        "SSH_HOST": "${SSH_HOST}",
+        "SSH_USER": "${SSH_USER}",
+        "SSH_PASSWORD": "${SSH_PASSWORD}",
+        "SSH_KEY_PATH": "${SSH_KEY_PATH}"
+      }
+    },
+    "sqlite": {
+      "command": "bunx",
+      "args": ["-y", "mcp-sqlite"],
+      "env": {
+        "SQLITE_DB_PATH": "${SQLITE_DB_PATH:-${HOME}/databases/app.db}"
+      }
+    },
+    "turso": {
+      "command": "bunx",
+      "args": ["-y", "mcp-turso-cloud"],
+      "env": {
+        "TURSO_DATABASE_URL": "${TURSO_DATABASE_URL}",
+        "TURSO_AUTH_TOKEN": "${TURSO_AUTH_TOKEN}"
+      }
+    },
+    "terraform": {
+      "command": "bunx",
+      "args": ["-y", "terraform-mcp-server"]
+    },
+    "fetch": {
+      "command": "bunx",
+      "args": ["-y", "fetch-mcp"]
+    },
+    "youtube-transcript": {
+      "command": "bunx",
+      "args": ["-y", "@kimtaeyoon83/mcp-server-youtube-transcript"]
+    },
+    "deepwiki": {
+      "serverUrl": "https://mcp.deepwiki.com/sse"
     }
   }
 }

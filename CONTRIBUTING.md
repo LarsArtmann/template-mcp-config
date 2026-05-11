@@ -156,10 +156,10 @@ bun run test:watch
 Place test files in `tests/` directory:
 
 ```javascript
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from "vitest";
 
-describe('Feature Name', () => {
-  it('should do something specific', () => {
+describe("Feature Name", () => {
+  it("should do something specific", () => {
     expect(true).toBe(true);
   });
 });

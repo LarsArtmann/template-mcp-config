@@ -19,7 +19,7 @@ Branch protection rules prevent direct pushes to critical branches and ensure th
 
 ```yaml
 # GitHub Branch Protection Settings
-branch_name_pattern: 'main'
+branch_name_pattern: "main"
 
 # Require pull request reviews
 required_reviewers:
@@ -31,10 +31,10 @@ required_reviewers:
 required_status_checks:
   strict: true # Require branch to be up to date
   contexts:
-    - 'ci/lint'
-    - 'ci/test'
-    - 'ci/validate'
-    - 'ci/build'
+    - "ci/lint"
+    - "ci/test"
+    - "ci/validate"
+    - "ci/build"
 
 # Require linear history
 linear_history: true

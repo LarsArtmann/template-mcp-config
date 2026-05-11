@@ -1,38 +1,38 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect } from "vitest";
 import {
   createValidator,
   validateMCPConfiguration,
   validateMCPServer,
   formatValidationErrors,
-} from '../validation/schema-loader.js';
+} from "../validation/schema-loader.js";
 
-describe('Schema Validation', () => {
+describe("Schema Validation", () => {
   const validator = createValidator();
 
-  describe('createValidator', () => {
-    it('should create a validator instance', () => {
+  describe("createValidator", () => {
+    it("should create a validator instance", () => {
       expect(validator).toBeDefined();
-      expect(typeof validator.validate).toBe('function');
+      expect(typeof validator.validate).toBe("function");
     });
 
-    it('should have MCPConfiguration schema', () => {
-      const schema = validator.getSchema('MCPConfiguration');
+    it("should have MCPConfiguration schema", () => {
+      const schema = validator.getSchema("MCPConfiguration");
       expect(schema).toBeDefined();
     });
 
-    it('should have MCPServer schema', () => {
-      const schema = validator.getSchema('MCPServer');
+    it("should have MCPServer schema", () => {
+      const schema = validator.getSchema("MCPServer");
       expect(schema).toBeDefined();
     });
   });
 
-  describe('validateMCPConfiguration', () => {
-    it('should validate a valid minimal config', () => {
+  describe("validateMCPConfiguration", () => {
+    it("should validate a valid minimal config", () => {
       const config = {
         mcpServers: {
-          'test-server': {
-            command: 'bunx',
-            args: ['-y', '@some/package'],
+          "test-server": {
+            command: "bunx",
+            args: ["-y", "@some/package"],
           },
         },
       };
@@ -42,19 +42,19 @@ describe('Schema Validation', () => {
       expect(result.errors).toHaveLength(0);
     });
 
-    it('should validate a config with multiple servers', () => {
+    it("should validate a config with multiple servers", () => {
       const config = {
         mcpServers: {
           server1: {
-            command: 'bunx',
-            args: ['-y', '@some/package1'],
+            command: "bunx",
+            args: ["-y", "@some/package1"],
           },
           server2: {
-            command: 'npx',
-            args: ['-y', '@some/package2'],
+            command: "npx",
+            args: ["-y", "@some/package2"],
           },
           server3: {
-            serverUrl: 'https://example.com/mcp',
+            serverUrl: "https://example.com/mcp",
           },
         },
       };
@@ -63,9 +63,9 @@ describe('Schema Validation', () => {
       expect(result.valid).toBe(true);
     });
 
-    it('should reject config without mcpServers', () => {
+    it("should reject config without mcpServers", () => {
       const config = {
-        version: '1.0.0',
+        version: "1.0.0",
       };
 
       const result = validateMCPConfiguration(config, validator);
@@ -73,14 +73,14 @@ describe('Schema Validation', () => {
       expect(result.errors.length).toBeGreaterThan(0);
     });
 
-    it('should validate server with env variables', () => {
+    it("should validate server with env variables", () => {
       const config = {
         mcpServers: {
           github: {
-            command: 'bunx',
-            args: ['-y', '@modelcontextprotocol/server-github'],
+            command: "bunx",
+            args: ["-y", "@modelcontextprotocol/server-github"],
             env: {
-              GITHUB_PERSONAL_ACCESS_TOKEN: '${GITHUB_PERSONAL_ACCESS_TOKEN}',
+              GITHUB_PERSONAL_ACCESS_TOKEN: "${GITHUB_PERSONAL_ACCESS_TOKEN}",
             },
           },
         },
@@ -91,34 +91,34 @@ describe('Schema Validation', () => {
     });
   });
 
-  describe('validateMCPServer', () => {
-    it('should validate a stdio server', () => {
+  describe("validateMCPServer", () => {
+    it("should validate a stdio server", () => {
       const serverConfig = {
-        command: 'bunx',
-        args: ['-y', '@some/package'],
+        command: "bunx",
+        args: ["-y", "@some/package"],
       };
 
       const result = validateMCPServer(serverConfig, validator);
       expect(result.valid).toBe(true);
     });
 
-    it('should validate an HTTP server', () => {
+    it("should validate an HTTP server", () => {
       const serverConfig = {
-        serverUrl: 'https://example.com/mcp',
+        serverUrl: "https://example.com/mcp",
       };
 
       const result = validateMCPServer(serverConfig, validator);
       expect(result.valid).toBe(true);
     });
 
-    it('should validate server with all optional fields', () => {
+    it("should validate server with all optional fields", () => {
       const serverConfig = {
-        command: 'bunx',
-        args: ['-y', '@some/package'],
+        command: "bunx",
+        args: ["-y", "@some/package"],
         env: {
-          API_KEY: 'secret',
+          API_KEY: "secret",
         },
-        cwd: '/tmp',
+        cwd: "/tmp",
         initTimeoutMs: 5000,
         autoRestart: true,
         maxRestarts: 5,
@@ -129,38 +129,38 @@ describe('Schema Validation', () => {
     });
   });
 
-  describe('formatValidationErrors', () => {
-    it('should format errors with instance path', () => {
+  describe("formatValidationErrors", () => {
+    it("should format errors with instance path", () => {
       const errors = [
         {
-          instancePath: '/mcpServers/test',
-          message: 'must be string',
+          instancePath: "/mcpServers/test",
+          message: "must be string",
           data: 123,
         },
       ];
 
       const formatted = formatValidationErrors(errors);
-      expect(formatted[0]).toContain('/mcpServers/test');
-      expect(formatted[0]).toContain('must be string');
+      expect(formatted[0]).toContain("/mcpServers/test");
+      expect(formatted[0]).toContain("must be string");
     });
 
-    it('should handle empty errors array', () => {
+    it("should handle empty errors array", () => {
       const formatted = formatValidationErrors([]);
       expect(formatted).toEqual([]);
     });
 
-    it('should include data in error message when available', () => {
+    it("should include data in error message when available", () => {
       const errors = [
         {
-          instancePath: '/field',
-          message: 'invalid type',
-          data: { complex: 'object' },
+          instancePath: "/field",
+          message: "invalid type",
+          data: { complex: "object" },
         },
       ];
 
       const formatted = formatValidationErrors(errors);
-      expect(formatted[0]).toContain('invalid type');
-      expect(formatted[0]).toContain('complex');
+      expect(formatted[0]).toContain("invalid type");
+      expect(formatted[0]).toContain("complex");
     });
   });
 });

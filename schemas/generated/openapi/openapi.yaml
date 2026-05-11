@@ -19,12 +19,12 @@ components:
         required:
           type: array
           items:
-            $ref: '#/components/schemas/EnvironmentVariable'
+            $ref: "#/components/schemas/EnvironmentVariable"
           description: Required environment variables that must be set
         optional:
           type: array
           items:
-            $ref: '#/components/schemas/EnvironmentVariable'
+            $ref: "#/components/schemas/EnvironmentVariable"
           description: Optional environment variables with default values
       description: |-
         Environment Variable Configuration
@@ -153,11 +153,11 @@ components:
         mcpServers:
           type: object
           additionalProperties:
-            $ref: '#/components/schemas/MCPServer'
+            $ref: "#/components/schemas/MCPServer"
           description: Collection of MCP servers with their configurations
         global:
           allOf:
-            - $ref: '#/components/schemas/GlobalConfiguration'
+            - $ref: "#/components/schemas/GlobalConfiguration"
           description: Global configuration settings (optional)
         version:
           type: string
@@ -166,13 +166,13 @@ components:
       description: Root MCP configuration structure
     MCPServer:
       anyOf:
-        - $ref: '#/components/schemas/StdioMCPServer'
-        - $ref: '#/components/schemas/HttpMCPServer'
+        - $ref: "#/components/schemas/StdioMCPServer"
+        - $ref: "#/components/schemas/HttpMCPServer"
       discriminator:
         propertyName: type
         mapping:
-          stdio: '#/components/schemas/StdioMCPServer'
-          http: '#/components/schemas/HttpMCPServer'
+          stdio: "#/components/schemas/StdioMCPServer"
+          http: "#/components/schemas/HttpMCPServer"
       description: MCP Server configuration supporting both stdio and HTTP protocols
     StdioMCPServer:
       type: object
@@ -218,7 +218,7 @@ components:
           format: int32
           minimum: 1
           maximum: 10
-          description: 'Maximum restart attempts (requires autoRestart: true)'
+          description: "Maximum restart attempts (requires autoRestart: true)"
           default: 3
       description: |-
         Standard I/O MCP Server Configuration
@@ -236,12 +236,12 @@ components:
         errors:
           type: array
           items:
-            $ref: '#/components/schemas/ValidationError'
+            $ref: "#/components/schemas/ValidationError"
           description: Errors specific to this validation category
         warnings:
           type: array
           items:
-            $ref: '#/components/schemas/ValidationWarning'
+            $ref: "#/components/schemas/ValidationWarning"
           description: Warnings specific to this validation category
         metadata:
           type: object
@@ -258,19 +258,19 @@ components:
       properties:
         structure:
           allOf:
-            - $ref: '#/components/schemas/ValidationCategory'
+            - $ref: "#/components/schemas/ValidationCategory"
           description: Results of configuration structure validation
         servers:
           allOf:
-            - $ref: '#/components/schemas/ValidationCategory'
+            - $ref: "#/components/schemas/ValidationCategory"
           description: Results of individual server validation
         environment:
           allOf:
-            - $ref: '#/components/schemas/ValidationCategory'
+            - $ref: "#/components/schemas/ValidationCategory"
           description: Results of environment variable validation
         connectivity:
           allOf:
-            - $ref: '#/components/schemas/ValidationCategory'
+            - $ref: "#/components/schemas/ValidationCategory"
           description: Results of server connectivity tests
       description: Detailed validation results
     ValidationError:
@@ -307,16 +307,16 @@ components:
         errors:
           type: array
           items:
-            $ref: '#/components/schemas/ValidationError'
+            $ref: "#/components/schemas/ValidationError"
           description: Critical errors that prevent server operation
         warnings:
           type: array
           items:
-            $ref: '#/components/schemas/ValidationWarning'
+            $ref: "#/components/schemas/ValidationWarning"
           description: Non-critical warnings about configuration
         details:
           allOf:
-            - $ref: '#/components/schemas/ValidationDetails'
+            - $ref: "#/components/schemas/ValidationDetails"
           description: Detailed results broken down by validation category
         timestamp:
           type: string

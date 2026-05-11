@@ -1,7 +1,6 @@
 {
   "name": "template-mcp-config",
   "version": "2.0.0",
-  "type": "module",
   "description": "Production-ready MCP configuration template with Context7 integration and comprehensive tooling for modern development workflows",
   "keywords": [
     "ai",
@@ -46,6 +45,7 @@
     "x64",
     "arm64"
   ],
+  "type": "module",
   "main": ".mcp.json",
   "scripts": {
     "install-all": "bun install",
